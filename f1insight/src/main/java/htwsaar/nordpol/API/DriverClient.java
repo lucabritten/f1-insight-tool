@@ -18,14 +18,19 @@ public class DriverClient {
 
     private final OkHttpClient okHttpClient;
     private final ObjectMapper objectMapper;
-    private final String BASE_URL = "https://api.openf1.org/v1/";
+    private final String BASE_URL;
 
-    public DriverClient(){
+    public DriverClient(String url){
         this.okHttpClient = new OkHttpClient();
-        objectMapper = new ObjectMapper();
+        this.objectMapper = new ObjectMapper();
+        this.BASE_URL = url;
     }
 
-    public void getDriverByName(String surname, String lastname) {
+    public DriverClient(){
+        this("https://api.openf1.org/v1");
+    }
+
+    public DriverApiDto getDriverByName(String surname, String lastname) {
         String url = BASE_URL + "drivers?full_name=" + surname + "%20" + lastname + "&meeting_key=latest&session_key=latest";
 
         Request request = new Request.Builder()
@@ -34,14 +39,18 @@ public class DriverClient {
 
         try(Response response = okHttpClient.newCall(request).execute()){
             String json = response.body().string();
-            
+
             DriverApiDto[] result = objectMapper.readValue(json, DriverApiDto[].class);
-            System.out.println(result[0]);
+
+            return result[0];
         }
         catch (IOException e){
             System.out.println(e.getMessage() + "DriverClient IO Exception");
         }
+        throw new RuntimeException("Did not find any Driver");
     }
+
+
 
 
 
