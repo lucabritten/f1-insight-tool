@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class DriverClient {
 
@@ -30,24 +31,31 @@ public class DriverClient {
         this("https://api.openf1.org/v1");
     }
 
-    public DriverApiDto getDriverByName(String surname, String lastname) {
-        String url = BASE_URL + "drivers?full_name=" + surname + "%20" + lastname + "&meeting_key=latest&session_key=latest";
+    public Optional<DriverApiDto> getDriverByName(String firstName, String lastName) {
+        String url = BASE_URL + "/drivers?full_name="
+                + firstName + "%20" + lastName
+                + "&meeting_key=latest&session_key=latest";
 
         Request request = new Request.Builder()
                 .url(url)
                 .build();
 
         try(Response response = okHttpClient.newCall(request).execute()){
-            String json = response.body().string();
 
-            DriverApiDto[] result = objectMapper.readValue(json, DriverApiDto[].class);
+            if(!response.isSuccessful())
+                return Optional.empty();
 
-            return result[0];
+            DriverApiDto[] result =
+                    objectMapper.readValue(response.body().string(), DriverApiDto[].class);
+
+            if(result.length == 0)
+                return Optional.empty();
+
+            return Optional.of(result[0]);
+
+        } catch (IOException e){
+            throw new RuntimeException("Failed to fetch driver from OpenF1 API", e);
         }
-        catch (IOException e){
-            System.out.println(e.getMessage() + "DriverClient IO Exception");
-        }
-        throw new RuntimeException("Did not find any Driver");
     }
 
 
