@@ -28,7 +28,7 @@ public class JooqDriverRepo implements DriverRepo{
     @Override
     public DriverApiDto getDriverByFullname(String surname, String lastName) {
         return create
-                .select(asterisk())
+                .select(DRIVERS.FULL_NAME, DRIVERS.DRIVER_NUMBER, DRIVERS.COUNTRY_CODE)
                 .from(DRIVERS)
                 .where(DRIVERS.FULL_NAME.eq(surname + " " + lastName))
                 .fetchOneInto(DriverApiDto.class);
