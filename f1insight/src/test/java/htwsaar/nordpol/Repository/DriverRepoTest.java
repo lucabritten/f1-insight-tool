@@ -61,7 +61,19 @@ public class DriverRepoTest {
         assertThat(stored).isNull();
     }
 
-    //
-    //
+    @Test
+    void getDriverByFullname_returnsCorrectDriver_forMultipleEntries() {
+        DriverApiDto lando = new DriverApiDto("Lando NORRIS", 4, "GBR");
+        DriverApiDto max = new DriverApiDto("Max VERSTAPPEN", 1, "NLD");
+
+        driverRepo.saveDriver(lando);
+        driverRepo.saveDriver(max);
+
+        DriverApiDto stored = driverRepo.getDriverByFullname("Max", "VERSTAPPEN");
+        assertThat(stored).isNotNull();
+        assertThat(stored.driver_number()).isEqualTo(1);
+        assertThat(stored.full_name()).isEqualTo("Max VERSTAPPEN");
+        assertThat(stored.country_code()).isEqualTo("NLD");
+    }
 
 }
