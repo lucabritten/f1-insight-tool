@@ -4,7 +4,6 @@ import htwsaar.nordpol.API.DTO.DriverApiDto;
 import org.jooq.DSLContext;
 
 import static com.nordpol.jooq.tables.Drivers.*;
-import static org.jooq.impl.DSL.asterisk;
 
 public class JooqDriverRepo implements DriverRepo{
 
