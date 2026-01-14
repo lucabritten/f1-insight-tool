@@ -13,6 +13,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class DriverRepoTest {
 
@@ -76,4 +77,27 @@ public class DriverRepoTest {
         assertThat(stored.country_code()).isEqualTo("NLD");
     }
 
+    @Test
+    void saveDriver_throwsException_whenDriverNumberIsNegative(){
+        DriverApiDto driverApiDto = new DriverApiDto("Max VERSTAPPEN", -1, "NED");
+
+        assertThatThrownBy(() -> driverRepo.saveDriver(driverApiDto))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void saveDriver_throwsException_whenFullnameIsNull(){
+        DriverApiDto driverApiDto = new DriverApiDto(null, 1, "NED");
+
+        assertThatThrownBy(() -> driverRepo.saveDriver(driverApiDto))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void saveDriver_throwsException_whenCountryCodeIsNull(){
+        DriverApiDto driverApiDto = new DriverApiDto("Max VERSTAPPEN", 1, null);
+
+        assertThatThrownBy(() -> driverRepo.saveDriver(driverApiDto))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
