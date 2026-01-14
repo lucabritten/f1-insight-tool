@@ -119,7 +119,7 @@
             </database>
 
             <target>
-              <packageName>com.britten.jooq</packageName>
+              <packageName>com.nordpol.jooq</packageName>
               <directory>${project.build.directory}/generated-sources/jooq</directory>
             </target>
           </generator>
