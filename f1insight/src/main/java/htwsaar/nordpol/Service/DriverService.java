@@ -2,7 +2,9 @@ package htwsaar.nordpol.Service;
 
 import htwsaar.nordpol.API.DTO.DriverApiDto;
 import htwsaar.nordpol.API.DriverClient;
+import htwsaar.nordpol.Domain.Driver;
 import htwsaar.nordpol.Repository.DriverRepo;
+import htwsaar.nordpol.util.Mapper;
 
 import java.util.Optional;
 
@@ -22,14 +24,19 @@ public class DriverService {
         this.driverClient = driverClient;
     }
 
-    public Optional<DriverApiDto> getDriverByName(String firstName, String lastName) {
-        DriverApiDto fromDB = driverRepo.getDriverByFullname(firstName, lastName);
-        if (fromDB != null) {
-            return Optional.of(fromDB);
+    public Optional<Driver> getDriverByName(String firstName, String lastName) {
+        DriverApiDto dtoFromDB = driverRepo.getDriverByFullname(firstName, lastName);
+        if (dtoFromDB != null) {
+            return Optional.of(Mapper.toDriver(dtoFromDB));
         }
 
-        Optional<DriverApiDto> fromApi = driverClient.getDriverByName(firstName, lastName);
-        fromApi.ifPresent(driverRepo::saveDriver);
-        return fromApi;
+        Optional<DriverApiDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName);
+        dtoFromApi.ifPresent(driverRepo::saveDriver);
+        if(dtoFromApi.isPresent()){
+            DriverApiDto driverApiDto = dtoFromApi.get();
+            driverRepo.saveDriver(driverApiDto);
+            return Optional.of(Mapper.toDriver(driverApiDto));
+        }
+        throw new IllegalStateException("Driver service Error: getting driver by name failed. DtoFromApi is not present.");
     }
 }

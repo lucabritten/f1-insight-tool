@@ -1,5 +1,6 @@
 package htwsaar.nordpol.Repository;
 
+import com.nordpol.jooq.tables.Drivers;
 import htwsaar.nordpol.API.DTO.DriverApiDto;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -28,7 +29,8 @@ public class DriverRepoTest {
         create.execute("""
                 create table Drivers (
                     driver_number integer primary key,
-                    full_name text not null,
+                    first_name text not null,
+                    last_name text not null,
                     country_code text not null
                 )
                 """);
@@ -44,14 +46,17 @@ public class DriverRepoTest {
 
     @Test
     void saveDriver_persistsDriver() {
-        DriverApiDto driverData = new DriverApiDto("Lando NORRIS", 4, "GBR");
+        DriverApiDto driverData = new DriverApiDto("Lando", "Norris", 4, "GBR");
 
         driverRepo.saveDriver(driverData);
+        System.out.println(create.selectFrom(Drivers.DRIVERS).fetch().format());
 
-        DriverApiDto stored = driverRepo.getDriverByFullname("Lando", "NORRIS");
+        DriverApiDto stored = driverRepo.getDriverByFullname("Lando", "Norris");
+
         assertThat(stored).isNotNull();
         assertThat(stored.driver_number()).isEqualTo(4);
-        assertThat(stored.full_name()).isEqualTo("Lando NORRIS");
+        assertThat(stored.first_name()).isEqualTo("Lando");
+        assertThat(stored.last_name()).isEqualTo("Norris");
         assertThat(stored.country_code()).isEqualTo("GBR");
     }
 
@@ -64,30 +69,31 @@ public class DriverRepoTest {
 
     @Test
     void getDriverByFullname_returnsCorrectDriver_forMultipleEntries() {
-        DriverApiDto lando = new DriverApiDto("Lando NORRIS", 4, "GBR");
-        DriverApiDto max = new DriverApiDto("Max VERSTAPPEN", 1, "NLD");
+        DriverApiDto lando = new DriverApiDto("Lando", "Norris", 4, "GBR");
+        DriverApiDto max = new DriverApiDto("Max", "Verstappen", 1, "NLD");
 
         driverRepo.saveDriver(lando);
         driverRepo.saveDriver(max);
 
-        DriverApiDto stored = driverRepo.getDriverByFullname("Max", "VERSTAPPEN");
+        DriverApiDto stored = driverRepo.getDriverByFullname("Max", "Verstappen");
         assertThat(stored).isNotNull();
         assertThat(stored.driver_number()).isEqualTo(1);
-        assertThat(stored.full_name()).isEqualTo("Max VERSTAPPEN");
+        assertThat(stored.first_name()).isEqualTo("Max");
+        assertThat(stored.last_name()).isEqualTo("Verstappen");
         assertThat(stored.country_code()).isEqualTo("NLD");
     }
 
     @Test
     void saveDriver_throwsException_whenDriverNumberIsNegative(){
-        DriverApiDto driverApiDto = new DriverApiDto("Max VERSTAPPEN", -1, "NED");
+        DriverApiDto driverApiDto = new DriverApiDto("Max", "Verstappen", -1, "NED");
 
         assertThatThrownBy(() -> driverRepo.saveDriver(driverApiDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void saveDriver_throwsException_whenFullnameIsNull(){
-        DriverApiDto driverApiDto = new DriverApiDto(null, 1, "NED");
+    void saveDriver_throwsException_whenFirstnameIsNull(){
+        DriverApiDto driverApiDto = new DriverApiDto(null, "Verstappen", 1, "NED");
 
         assertThatThrownBy(() -> driverRepo.saveDriver(driverApiDto))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -95,7 +101,7 @@ public class DriverRepoTest {
 
     @Test
     void saveDriver_throwsException_whenCountryCodeIsNull(){
-        DriverApiDto driverApiDto = new DriverApiDto("Max VERSTAPPEN", 1, null);
+        DriverApiDto driverApiDto = new DriverApiDto("Max", "Verstappen", 1, null);
 
         assertThatThrownBy(() -> driverRepo.saveDriver(driverApiDto))
                 .isInstanceOf(IllegalArgumentException.class);

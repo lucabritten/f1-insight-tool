@@ -18,9 +18,15 @@ public class JooqDriverRepo implements DriverRepo{
         validateDriver(driverApiDto);
 
         create
-                .insertInto(DRIVERS)
+                .insertInto(DRIVERS,
+                        DRIVERS.DRIVER_NUMBER,
+                        DRIVERS.FIRST_NAME,
+                        DRIVERS.LAST_NAME,
+                        DRIVERS.COUNTRY_CODE
+                        )
                 .values(driverApiDto.driver_number(),
-                        driverApiDto.full_name(),
+                        driverApiDto.first_name(),
+                        driverApiDto.last_name(),
                         driverApiDto.country_code()
                 )
                 .execute();
@@ -33,19 +39,24 @@ public class JooqDriverRepo implements DriverRepo{
         if (driverApiDto.driver_number() <= 0)
             throw new IllegalArgumentException("driver_number must be positive.");
 
-        if (driverApiDto.full_name() == null || driverApiDto.full_name().isBlank())
+        if (driverApiDto.first_name() == null || driverApiDto.first_name().isBlank())
             throw new IllegalArgumentException("full_name must not be null or blank.");
+
+        if (driverApiDto.last_name() == null || driverApiDto.last_name().isBlank())
+            throw new IllegalArgumentException("last_name must not be null or blank.");
 
         if (driverApiDto.country_code() == null || driverApiDto.country_code().isBlank())
             throw new IllegalArgumentException("country_code must not be null or blank.");
     }
 
     @Override
-    public DriverApiDto getDriverByFullname(String surname, String lastName) {
+    public DriverApiDto getDriverByFullname(String firstName, String lastName) {
         return create
-                .select(DRIVERS.FULL_NAME, DRIVERS.DRIVER_NUMBER, DRIVERS.COUNTRY_CODE)
+                .select(DRIVERS.FIRST_NAME, DRIVERS.LAST_NAME, DRIVERS.DRIVER_NUMBER, DRIVERS.COUNTRY_CODE)
                 .from(DRIVERS)
-                .where(DRIVERS.FULL_NAME.eq(surname + " " + lastName))
+                .where(DRIVERS.FIRST_NAME.eq(firstName)
+                        .and(DRIVERS.LAST_NAME.eq(lastName))
+                )
                 .fetchOneInto(DriverApiDto.class);
     }
 }

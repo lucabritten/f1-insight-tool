@@ -3,7 +3,5 @@ package htwsaar.nordpol.Domain;
 public record Driver(String surname,
                      String lastName,
                      int driverNumber,
-                     String countryCode,
-                     String teamName) {
-
+                     String countryCode) {
 }

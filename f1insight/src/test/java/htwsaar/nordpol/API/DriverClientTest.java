@@ -36,8 +36,9 @@ public class DriverClientTest {
                 [
                     {
                         "driver_number": 44,
-                        "country_code": "GBR",
-                        "full_name": "Lewis HAMILTON"
+                        "first_name": "Lewis",
+                        "last_name": "Hamilton",
+                        "country_code": "GBR"
                     }
                 ]
                 """;
@@ -56,7 +57,8 @@ public class DriverClientTest {
         DriverApiDto driverDto = optionalDriverDto.get();
 
         assertThat(driverDto.driver_number()).isEqualTo(44);
-        assertThat(driverDto.full_name()).isEqualTo("Lewis HAMILTON");
+        assertThat(driverDto.first_name()).isEqualTo("Lewis");
+        assertThat(driverDto.last_name()).isEqualTo("Hamilton");
     }
 
     @Test
