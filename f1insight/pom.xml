@@ -109,7 +109,7 @@
         <configuration>
           <jdbc>
             <driver>org.sqlite.JDBC</driver>
-            <url>jdbc:sqlite:f1data.db</url>
+            <url>jdbc:sqlite:${project.basedir}/f1data.db</url>
           </jdbc>
 
           <generator>
