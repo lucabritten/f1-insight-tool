@@ -24,18 +24,19 @@ public class DriverService {
         this.driverClient = driverClient;
     }
 
-    public Optional<Driver> getDriverByName(String firstName, String lastName) {
-        DriverApiDto dtoFromDB = driverRepo.getDriverByFullname(firstName, lastName);
-        if (dtoFromDB != null) {
-            return Optional.of(Mapper.toDriver(dtoFromDB));
+    public Driver getDriverByName(String firstName, String lastName) {
+        Optional<DriverApiDto> dtoFromDB = driverRepo.getDriverByFullname(firstName, lastName);
+        System.out.println(dtoFromDB);
+        if (dtoFromDB.isPresent()) {
+            return Mapper.toDriver(dtoFromDB.get());
         }
 
         Optional<DriverApiDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName);
-        dtoFromApi.ifPresent(driverRepo::saveDriver);
+        System.out.println(dtoFromApi);
         if(dtoFromApi.isPresent()){
             DriverApiDto driverApiDto = dtoFromApi.get();
             driverRepo.saveDriver(driverApiDto);
-            return Optional.of(Mapper.toDriver(driverApiDto));
+            return Mapper.toDriver(driverApiDto);
         }
         throw new IllegalStateException("Driver service Error: getting driver by name failed. DtoFromApi is not present.");
     }

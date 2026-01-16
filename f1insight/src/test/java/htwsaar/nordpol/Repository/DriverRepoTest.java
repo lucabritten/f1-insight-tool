@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -50,20 +51,23 @@ public class DriverRepoTest {
 
         driverRepo.saveDriver(driverData);
 
-        DriverApiDto stored = driverRepo.getDriverByFullname("Lando", "Norris");
+        Optional<DriverApiDto> stored = driverRepo.getDriverByFullname("Lando", "Norris");
 
-        assertThat(stored).isNotNull();
-        assertThat(stored.driver_number()).isEqualTo(4);
-        assertThat(stored.first_name()).isEqualTo("Lando");
-        assertThat(stored.last_name()).isEqualTo("Norris");
-        assertThat(stored.country_code()).isEqualTo("GBR");
+        assertThat(stored).isPresent();
+
+        DriverApiDto dto = stored.get();
+
+        assertThat(dto.driver_number()).isEqualTo(4);
+        assertThat(dto.first_name()).isEqualTo("Lando");
+        assertThat(dto.last_name()).isEqualTo("Norris");
+        assertThat(dto.country_code()).isEqualTo("GBR");
     }
 
     @Test
     void getDriverByFullname_returnsNullWhenMissing() {
-        DriverApiDto stored = driverRepo.getDriverByFullname("Unknown", "Driver");
+        Optional<DriverApiDto> stored = driverRepo.getDriverByFullname("Unknown", "Driver");
 
-        assertThat(stored).isNull();
+        assertThat(stored).isEmpty();
     }
 
     @Test
@@ -74,12 +78,15 @@ public class DriverRepoTest {
         driverRepo.saveDriver(lando);
         driverRepo.saveDriver(max);
 
-        DriverApiDto stored = driverRepo.getDriverByFullname("Max", "Verstappen");
-        assertThat(stored).isNotNull();
-        assertThat(stored.driver_number()).isEqualTo(1);
-        assertThat(stored.first_name()).isEqualTo("Max");
-        assertThat(stored.last_name()).isEqualTo("Verstappen");
-        assertThat(stored.country_code()).isEqualTo("NLD");
+        Optional<DriverApiDto> stored = driverRepo.getDriverByFullname("Max", "Verstappen");
+
+        assertThat(stored).isPresent();
+
+        DriverApiDto dto = stored.get();
+        assertThat(dto.driver_number()).isEqualTo(1);
+        assertThat(dto.first_name()).isEqualTo("Max");
+        assertThat(dto.last_name()).isEqualTo("Verstappen");
+        assertThat(dto.country_code()).isEqualTo("NLD");
     }
 
     @Test

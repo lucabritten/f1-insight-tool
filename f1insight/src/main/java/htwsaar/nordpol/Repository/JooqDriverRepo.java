@@ -3,6 +3,8 @@ package htwsaar.nordpol.Repository;
 import htwsaar.nordpol.API.DTO.DriverApiDto;
 import org.jooq.DSLContext;
 
+import java.util.Optional;
+
 import static com.nordpol.jooq.tables.Drivers.*;
 
 public class JooqDriverRepo implements DriverRepo{
@@ -50,13 +52,14 @@ public class JooqDriverRepo implements DriverRepo{
     }
 
     @Override
-    public DriverApiDto getDriverByFullname(String firstName, String lastName) {
-        return create
+    public Optional<DriverApiDto> getDriverByFullname(String firstName, String lastName) {
+        return Optional.ofNullable(create
                 .select(DRIVERS.FIRST_NAME, DRIVERS.LAST_NAME, DRIVERS.DRIVER_NUMBER, DRIVERS.COUNTRY_CODE)
                 .from(DRIVERS)
                 .where(DRIVERS.FIRST_NAME.eq(firstName)
                         .and(DRIVERS.LAST_NAME.eq(lastName))
                 )
-                .fetchOneInto(DriverApiDto.class);
+                .fetchOneInto(DriverApiDto.class)
+        );
     }
 }

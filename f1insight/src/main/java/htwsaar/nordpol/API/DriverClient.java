@@ -32,9 +32,12 @@ public class DriverClient {
     }
 
     public Optional<DriverApiDto> getDriverByName(String firstName, String lastName) {
-        String url = BASE_URL + "/drivers?full_name="
-                + firstName + "%20" + lastName
-                + "&meeting_key=latest&session_key=latest";
+        String url = BASE_URL + "/drivers?"
+                     + "first_name=" + firstName
+                     + "&last_name=" + lastName
+                     + "&meeting_key=1250";
+
+        System.out.println(url);
 
         Request request = new Request.Builder()
                 .url(url)
@@ -57,9 +60,4 @@ public class DriverClient {
             throw new RuntimeException("Failed to fetch driver from OpenF1 API", e);
         }
     }
-
-
-
-
-
 }
