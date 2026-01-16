@@ -49,7 +49,6 @@ public class DriverRepoTest {
         DriverApiDto driverData = new DriverApiDto("Lando", "Norris", 4, "GBR");
 
         driverRepo.saveDriver(driverData);
-        System.out.println(create.selectFrom(Drivers.DRIVERS).fetch().format());
 
         DriverApiDto stored = driverRepo.getDriverByFullname("Lando", "Norris");
 
