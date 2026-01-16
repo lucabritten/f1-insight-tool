@@ -26,13 +26,11 @@ public class DriverService {
 
     public Driver getDriverByName(String firstName, String lastName) {
         Optional<DriverApiDto> dtoFromDB = driverRepo.getDriverByFullname(firstName, lastName);
-        System.out.println(dtoFromDB);
         if (dtoFromDB.isPresent()) {
             return Mapper.toDriver(dtoFromDB.get());
         }
 
         Optional<DriverApiDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName);
-        System.out.println(dtoFromApi);
         if(dtoFromApi.isPresent()){
             DriverApiDto driverApiDto = dtoFromApi.get();
             driverRepo.saveDriver(driverApiDto);

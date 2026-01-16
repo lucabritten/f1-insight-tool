@@ -1,6 +1,5 @@
 package htwsaar.nordpol.Repository;
 
-import com.nordpol.jooq.tables.Drivers;
 import htwsaar.nordpol.API.DTO.DriverApiDto;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
