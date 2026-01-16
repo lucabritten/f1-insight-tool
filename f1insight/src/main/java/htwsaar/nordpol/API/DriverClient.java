@@ -11,12 +11,6 @@ import java.util.Optional;
 
 public class DriverClient {
 
-
-    //Input vom User aka Fahrername FORMAT https://api.openf1.org/v1/drivers?full_name
-    //API-Request--> .json
-    //.json refactor
-    // ----> output to console
-
     private final OkHttpClient okHttpClient;
     private final ObjectMapper objectMapper;
     private final String BASE_URL;
@@ -36,8 +30,6 @@ public class DriverClient {
                      + "first_name=" + firstName
                      + "&last_name=" + lastName
                      + "&meeting_key=1250";
-
-        System.out.println(url);
 
         Request request = new Request.Builder()
                 .url(url)
