@@ -11,7 +11,7 @@ public class JooqConfig {
     public static DSLContext createContext(){
         try{
             Connection connection = DriverManager.getConnection(
-                    "jdbc:sqlite:f1insight/f1data.db"
+                    "jdbc:sqlite:f1data.db"
             );
             return DSL.using(connection);
         } catch (Exception e){

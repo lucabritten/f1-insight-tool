@@ -1,13 +1,11 @@
 package htwsaar.nordpol;
 
-import htwsaar.nordpol.Service.DriverService;
-import htwsaar.nordpol.config.ApplicationContext;
-import htwsaar.nordpol.util.Formatter;
+import htwsaar.nordpol.CLI.F1CLI;
+import picocli.CommandLine;
 
 public class App {
     public static void main(String[] args) {
-        DriverService service = ApplicationContext.driverService();
-
-        System.out.println(Formatter.formatDriver(service.getDriverByName("Lando", "Norris")));
+        CommandLine commandLine = new CommandLine(new F1CLI());
+        commandLine.execute(args);
     }
 }

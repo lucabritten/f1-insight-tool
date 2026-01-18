@@ -1,14 +1,17 @@
 package htwsaar.nordpol.CLI;
 
+import htwsaar.nordpol.Domain.Driver;
 import htwsaar.nordpol.Service.DriverService;
 import htwsaar.nordpol.config.ApplicationContext;
-import picocli.CommandLine;
+
+import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
-@Command(name = "Driver-Info")
-
+@Command(name = "driver-info",
+        description = "Print driver infos",
+        mixinStandardHelpOptions = true
+)
 public class DriverCommand implements Runnable {
 
     @Option(names = {"--firstName",
@@ -18,17 +21,34 @@ public class DriverCommand implements Runnable {
     )
     private String firstName;
 
-    @Option(names = {"--lastName",
+    @Option(names = {
+            "--lastName",
             "-ln"},
             //description
             required = true
     )
     private String lastName;
 
-    private final DriverService driverService = ApplicationContext.driverService();
+    private final DriverService driverService;
+
+    public DriverCommand(DriverService driverService){
+        this.driverService = driverService;
+    }
+
+    public DriverCommand(){
+        this(ApplicationContext.driverService());
+    }
 
     @Override
     public void run() {
-        System.out.println(driverService.getDriverByName(firstName, lastName));
+        try {
+            Driver driver = driverService.getDriverByName(firstName, lastName);
+            String output = Formatter.formatDriver(driver);
+            System.out.println(output);
+        } catch (IllegalStateException e){
+            System.out.println("Driver not found.");
+        }
+
+
     }
 }
