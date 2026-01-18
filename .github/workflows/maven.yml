@@ -28,6 +28,6 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Generate jOOQ sources
-      run: mvn -B jooq-codegen:generate --file f1insight/pom.xml
+      run: mvn -B jooq-codegen:generate --file pom.xml
     - name: Build with Maven
-      run: mvn -B package --file f1insight/pom.xml
+      run: mvn -B package --file pom.xml
