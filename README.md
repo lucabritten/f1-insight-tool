@@ -1,14 +1,14 @@
 # F1 Insight CLI Tool🏎️
 CLI-Tool to get information about F1 drivers, events and its correlated data.
 
-## Peqrequisites
+## Prerequisites
 - Java 21
 - Maven 3.9+
 
 ## Installation
 ```bash
-git clone https://github.com/lucabritten/f1insight-tool.git
-cd f1-insight-tool/f1insight
+git clone https://github.com/lucabritten/f1-insight-tool.git
+cd f1-insight-tool
 
 mvn clean package
 ```

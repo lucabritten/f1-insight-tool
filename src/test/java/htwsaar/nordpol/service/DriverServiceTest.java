@@ -7,6 +7,7 @@ import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.Repository.DriverRepo;
 import htwsaar.nordpol.Service.DriverService;
 
+import htwsaar.nordpol.exception.DriverNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -77,6 +78,6 @@ public class DriverServiceTest {
 
         assertThatThrownBy(() ->
                 driverService.getDriverByName("Alice", "Bob")
-        ).isInstanceOf(IllegalStateException.class);
+        ).isInstanceOf(DriverNotFoundException.class);
     }
 }

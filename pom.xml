@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>htwsaar.nordpol</groupId>
-  <artifactId>f1insight</artifactId>
+  <artifactId>f1-insight-tool</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <name>f1insight</name>
