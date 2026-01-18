@@ -1,4 +1,4 @@
-# F1 Insight CLI Tool
+# F1 Insight CLI Tool🏎️
 CLI-Tool to get information about F1 drivers, events and its correlated data.
 
 ## Peqrequisites
@@ -8,14 +8,14 @@ CLI-Tool to get information about F1 drivers, events and its correlated data.
 ## Installation
 ```bash
 git clone https://github.com/lucabritten/f1insight-tool.git
-cd f1-insight-tool
+cd f1-insight-tool/f1insight
 
 mvn clean package
 ```
 
 ## Quick-start (driver-info cmd)
 ```bash
-mvn exec: mvn -q exec:java -Dexec.args="driver-info --firstName Max -lastName Verstappen"
+mvn -q exec:java -Dexec.args="driver-info --firstName Max -lastName Verstappen"
 ```
 
 ## Features
