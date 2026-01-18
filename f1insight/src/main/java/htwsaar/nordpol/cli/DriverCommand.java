@@ -1,6 +1,6 @@
-package htwsaar.nordpol.CLI;
+package htwsaar.nordpol.cli;
 
-import htwsaar.nordpol.Domain.Driver;
+import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.Service.DriverService;
 import htwsaar.nordpol.config.ApplicationContext;
 

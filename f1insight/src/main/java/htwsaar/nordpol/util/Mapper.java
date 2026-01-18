@@ -1,7 +1,7 @@
 package htwsaar.nordpol.util;
 
 import htwsaar.nordpol.API.DTO.DriverApiDto;
-import htwsaar.nordpol.Domain.Driver;
+import htwsaar.nordpol.domain.Driver;
 
 public class Mapper {
 

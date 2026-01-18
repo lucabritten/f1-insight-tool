@@ -8,6 +8,12 @@ import java.sql.DriverManager;
 
 public class JooqConfig {
 
+    /**
+     * Creates and returns a jOOQ {@link DSLContext}.
+     *
+     * @return a configured DSLContext connected to the local SQLite database
+     * @throws RuntimeException if the database connection cannot be established
+     */
     public static DSLContext createContext(){
         try{
             Connection connection = DriverManager.getConnection(

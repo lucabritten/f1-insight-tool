@@ -3,7 +3,7 @@ package htwsaar.nordpol.service;
 
 import htwsaar.nordpol.API.DTO.DriverApiDto;
 import htwsaar.nordpol.API.DriverClient;
-import htwsaar.nordpol.Domain.Driver;
+import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.Repository.DriverRepo;
 import htwsaar.nordpol.Service.DriverService;
 

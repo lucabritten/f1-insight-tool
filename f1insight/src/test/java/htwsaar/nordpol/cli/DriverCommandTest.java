@@ -1,7 +1,6 @@
 package htwsaar.nordpol.cli;
 
-import htwsaar.nordpol.CLI.DriverCommand;
-import htwsaar.nordpol.Domain.Driver;
+import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.Service.DriverService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 
 import static org.assertj.core.api.Assertions.assertThat;

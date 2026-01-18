@@ -13,7 +13,7 @@ import java.util.Optional;
  * HTTP client for accessing the OpenF1 API.
  *
  * <p>This client is responsible only for fetching raw API data
- * and mapping it to DTOs<. No business logic is applied here.</p>
+ * and mapping it to DTOs. No business logic is applied here.</p>
  */
 public class DriverClient {
 

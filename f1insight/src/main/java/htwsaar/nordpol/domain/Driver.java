@@ -1,4 +1,4 @@
-package htwsaar.nordpol.Domain;
+package htwsaar.nordpol.domain;
 
 public record Driver(String firstName,
                      String lastName,

@@ -2,7 +2,8 @@ package htwsaar.nordpol.Service;
 
 import htwsaar.nordpol.API.DTO.DriverApiDto;
 import htwsaar.nordpol.API.DriverClient;
-import htwsaar.nordpol.Domain.Driver;
+import htwsaar.nordpol.domain.Driver;
+import htwsaar.nordpol.exception.DriverNotFoundException;
 import htwsaar.nordpol.Repository.DriverRepo;
 import htwsaar.nordpol.util.Mapper;
 
@@ -56,6 +57,6 @@ public class DriverService {
             driverRepo.saveDriver(driverApiDto);
             return Mapper.toDriver(driverApiDto);
         }
-        throw new IllegalStateException("Driver service Error: getting driver by name failed. DTO is not present.");
+        throw new DriverNotFoundException(firstName, lastName);
     }
 }

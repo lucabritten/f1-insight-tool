@@ -1,6 +1,6 @@
 package htwsaar.nordpol;
 
-import htwsaar.nordpol.CLI.F1CLI;
+import htwsaar.nordpol.cli.F1CLI;
 import picocli.CommandLine;
 
 public class App {
