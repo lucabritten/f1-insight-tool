@@ -9,6 +9,12 @@ import okhttp3.Response;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * HTTP client for accessing the OpenF1 API.
+ *
+ * <p>This client is responsible only for fetching raw API data
+ * and mapping it to DTOs<. No business logic is applied here.</p>
+ */
 public class DriverClient {
 
     private final OkHttpClient okHttpClient;
@@ -25,6 +31,11 @@ public class DriverClient {
         this("https://api.openf1.org/v1");
     }
 
+    /**
+     * Fetches a driver from the OpenF1 APi by name.
+     *
+     * @return an Optional containing the driver DTO if found
+     */
     public Optional<DriverApiDto> getDriverByName(String firstName, String lastName) {
         String url = BASE_URL + "/drivers?"
                      + "first_name=" + firstName

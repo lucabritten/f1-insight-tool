@@ -7,6 +7,10 @@ import java.util.Optional;
 
 import static com.nordpol.jooq.tables.Drivers.*;
 
+/**
+ * jOOQ-based repository for persisting and retrieving drivers
+ * from the local SQLite database.
+ */
 public class JooqDriverRepo implements DriverRepo{
 
     private final DSLContext create;
