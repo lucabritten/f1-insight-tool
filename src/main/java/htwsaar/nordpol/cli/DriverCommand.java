@@ -1,7 +1,7 @@
 package htwsaar.nordpol.cli;
 
 import htwsaar.nordpol.domain.Driver;
-import htwsaar.nordpol.Service.DriverService;
+import htwsaar.nordpol.service.DriverService;
 import htwsaar.nordpol.config.ApplicationContext;
 
 import htwsaar.nordpol.exception.DriverNotFoundException;

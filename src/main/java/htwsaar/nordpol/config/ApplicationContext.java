@@ -1,9 +1,9 @@
 package htwsaar.nordpol.config;
 
-import htwsaar.nordpol.API.DriverClient;
-import htwsaar.nordpol.Repository.DriverRepo;
-import htwsaar.nordpol.Repository.JooqDriverRepo;
-import htwsaar.nordpol.Service.DriverService;
+import htwsaar.nordpol.api.DriverClient;
+import htwsaar.nordpol.repository.DriverRepo;
+import htwsaar.nordpol.repository.JooqDriverRepo;
+import htwsaar.nordpol.service.DriverService;
 
 /**
  * Simple application context responsible for wiring application services.
@@ -16,6 +16,9 @@ import htwsaar.nordpol.Service.DriverService;
  */
 public class ApplicationContext {
 
+    private ApplicationContext(){
+
+    }
     /**
      * Creates and returns a {@link DriverService} instance.
      *

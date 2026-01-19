@@ -8,6 +8,10 @@ import java.sql.DriverManager;
 
 public class JooqConfig {
 
+    private JooqConfig(){
+
+    }
+
     /**
      * Creates and returns a jOOQ {@link DSLContext}.
      *

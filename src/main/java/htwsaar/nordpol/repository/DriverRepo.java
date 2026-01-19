@@ -1,5 +1,5 @@
-package htwsaar.nordpol.Repository;
-import htwsaar.nordpol.API.DTO.DriverApiDto;
+package htwsaar.nordpol.repository;
+import htwsaar.nordpol.api.dto.DriverApiDto;
 
 import java.util.Optional;
 

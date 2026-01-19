@@ -1,6 +1,6 @@
-package htwsaar.nordpol.API;
+package htwsaar.nordpol.api;
 
-import htwsaar.nordpol.API.DTO.DriverApiDto;
+import htwsaar.nordpol.api.dto.DriverApiDto;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import com.fasterxml.jackson.databind.ObjectMapper;

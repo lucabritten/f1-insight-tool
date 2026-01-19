@@ -1,11 +1,10 @@
 package htwsaar.nordpol.service;
 
 
-import htwsaar.nordpol.API.DTO.DriverApiDto;
-import htwsaar.nordpol.API.DriverClient;
+import htwsaar.nordpol.api.dto.DriverApiDto;
+import htwsaar.nordpol.api.DriverClient;
 import htwsaar.nordpol.domain.Driver;
-import htwsaar.nordpol.Repository.DriverRepo;
-import htwsaar.nordpol.Service.DriverService;
+import htwsaar.nordpol.repository.DriverRepo;
 
 import htwsaar.nordpol.exception.DriverNotFoundException;
 import org.junit.jupiter.api.Test;

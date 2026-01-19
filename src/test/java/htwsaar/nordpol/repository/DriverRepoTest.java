@@ -1,6 +1,6 @@
-package htwsaar.nordpol.Repository;
+package htwsaar.nordpol.repository;
 
-import htwsaar.nordpol.API.DTO.DriverApiDto;
+import htwsaar.nordpol.api.dto.DriverApiDto;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;

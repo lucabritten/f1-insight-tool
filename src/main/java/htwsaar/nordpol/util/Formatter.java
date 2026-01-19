@@ -4,6 +4,10 @@ import htwsaar.nordpol.domain.Driver;
 
 public class Formatter {
 
+    private Formatter(){
+
+    }
+
     public static String formatDriver(Driver driver){
         return """
                 ========== DRIVER ==========
