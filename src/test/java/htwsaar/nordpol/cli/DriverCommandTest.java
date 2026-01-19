@@ -2,6 +2,7 @@ package htwsaar.nordpol.cli;
 
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.Service.DriverService;
+import htwsaar.nordpol.exception.DriverNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ public class DriverCommandTest {
 
     @Test
     void driverInfo_printsFormattedDriver(){
-        when(mockDriverService.getDriverByName("Max", "Verstappen"))
+        when(mockDriverService.getDriverByNameAndSeason("Max", "Verstappen", 2024))
                 .thenReturn(new Driver("Max", "Verstappen", 1, "NED"));
 
         int exitCode = new CommandLine(
@@ -74,13 +75,14 @@ public class DriverCommandTest {
 
     @Test
     void unknownDriver_printsMessage() {
-        when(mockDriverService.getDriverByName("Foo", "Bar"))
-                .thenThrow(new IllegalStateException("DTO is not present."));
+        when(mockDriverService.getDriverByNameAndSeason("Foo", "Bar", 2024))
+                .thenThrow(new DriverNotFoundException("Foo", "Bar"));
 
         int exitCode = new CommandLine(
                 new DriverCommand(mockDriverService)
         ).execute("-fn", "Foo", "-ln", "Bar");
 
+        assertThat(exitCode).isZero();
         assertThat(outputStream.toString())
                 .contains("not found");
     }
@@ -97,12 +99,26 @@ public class DriverCommandTest {
 
     @Test
     void shortAndLongOptions_work() {
-        when(mockDriverService.getDriverByName("Max", "Verstappen"))
+        when(mockDriverService.getDriverByNameAndSeason("Max", "Verstappen", 2024))
                 .thenReturn(new Driver("Max", "Verstappen", 1, "NED"));
 
         int exitCode = new CommandLine(new DriverCommand(mockDriverService))
-                .execute("--firstName", "Max", "--lastName", "Verstappen");
+                .execute("--firstName", "Max", "--lastName", "Verstappen", "--season", "2024");
 
         assertThat(exitCode).isEqualTo(0);
+    }
+
+    @Test
+    void invalidSeason_printsErrorMessage() {
+        when(mockDriverService.getDriverByNameAndSeason("Max", "Verstappen", 1899))
+                .thenThrow(new IllegalArgumentException("No data for season: 1899"));
+
+        int exitCode = new CommandLine(
+                new DriverCommand(mockDriverService)
+        ).execute("-fn", "Max", "-ln", "Verstappen", "-s", "1899");
+
+        assertThat(exitCode).isZero();
+        assertThat(outputStream.toString())
+                .contains("1899");
     }
 }

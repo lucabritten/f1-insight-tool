@@ -4,6 +4,7 @@ import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.Service.DriverService;
 import htwsaar.nordpol.config.ApplicationContext;
 
+import htwsaar.nordpol.exception.DriverNotFoundException;
 import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -16,7 +17,7 @@ public class DriverCommand implements Runnable {
 
     @Option(names = {"--firstName",
             "-fn"},
-            //description
+            description = "The drivers first name",
             required = true
     )
     private String firstName;
@@ -24,10 +25,18 @@ public class DriverCommand implements Runnable {
     @Option(names = {
             "--lastName",
             "-ln"},
-            //description
+            description = "The drivers last name",
             required = true
     )
     private String lastName;
+
+    @Option(names = {
+            "--season",
+            "-s"},
+            description = "The season the data is related to. This tool provides data from 2023 onwards.",
+            defaultValue = "2024"
+    )
+    private int season;
 
     private final DriverService driverService;
 
@@ -42,13 +51,13 @@ public class DriverCommand implements Runnable {
     @Override
     public void run() {
         try {
-            Driver driver = driverService.getDriverByName(firstName, lastName);
+            Driver driver = driverService.getDriverByNameAndSeason(firstName, lastName, season);
             String output = Formatter.formatDriver(driver);
             System.out.println(output);
-        } catch (IllegalStateException e){
-            System.out.println("Driver not found.");
+        } catch (DriverNotFoundException e){
+            System.out.println("Driver with name: " + firstName + " " + lastName + " not found.");
+        } catch (IllegalArgumentException e){
+            System.out.println(e.getMessage());
         }
-
-
     }
 }

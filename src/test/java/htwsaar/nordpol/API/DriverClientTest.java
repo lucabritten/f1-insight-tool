@@ -50,7 +50,7 @@ public class DriverClientTest {
         );
 
 
-        Optional<DriverApiDto> optionalDriverDto = driverClient.getDriverByName("Lewis", "Hamilton");
+        Optional<DriverApiDto> optionalDriverDto = driverClient.getDriverByName("Lewis", "Hamilton", 2025);
 
         assertThat(optionalDriverDto).isPresent();
 
@@ -71,7 +71,7 @@ public class DriverClientTest {
                 .setResponseCode(200)
         );
 
-        Optional<DriverApiDto> driverApiDto = driverClient.getDriverByName("Unknown", "Driver");
+        Optional<DriverApiDto> driverApiDto = driverClient.getDriverByName("Unknown", "Driver", 2025);
 
         assertThat(driverApiDto).isEmpty();
     }
@@ -82,7 +82,7 @@ public class DriverClientTest {
                 .setResponseCode(404)
         );
 
-        Optional<DriverApiDto> optionalDriverDto = driverClient.getDriverByName("Lando", "NORRIS");
+        Optional<DriverApiDto> optionalDriverDto = driverClient.getDriverByName("Lando", "NORRIS", 2025);
 
         assertThat(optionalDriverDto).isEmpty();
     }
@@ -97,7 +97,7 @@ public class DriverClientTest {
         );
 
         assertThatThrownBy(() ->
-                driverClient.getDriverByName("Lewis", "Hamilton")
+                driverClient.getDriverByName("Lewis", "Hamilton", 2025)
         ).isInstanceOf(RuntimeException.class);
     }
 }

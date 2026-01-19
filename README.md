@@ -1,5 +1,5 @@
 # F1 Insight CLI Tool🏎️
-CLI-Tool to get information about F1 drivers, events and its correlated data.
+CLI-Tool to get information about F1 drivers, events and its correlated data. Currently working with data from 2023 ongoing.
 
 ## Prerequisites
 - Java 21
@@ -15,7 +15,7 @@ mvn clean package
 
 ## Quick-start (driver-info cmd)
 ```bash
-mvn -q exec:java -Dexec.args="driver-info --firstName Max -lastName Verstappen"
+mvn -q exec:java -Dexec.args="driver-info --firstName Max --lastName Verstappen --season 2025"
 ```
 
 ## Features
@@ -24,6 +24,7 @@ required arguments:
 
  1. firstname (---firstName, -fn)
  2. lastname (--lastName, -ln)
+ 3. season (--season, -s) → Supported from season 2023 ongoing 
 
 ```bash
 driver-info --firstName FIRSTNAME --lastName LASTNAME
@@ -51,6 +52,6 @@ Prints basic driver details such as country-code or current car number to the co
 
 ## Team Nordpol 🧊
 - Gina Rose Kessler
-- Niklas Beliérès
+- Niklas Bélières
 - Jona David Mees
 - Luca Britten

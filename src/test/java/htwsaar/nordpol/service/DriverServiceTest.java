@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,46 +37,55 @@ public class DriverServiceTest {
         DriverApiDto dbDto =
                 new DriverApiDto("Lewis", "Hamilton", 44, "GBR");
 
-        when(driverRepo.getDriverByFullname("Lewis", "Hamilton"))
+        when(driverRepo.getDriverByFullNameForSeason("Lewis", "Hamilton", 2025))
                 .thenReturn(Optional.of(dbDto));
 
         Driver result =
-                driverService.getDriverByName("Lewis", "Hamilton");
+                driverService.getDriverByNameAndSeason("Lewis", "Hamilton", 2025);
 
         assertThat(result.firstName()).isEqualTo("Lewis");
 
-        verify(driverClient, never()).getDriverByName(any(), any());
+        verify(driverClient, never()).getDriverByName(anyString(), anyString(), anyInt());
+        verify(driverRepo).getDriverByFullNameForSeason("Lewis", "Hamilton", 2025);
     }
 
     @Test
     void getDriverByName_fetchesFromApiAndSavesDriver() {
-        when(driverRepo.getDriverByFullname("Max", "Verstappen"))
+        when(driverRepo.getDriverByFullNameForSeason("Max", "Verstappen", 2025))
                 .thenReturn(Optional.empty());
 
         DriverApiDto apiDto =
                 new DriverApiDto("Max", "Verstappen", 1, "NLD");
 
-        when(driverClient.getDriverByName("Max", "Verstappen"))
+        when(driverClient.getDriverByName(eq("Max"), eq("Verstappen"), anyInt()))
                 .thenReturn(Optional.of(apiDto));
 
         Driver result =
-                driverService.getDriverByName("Max", "Verstappen");
+                driverService.getDriverByNameAndSeason("Max", "Verstappen", 2025);
 
         assertThat(result.firstName()).isEqualTo("Max");
 
-        verify(driverRepo).saveDriver(apiDto);
+        verify(driverRepo).saveOrUpdateDriverForSeason(apiDto, 2025);
     }
 
     @Test
     void getDriverByName_throwsException_whenDriverNotFoundAnywhere() {
-        when(driverRepo.getDriverByFullname(any(), any()))
+        when(driverRepo.getDriverByFullNameForSeason(anyString(), anyString(), anyInt()))
                 .thenReturn(Optional.empty());
 
-        when(driverClient.getDriverByName(any(), any()))
+        when(driverClient.getDriverByName(anyString(), anyString(), anyInt()))
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
-                driverService.getDriverByName("Alice", "Bob")
+                driverService.getDriverByNameAndSeason("Alice", "Bob", 2025)
         ).isInstanceOf(DriverNotFoundException.class);
+    }
+
+    @Test
+    void getDriverByName_throwsException_whenSeasonIsInvalid() {
+        assertThatThrownBy(() ->
+                driverService.getDriverByNameAndSeason("Max", "Verstappen", 2022)
+        ).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("No data for season");
     }
 }

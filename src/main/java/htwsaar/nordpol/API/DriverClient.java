@@ -32,15 +32,15 @@ public class DriverClient {
     }
 
     /**
-     * Fetches a driver from the OpenF1 APi by name.
+     * Fetches a driver from the OpenF1 APi by name and season.
      *
      * @return an Optional containing the driver DTO if found
      */
-    public Optional<DriverApiDto> getDriverByName(String firstName, String lastName) {
+    public Optional<DriverApiDto> getDriverByName(String firstName, String lastName, int meetingKey) {
         String url = BASE_URL + "/drivers?"
                      + "first_name=" + firstName
                      + "&last_name=" + lastName
-                     + "&meeting_key=1250";
+                     + "&meeting_key=" + meetingKey;
 
         Request request = new Request.Builder()
                 .url(url)

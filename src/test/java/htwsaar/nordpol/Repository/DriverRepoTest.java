@@ -13,6 +13,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import static com.nordpol.jooq.Tables.DRIVERS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -27,13 +28,24 @@ public class DriverRepoTest {
         connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         create = DSL.using(connection, SQLDialect.SQLITE);
         create.execute("""
-                create table Drivers (
-                    driver_number integer primary key,
-                    first_name text not null,
-                    last_name text not null,
-                    country_code text not null
-                )
-                """);
+            create table Drivers (
+                driver_id integer primary key autoincrement,
+                first_name text not null,
+                last_name text not null,
+                country_code text not null
+            );
+        """);
+        create.execute("""
+            create table Driver_numbers (
+                id integer primary key autoincrement,
+                driver_id integer not null,
+                start_number integer not null,
+                season integer not null,
+                foreign key (driver_id) references Drivers(driver_id) on delete cascade,
+                unique (driver_id, season)
+            );
+        """);
+
         driverRepo = new JooqDriverRepo(create);
     }
 
@@ -46,11 +58,13 @@ public class DriverRepoTest {
 
     @Test
     void saveDriver_persistsDriver() {
-        DriverApiDto driverData = new DriverApiDto("Lando", "Norris", 4, "GBR");
+        DriverApiDto driverData =
+                new DriverApiDto("Lando", "Norris", 4, "GBR");
 
-        driverRepo.saveDriver(driverData);
+        driverRepo.saveOrUpdateDriverForSeason(driverData, 2025);
 
-        Optional<DriverApiDto> stored = driverRepo.getDriverByFullname("Lando", "Norris");
+        Optional<DriverApiDto> stored =
+                driverRepo.getDriverByFullNameForSeason("Lando", "Norris", 2025);
 
         assertThat(stored).isPresent();
 
@@ -63,21 +77,23 @@ public class DriverRepoTest {
     }
 
     @Test
-    void getDriverByFullname_returnsNullWhenMissing() {
-        Optional<DriverApiDto> stored = driverRepo.getDriverByFullname("Unknown", "Driver");
+    void getDriverByFullName_returnsNullWhenMissing() {
+        Optional<DriverApiDto> stored =
+                driverRepo.getDriverByFullNameForSeason("Unknown", "Driver", 2025);
 
         assertThat(stored).isEmpty();
     }
 
     @Test
-    void getDriverByFullname_returnsCorrectDriver_forMultipleEntries() {
+    void getDriverByFullName_returnsCorrectDriver_forMultipleEntries() {
         DriverApiDto lando = new DriverApiDto("Lando", "Norris", 4, "GBR");
         DriverApiDto max = new DriverApiDto("Max", "Verstappen", 1, "NLD");
 
-        driverRepo.saveDriver(lando);
-        driverRepo.saveDriver(max);
+        driverRepo.saveOrUpdateDriverForSeason(lando, 2025);
+        driverRepo.saveOrUpdateDriverForSeason(max, 2025);
 
-        Optional<DriverApiDto> stored = driverRepo.getDriverByFullname("Max", "Verstappen");
+        Optional<DriverApiDto> stored =
+                driverRepo.getDriverByFullNameForSeason("Max", "Verstappen", 2025);
 
         assertThat(stored).isPresent();
 
@@ -92,7 +108,7 @@ public class DriverRepoTest {
     void saveDriver_throwsException_whenDriverNumberIsNegative(){
         DriverApiDto driverApiDto = new DriverApiDto("Max", "Verstappen", -1, "NED");
 
-        assertThatThrownBy(() -> driverRepo.saveDriver(driverApiDto))
+        assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForSeason(driverApiDto, 2025))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -100,7 +116,7 @@ public class DriverRepoTest {
     void saveDriver_throwsException_whenFirstnameIsNull(){
         DriverApiDto driverApiDto = new DriverApiDto(null, "Verstappen", 1, "NED");
 
-        assertThatThrownBy(() -> driverRepo.saveDriver(driverApiDto))
+        assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForSeason(driverApiDto, 2025))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -108,7 +124,68 @@ public class DriverRepoTest {
     void saveDriver_throwsException_whenCountryCodeIsNull(){
         DriverApiDto driverApiDto = new DriverApiDto("Max", "Verstappen", 1, null);
 
-        assertThatThrownBy(() -> driverRepo.saveDriver(driverApiDto))
+        assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForSeason(driverApiDto, 2025))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void sameDriver_canHaveDifferentNumbersInDifferentSeasons() {
+        DriverApiDto max2025 =
+                new DriverApiDto("Max", "Verstappen", 1, "NLD");
+
+        DriverApiDto max2026 =
+                new DriverApiDto("Max", "Verstappen", 3, "NLD");
+
+        driverRepo.saveOrUpdateDriverForSeason(max2025, 2025);
+        driverRepo.saveOrUpdateDriverForSeason(max2026, 2026);
+
+        assertThat(driverRepo
+                .getDriverByStartNumberForSeason(1, 2025)).isPresent();
+
+        assertThat(driverRepo
+                .getDriverByStartNumberForSeason(3, 2026)).isPresent();
+    }
+
+    @Test
+    void sameDriver_sameSeason_updatesStartNumber(){
+        DriverApiDto max1 =
+                new DriverApiDto("Max", "Verstappen", 33, "NLD");
+
+        DriverApiDto max2 =
+                new DriverApiDto("Max", "Verstappen", 1, "NLD");
+
+        driverRepo.saveOrUpdateDriverForSeason(max1, 2025);
+        driverRepo.saveOrUpdateDriverForSeason(max2, 2025);
+
+        Optional<DriverApiDto> stored =
+                driverRepo.getDriverByFullNameForSeason("Max", "Verstappen", 2025);
+
+        assertThat(stored).isPresent();
+        assertThat(stored.get().driver_number()).isEqualTo(1);
+    }
+
+    @Test
+    void deletingDriver_removesDriverNumbers() {
+        DriverApiDto max =
+                new DriverApiDto("Max", "Verstappen", 1, "NLD");
+
+        driverRepo.saveOrUpdateDriverForSeason(max, 2025);
+
+        create.deleteFrom(DRIVERS)
+                .where(DRIVERS.FIRST_NAME.eq("Max"))
+                .execute();
+
+        assertThat(driverRepo.getDriverByStartNumberForSeason(1, 2025))
+                .isEmpty();
+    }
+
+    @Test
+    void invalidYear_throwsException(){
+        DriverApiDto max =
+                new DriverApiDto("Max", "Verstappen", 1, "NLD");
+
+        assertThatThrownBy(() ->
+                driverRepo.saveOrUpdateDriverForSeason(max, 1900))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
