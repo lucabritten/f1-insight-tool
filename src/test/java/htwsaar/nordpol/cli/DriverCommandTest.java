@@ -76,7 +76,7 @@ public class DriverCommandTest {
     @Test
     void unknownDriver_printsMessage() {
         when(mockDriverService.getDriverByNameAndSeason("Foo", "Bar", 2024))
-                .thenThrow(new DriverNotFoundException("Foo", "Bar"));
+                .thenThrow(new DriverNotFoundException("Foo", "Bar", 2024));
 
         int exitCode = new CommandLine(
                 new DriverCommand(mockDriverService)

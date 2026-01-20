@@ -68,6 +68,6 @@ public class DriverService {
             driverRepo.saveOrUpdateDriverForSeason(driverApiDto, season);
             return Mapper.toDriver(driverApiDto);
         }
-        throw new DriverNotFoundException(firstName, lastName);
+        throw new DriverNotFoundException(firstName, lastName, season);
     }
 }
