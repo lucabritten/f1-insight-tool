@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public class SessionClient implements ISessionClient {
 
-    pivate final OkHttpClient okHttpClient;
+    private final OkHttpClient okHttpClient;
     private final ObjectMapper objectMapper;
     private final String BASE_URL;
 
