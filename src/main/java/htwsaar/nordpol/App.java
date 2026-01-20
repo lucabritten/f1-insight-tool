@@ -6,6 +6,7 @@ import picocli.CommandLine;
 public class App {
     public static void main(String[] args) {
         CommandLine commandLine = new CommandLine(new F1CLI());
-        commandLine.execute(args);
+        int exitCode = commandLine.execute(args);
+        System.exit(exitCode);
     }
 }

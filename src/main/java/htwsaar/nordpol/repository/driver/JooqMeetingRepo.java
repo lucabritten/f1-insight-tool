@@ -1,6 +1,7 @@
-package htwsaar.nordpol.repository;
+package htwsaar.nordpol.repository.driver;
 
 import htwsaar.nordpol.api.dto.MeetingDto;
+import htwsaar.nordpol.repository.meeting.IMeetingRepo;
 import org.jooq.DSLContext;
 
 import java.util.Optional;
@@ -8,7 +9,7 @@ import java.util.Optional;
 import static com.nordpol.jooq.tables.Meetings.MEETINGS;
 
 
-public class JooqMeetingRepo implements IMeetingRepo{
+public class JooqMeetingRepo implements IMeetingRepo {
 
     private final DSLContext create;
 
@@ -22,7 +23,19 @@ public class JooqMeetingRepo implements IMeetingRepo{
 
         create
                 .insertInto(MEETINGS,
-                        MEETINGS)
+                        MEETINGS.MEETING_KEY,
+                        MEETINGS.COUNTRY_NAME,
+                        MEETINGS.COUNTRY_CODE,
+                        MEETINGS.LOCATION,
+                        MEETINGS.MEETING_NAME,
+                        MEETINGS.YEAR)
+                .values(dto.meeting_key(),
+                        dto.country_name(),
+                        dto.country_code(),
+                        dto.location(),
+                        dto.meeting_name(),
+                        dto.year())
+                .execute();
 
     }
 
@@ -42,12 +55,16 @@ public class JooqMeetingRepo implements IMeetingRepo{
         if(dto.year() < 0){
             throw new IllegalArgumentException("Field year must be positive.");
         }
-
-
     }
 
     @Override
     public Optional<MeetingDto> getMeetingBySeasonAndLocation(int season, String location) {
-        return Optional.empty();
+        var record = create.select(MEETINGS.COUNTRY_CODE, MEETINGS.COUNTRY_NAME, MEETINGS.LOCATION, MEETINGS.MEETING_KEY, MEETINGS.MEETING_NAME, MEETINGS.YEAR)
+                .from(MEETINGS)
+                .where(MEETINGS.YEAR.eq(season)
+                        .and(MEETINGS.LOCATION.eq(location)))
+                .fetchOneInto(MeetingDto.class);
+
+        return Optional.ofNullable(record);
     }
 }

@@ -1,8 +1,8 @@
 package htwsaar.nordpol.config;
 
 import htwsaar.nordpol.api.DriverClient;
-import htwsaar.nordpol.repository.DriverRepo;
-import htwsaar.nordpol.repository.JooqDriverRepo;
+import htwsaar.nordpol.repository.driver.DriverRepo;
+import htwsaar.nordpol.repository.driver.JooqDriverRepo;
 import htwsaar.nordpol.service.DriverService;
 
 /**

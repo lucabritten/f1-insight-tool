@@ -1,4 +1,4 @@
-package htwsaar.nordpol.repository;
+package htwsaar.nordpol.repository.driver;
 
 import htwsaar.nordpol.api.dto.DriverDto;
 import org.jooq.DSLContext;
@@ -12,7 +12,7 @@ import static com.nordpol.jooq.tables.DriverNumbers.*;
  * jOOQ-based repository for persisting and retrieving drivers
  * from the local SQLite database.
  */
-public class JooqDriverRepo implements DriverRepo{
+public class JooqDriverRepo implements DriverRepo {
 
     private final DSLContext create;
     private final static int FIRST_F1_SEASON = 1950;
