@@ -1,7 +1,7 @@
 package htwsaar.nordpol.service;
 
 import htwsaar.nordpol.api.dto.DriverDto;
-import htwsaar.nordpol.api.DriverClient;
+import htwsaar.nordpol.api.driver.DriverClient;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.exception.DriverNotFoundException;
 import htwsaar.nordpol.repository.driver.DriverRepo;

@@ -1,7 +1,5 @@
-package htwsaar.nordpol.api;
+package htwsaar.nordpol.api.session;
 
-import htwsaar.nordpol.api.dto.DriverDto;
-import htwsaar.nordpol.api.dto.MeetingDto;
 import htwsaar.nordpol.api.dto.SessionDto;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
