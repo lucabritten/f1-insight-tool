@@ -23,8 +23,9 @@ public class SessionClient implements ISessionClient {
         this.BASE_URL = url;
     }
 
-    public SessionClient(){
+    public SessionClient() {
         this("https://api.openf1.org/v1");
+    }
 
     @Override
     public Optional<SessionDto> getSessionByMeetingKeyAndSessionType(int meetingKey, String sessionType) {
@@ -52,6 +53,6 @@ public class SessionClient implements ISessionClient {
             } catch (IOException e){
                 throw new RuntimeException("Failed to fetch session from OpenF1 API", e);
             }
-        }
     }
 }
+

@@ -22,8 +22,9 @@ public class MeetingClient implements IMeetingClient {
         this.BASE_URL = url;
     }
 
-    public MeetingClient(){
+    public MeetingClient() {
         this("https://api.openf1.org/v1");
+    }
 
     @Override
     public Optional<MeetingDto> getMeetingBySeasonAndLocation(int season, String location) {
@@ -50,7 +51,6 @@ public class MeetingClient implements IMeetingClient {
 
         } catch (IOException e){
             throw new RuntimeException("Failed to fetch meeting from OpenF1 API", e);
-            }
         }
     }
 }
