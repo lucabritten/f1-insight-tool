@@ -1,6 +1,7 @@
 package htwsaar.nordpol.api;
 
 import htwsaar.nordpol.api.dto.DriverDto;
+import htwsaar.nordpol.api.driver.DriverClient;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.MockResponse;
 import org.junit.jupiter.api.AfterEach;
@@ -98,7 +99,31 @@ public class DriverClientTest {
 
         assertThatThrownBy(() ->
                 driverClient.getDriverByName("Lewis", "Hamilton", 2025)
-        ).isInstanceOf(RuntimeException.class);
+        )
+                .isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    void getDriverByFullName_returnsEmptyOptional_whenHttpStatusIsNotSuccessful() {
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(500)
+        );
+
+        Optional<DriverDto> result =
+                driverClient.getDriverByName("Lewis", "Hamilton", 1234);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void getMeetingBySeasonAndLocation_throwsRuntimeException_whenConnectionFails() throws IOException{
+        mockWebServer.shutdown();
+
+        assertThatThrownBy(() ->
+                driverClient.getDriverByName("Lewis", "Hamilton", 1234)
+
+        ).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Failed to fetch driver");
     }
 }
 
