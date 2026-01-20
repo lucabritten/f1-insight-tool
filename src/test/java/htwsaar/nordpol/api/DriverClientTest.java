@@ -1,6 +1,6 @@
 package htwsaar.nordpol.api;
 
-import htwsaar.nordpol.api.dto.DriverApiDto;
+import htwsaar.nordpol.api.dto.DriverDto;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.MockResponse;
 import org.junit.jupiter.api.AfterEach;
@@ -50,11 +50,11 @@ public class DriverClientTest {
         );
 
 
-        Optional<DriverApiDto> optionalDriverDto = driverClient.getDriverByName("Lewis", "Hamilton", 2025);
+        Optional<DriverDto> optionalDriverDto = driverClient.getDriverByName("Lewis", "Hamilton", 2025);
 
         assertThat(optionalDriverDto).isPresent();
 
-        DriverApiDto driverDto = optionalDriverDto.get();
+        DriverDto driverDto = optionalDriverDto.get();
 
         assertThat(driverDto.driver_number()).isEqualTo(44);
         assertThat(driverDto.first_name()).isEqualTo("Lewis");
@@ -71,7 +71,7 @@ public class DriverClientTest {
                 .setResponseCode(200)
         );
 
-        Optional<DriverApiDto> driverApiDto = driverClient.getDriverByName("Unknown", "Driver", 2025);
+        Optional<DriverDto> driverApiDto = driverClient.getDriverByName("Unknown", "Driver", 2025);
 
         assertThat(driverApiDto).isEmpty();
     }
@@ -82,7 +82,7 @@ public class DriverClientTest {
                 .setResponseCode(404)
         );
 
-        Optional<DriverApiDto> optionalDriverDto = driverClient.getDriverByName("Lando", "NORRIS", 2025);
+        Optional<DriverDto> optionalDriverDto = driverClient.getDriverByName("Lando", "NORRIS", 2025);
 
         assertThat(optionalDriverDto).isEmpty();
     }

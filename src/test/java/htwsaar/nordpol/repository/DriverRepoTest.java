@@ -1,6 +1,6 @@
 package htwsaar.nordpol.repository;
 
-import htwsaar.nordpol.api.dto.DriverApiDto;
+import htwsaar.nordpol.api.dto.DriverDto;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -58,17 +58,17 @@ public class DriverRepoTest {
 
     @Test
     void saveDriver_persistsDriver() {
-        DriverApiDto driverData =
-                new DriverApiDto("Lando", "Norris", 4, "GBR");
+        DriverDto driverData =
+                new DriverDto("Lando", "Norris", 4, "GBR");
 
         driverRepo.saveOrUpdateDriverForSeason(driverData, 2025);
 
-        Optional<DriverApiDto> stored =
+        Optional<DriverDto> stored =
                 driverRepo.getDriverByFullNameForSeason("Lando", "Norris", 2025);
 
         assertThat(stored).isPresent();
 
-        DriverApiDto dto = stored.get();
+        DriverDto dto = stored.get();
 
         assertThat(dto.driver_number()).isEqualTo(4);
         assertThat(dto.first_name()).isEqualTo("Lando");
@@ -78,7 +78,7 @@ public class DriverRepoTest {
 
     @Test
     void getDriverByFullName_returnsNullWhenMissing() {
-        Optional<DriverApiDto> stored =
+        Optional<DriverDto> stored =
                 driverRepo.getDriverByFullNameForSeason("Unknown", "Driver", 2025);
 
         assertThat(stored).isEmpty();
@@ -86,18 +86,18 @@ public class DriverRepoTest {
 
     @Test
     void getDriverByFullName_returnsCorrectDriver_forMultipleEntries() {
-        DriverApiDto lando = new DriverApiDto("Lando", "Norris", 4, "GBR");
-        DriverApiDto max = new DriverApiDto("Max", "Verstappen", 1, "NLD");
+        DriverDto lando = new DriverDto("Lando", "Norris", 4, "GBR");
+        DriverDto max = new DriverDto("Max", "Verstappen", 1, "NLD");
 
         driverRepo.saveOrUpdateDriverForSeason(lando, 2025);
         driverRepo.saveOrUpdateDriverForSeason(max, 2025);
 
-        Optional<DriverApiDto> stored =
+        Optional<DriverDto> stored =
                 driverRepo.getDriverByFullNameForSeason("Max", "Verstappen", 2025);
 
         assertThat(stored).isPresent();
 
-        DriverApiDto dto = stored.get();
+        DriverDto dto = stored.get();
         assertThat(dto.driver_number()).isEqualTo(1);
         assertThat(dto.first_name()).isEqualTo("Max");
         assertThat(dto.last_name()).isEqualTo("Verstappen");
@@ -106,35 +106,35 @@ public class DriverRepoTest {
 
     @Test
     void saveDriver_throwsException_whenDriverNumberIsNegative(){
-        DriverApiDto driverApiDto = new DriverApiDto("Max", "Verstappen", -1, "NED");
+        DriverDto driverDto = new DriverDto("Max", "Verstappen", -1, "NED");
 
-        assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForSeason(driverApiDto, 2025))
+        assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForSeason(driverDto, 2025))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void saveDriver_throwsException_whenFirstnameIsNull(){
-        DriverApiDto driverApiDto = new DriverApiDto(null, "Verstappen", 1, "NED");
+        DriverDto driverDto = new DriverDto(null, "Verstappen", 1, "NED");
 
-        assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForSeason(driverApiDto, 2025))
+        assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForSeason(driverDto, 2025))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void saveDriver_throwsException_whenCountryCodeIsNull(){
-        DriverApiDto driverApiDto = new DriverApiDto("Max", "Verstappen", 1, null);
+        DriverDto driverDto = new DriverDto("Max", "Verstappen", 1, null);
 
-        assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForSeason(driverApiDto, 2025))
+        assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForSeason(driverDto, 2025))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void sameDriver_canHaveDifferentNumbersInDifferentSeasons() {
-        DriverApiDto max2025 =
-                new DriverApiDto("Max", "Verstappen", 1, "NLD");
+        DriverDto max2025 =
+                new DriverDto("Max", "Verstappen", 1, "NLD");
 
-        DriverApiDto max2026 =
-                new DriverApiDto("Max", "Verstappen", 3, "NLD");
+        DriverDto max2026 =
+                new DriverDto("Max", "Verstappen", 3, "NLD");
 
         driverRepo.saveOrUpdateDriverForSeason(max2025, 2025);
         driverRepo.saveOrUpdateDriverForSeason(max2026, 2026);
@@ -148,16 +148,16 @@ public class DriverRepoTest {
 
     @Test
     void sameDriver_sameSeason_updatesStartNumber(){
-        DriverApiDto max1 =
-                new DriverApiDto("Max", "Verstappen", 33, "NLD");
+        DriverDto max1 =
+                new DriverDto("Max", "Verstappen", 33, "NLD");
 
-        DriverApiDto max2 =
-                new DriverApiDto("Max", "Verstappen", 1, "NLD");
+        DriverDto max2 =
+                new DriverDto("Max", "Verstappen", 1, "NLD");
 
         driverRepo.saveOrUpdateDriverForSeason(max1, 2025);
         driverRepo.saveOrUpdateDriverForSeason(max2, 2025);
 
-        Optional<DriverApiDto> stored =
+        Optional<DriverDto> stored =
                 driverRepo.getDriverByFullNameForSeason("Max", "Verstappen", 2025);
 
         assertThat(stored).isPresent();
@@ -166,8 +166,8 @@ public class DriverRepoTest {
 
     @Test
     void deletingDriver_removesDriverNumbers() {
-        DriverApiDto max =
-                new DriverApiDto("Max", "Verstappen", 1, "NLD");
+        DriverDto max =
+                new DriverDto("Max", "Verstappen", 1, "NLD");
 
         driverRepo.saveOrUpdateDriverForSeason(max, 2025);
 
@@ -181,8 +181,8 @@ public class DriverRepoTest {
 
     @Test
     void invalidYear_throwsException(){
-        DriverApiDto max =
-                new DriverApiDto("Max", "Verstappen", 1, "NLD");
+        DriverDto max =
+                new DriverDto("Max", "Verstappen", 1, "NLD");
 
         assertThatThrownBy(() ->
                 driverRepo.saveOrUpdateDriverForSeason(max, 1900))

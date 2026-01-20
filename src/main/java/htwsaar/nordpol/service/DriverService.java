@@ -1,6 +1,6 @@
 package htwsaar.nordpol.service;
 
-import htwsaar.nordpol.api.dto.DriverApiDto;
+import htwsaar.nordpol.api.dto.DriverDto;
 import htwsaar.nordpol.api.DriverClient;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.exception.DriverNotFoundException;
@@ -55,18 +55,18 @@ public class DriverService {
      * @throws IllegalArgumentException if season is not provided by the api
      */
     public Driver getDriverByNameAndSeason(String firstName, String lastName, int season) {
-        Optional<DriverApiDto> dtoFromDB = driverRepo.getDriverByFullNameForSeason(firstName, lastName, season);
+        Optional<DriverDto> dtoFromDB = driverRepo.getDriverByFullNameForSeason(firstName, lastName, season);
         if (dtoFromDB.isPresent()) {
             return Mapper.toDriver(dtoFromDB.get());
         }
 
         int seasonalMeetingKey = Optional.ofNullable(meetingSeasonMap.get(season))
                 .orElseThrow(() -> new IllegalArgumentException("No data for season: " + season));
-        Optional<DriverApiDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName, seasonalMeetingKey);
+        Optional<DriverDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName, seasonalMeetingKey);
         if(dtoFromApi.isPresent()){
-            DriverApiDto driverApiDto = dtoFromApi.get();
-            driverRepo.saveOrUpdateDriverForSeason(driverApiDto, season);
-            return Mapper.toDriver(driverApiDto);
+            DriverDto driverDto = dtoFromApi.get();
+            driverRepo.saveOrUpdateDriverForSeason(driverDto, season);
+            return Mapper.toDriver(driverDto);
         }
         throw new DriverNotFoundException(firstName, lastName, season);
     }

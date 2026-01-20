@@ -1,9 +1,7 @@
 package htwsaar.nordpol.util;
 
-import htwsaar.nordpol.api.dto.DriverApiDto;
+import htwsaar.nordpol.api.dto.DriverDto;
 import htwsaar.nordpol.domain.Driver;
-
-import java.util.Map;
 
 public class Mapper {
 
@@ -11,7 +9,7 @@ public class Mapper {
 
     }
 
-    public static Driver toDriver(DriverApiDto dto){
+    public static Driver toDriver(DriverDto dto){
 
         return new Driver(
                 dto.first_name(),

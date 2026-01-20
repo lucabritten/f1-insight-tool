@@ -1,6 +1,6 @@
 package htwsaar.nordpol.api;
 
-import htwsaar.nordpol.api.dto.DriverApiDto;
+import htwsaar.nordpol.api.dto.DriverDto;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +36,7 @@ public class DriverClient {
      *
      * @return an Optional containing the driver DTO if found
      */
-    public Optional<DriverApiDto> getDriverByName(String firstName, String lastName, int meetingKey) {
+    public Optional<DriverDto> getDriverByName(String firstName, String lastName, int meetingKey) {
         String url = BASE_URL + "/drivers?"
                      + "first_name=" + firstName
                      + "&last_name=" + lastName
@@ -51,8 +51,8 @@ public class DriverClient {
             if(!response.isSuccessful())
                 return Optional.empty();
 
-            DriverApiDto[] result =
-                    objectMapper.readValue(response.body().string(), DriverApiDto[].class);
+            DriverDto[] result =
+                    objectMapper.readValue(response.body().string(), DriverDto[].class);
 
             if(result.length == 0)
                 return Optional.empty();

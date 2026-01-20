@@ -1,7 +1,7 @@
 package htwsaar.nordpol.service;
 
 
-import htwsaar.nordpol.api.dto.DriverApiDto;
+import htwsaar.nordpol.api.dto.DriverDto;
 import htwsaar.nordpol.api.DriverClient;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.repository.DriverRepo;
@@ -33,8 +33,8 @@ public class DriverServiceTest {
 
     @Test
     void getDriverByName_returnsDriverFromDataBase() {
-        DriverApiDto dbDto =
-                new DriverApiDto("Lewis", "Hamilton", 44, "GBR");
+        DriverDto dbDto =
+                new DriverDto("Lewis", "Hamilton", 44, "GBR");
 
         when(driverRepo.getDriverByFullNameForSeason("Lewis", "Hamilton", 2025))
                 .thenReturn(Optional.of(dbDto));
@@ -53,8 +53,8 @@ public class DriverServiceTest {
         when(driverRepo.getDriverByFullNameForSeason("Max", "Verstappen", 2025))
                 .thenReturn(Optional.empty());
 
-        DriverApiDto apiDto =
-                new DriverApiDto("Max", "Verstappen", 1, "NLD");
+        DriverDto apiDto =
+                new DriverDto("Max", "Verstappen", 1, "NLD");
 
         when(driverClient.getDriverByName(eq("Max"), eq("Verstappen"), anyInt()))
                 .thenReturn(Optional.of(apiDto));

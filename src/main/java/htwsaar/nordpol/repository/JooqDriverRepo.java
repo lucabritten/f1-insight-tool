@@ -1,6 +1,6 @@
 package htwsaar.nordpol.repository;
 
-import htwsaar.nordpol.api.dto.DriverApiDto;
+import htwsaar.nordpol.api.dto.DriverDto;
 import org.jooq.DSLContext;
 
 import java.util.Optional;
@@ -22,14 +22,14 @@ public class JooqDriverRepo implements DriverRepo{
     }
 
     @Override
-    public void saveOrUpdateDriverForSeason(DriverApiDto driverApiDto, int season) {
-        validateDriver(driverApiDto);
+    public void saveOrUpdateDriverForSeason(DriverDto driverDto, int season) {
+        validateDriver(driverDto);
         validateSeason(season);
         Integer driverId = create
                 .select(DRIVERS.DRIVER_ID)
                 .from(DRIVERS)
-                .where(DRIVERS.FIRST_NAME.eq(driverApiDto.first_name())
-                        .and(DRIVERS.LAST_NAME.eq(driverApiDto.last_name())))
+                .where(DRIVERS.FIRST_NAME.eq(driverDto.first_name())
+                        .and(DRIVERS.LAST_NAME.eq(driverDto.last_name())))
                 .fetchOneInto(Integer.class);
 
         if(driverId == null){
@@ -38,9 +38,9 @@ public class JooqDriverRepo implements DriverRepo{
                             DRIVERS.FIRST_NAME,
                             DRIVERS.LAST_NAME,
                             DRIVERS.COUNTRY_CODE)
-                    .values(driverApiDto.first_name(),
-                            driverApiDto.last_name(),
-                            driverApiDto.country_code()
+                    .values(driverDto.first_name(),
+                            driverDto.last_name(),
+                            driverDto.country_code()
                     )
                     .returningResult(DRIVERS.DRIVER_ID)
                     .fetchOne(0, Integer.class);
@@ -59,32 +59,32 @@ public class JooqDriverRepo implements DriverRepo{
                     DRIVER_NUMBERS.DRIVER_ID,
                     DRIVER_NUMBERS.SEASON,
                     DRIVER_NUMBERS.START_NUMBER)
-                    .values(driverId, season, driverApiDto.driver_number())
+                    .values(driverId, season, driverDto.driver_number())
                     .execute();
 
-        } else if (existing != driverApiDto.driver_number()) {
+        } else if (existing != driverDto.driver_number()) {
             create.update(DRIVER_NUMBERS)
-                    .set(DRIVER_NUMBERS.START_NUMBER, driverApiDto.driver_number())
+                    .set(DRIVER_NUMBERS.START_NUMBER, driverDto.driver_number())
                     .where(DRIVER_NUMBERS.DRIVER_ID.eq(driverId)
                             .and(DRIVER_NUMBERS.SEASON.eq(season)))
                     .execute();
         }
     }
 
-    private void validateDriver(DriverApiDto driverApiDto) {
-        if (driverApiDto == null)
+    private void validateDriver(DriverDto driverDto) {
+        if (driverDto == null)
             throw new IllegalArgumentException("driverApiDto must not be null.");
 
-        if (driverApiDto.driver_number() <= 0)
+        if (driverDto.driver_number() <= 0)
             throw new IllegalArgumentException("driver_number must be positive.");
 
-        if (driverApiDto.first_name() == null || driverApiDto.first_name().isBlank())
+        if (driverDto.first_name() == null || driverDto.first_name().isBlank())
             throw new IllegalArgumentException("full_name must not be null or blank.");
 
-        if (driverApiDto.last_name() == null || driverApiDto.last_name().isBlank())
+        if (driverDto.last_name() == null || driverDto.last_name().isBlank())
             throw new IllegalArgumentException("last_name must not be null or blank.");
 
-        if (driverApiDto.country_code() == null || driverApiDto.country_code().isBlank())
+        if (driverDto.country_code() == null || driverDto.country_code().isBlank())
             throw new IllegalArgumentException("country_code must not be null or blank.");
     }
 
@@ -94,7 +94,7 @@ public class JooqDriverRepo implements DriverRepo{
     }
 
     @Override
-    public Optional<DriverApiDto> getDriverByFullNameForSeason(String firstName, String lastName, int season) {
+    public Optional<DriverDto> getDriverByFullNameForSeason(String firstName, String lastName, int season) {
         var record = create.select(DRIVERS.FIRST_NAME, DRIVERS.LAST_NAME, DRIVER_NUMBERS.START_NUMBER.as("driver_number"), DRIVERS.COUNTRY_CODE)
                 .from(DRIVERS)
                 .join(DRIVER_NUMBERS)
@@ -102,13 +102,13 @@ public class JooqDriverRepo implements DriverRepo{
                 .where(DRIVERS.FIRST_NAME.eq(firstName)
                         .and(DRIVERS.LAST_NAME.eq(lastName))
                         .and(DRIVER_NUMBERS.SEASON.eq(season)))
-                .fetchOneInto(DriverApiDto.class);
+                .fetchOneInto(DriverDto.class);
 
         return Optional.ofNullable(record);
     }
 
     @Override
-    public Optional<DriverApiDto> getDriverByStartNumberForSeason(int startNumber, int season) {
+    public Optional<DriverDto> getDriverByStartNumberForSeason(int startNumber, int season) {
         var record = create.select(
                         DRIVERS.FIRST_NAME, DRIVERS.LAST_NAME,
                         DRIVER_NUMBERS.START_NUMBER.as("driver_number"),
@@ -118,7 +118,7 @@ public class JooqDriverRepo implements DriverRepo{
                 .on(DRIVER_NUMBERS.DRIVER_ID.eq(DRIVERS.DRIVER_ID))
                 .where(DRIVER_NUMBERS.SEASON.eq(season)
                         .and(DRIVER_NUMBERS.START_NUMBER.eq(startNumber)))
-                .fetchOneInto(DriverApiDto.class);
+                .fetchOneInto(DriverDto.class);
 
         return Optional.ofNullable(record);
     }
