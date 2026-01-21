@@ -59,13 +59,7 @@ public class WeatherCommand implements Runnable {
             String output = Formatter.formatWeather(weather);
             System.out.println(output);
 
-        } catch (WeatherNotFoundException e) {
-            System.out.println(
-                    "No weather data found for location=" + location +
-                            ", year=" + year +
-                            " and sessionType=" + sessionType + "."
-            );
-        } catch (IllegalArgumentException e) {
+        } catch (WeatherNotFoundException | IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
     }
