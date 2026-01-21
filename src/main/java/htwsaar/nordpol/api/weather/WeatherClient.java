@@ -29,7 +29,7 @@ public class WeatherClient implements IWeatherClient{
 
     @Override
     public Optional<List<WeatherDto>> getWeatherDataByMeetingKeyAndSessionKey(int meetingKey, int sessionKey) {
-        String url = BASE_URL + "/session?"
+        String url = BASE_URL + "/weather?"
                 + "meeting_key=" + meetingKey
                 + "&session_key=" + sessionKey;
 
