@@ -13,7 +13,7 @@ import java.util.Optional;
 public class WeatherService {
 
     private final IWeatherClient weatherClient;
-    private finalIWeatherRepo weatherRepo;
+    private final IWeatherRepo weatherRepo;
 
     public WeatherService(IWeatherClient client, IWeatherRepo repo){
         if(client == null)
