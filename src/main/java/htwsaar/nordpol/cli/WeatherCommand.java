@@ -10,7 +10,7 @@ import picocli.CommandLine.Option;
 
 @Command(
         name = "weather-info",
-        description = "Print averaged weather information for a specific for a specific location, year and session type",
+        description = "Print averaged weather information for a specific location, year and session type",
         mixinStandardHelpOptions = true
 )
 public class WeatherCommand implements Runnable {
