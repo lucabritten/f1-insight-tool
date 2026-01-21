@@ -90,7 +90,7 @@ public class JooqDriverRepo implements IDriverRepo {
 
     private void validateSeason(int season){
         if (season < FIRST_F1_SEASON)
-            throw new IllegalArgumentException("Season must be positive");
+            throw new IllegalArgumentException("Season must be 1950 or younger");
     }
 
     @Override
