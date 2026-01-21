@@ -1,7 +1,6 @@
-package htwsaar.nordpol.repository.driver;
+package htwsaar.nordpol.repository.meeting;
 
 import htwsaar.nordpol.api.dto.MeetingDto;
-import htwsaar.nordpol.repository.meeting.IMeetingRepo;
 import org.jooq.DSLContext;
 
 import java.util.Optional;
