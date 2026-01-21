@@ -1,6 +1,6 @@
 package htwsaar.nordpol.service;
 
-import htwsaar.nordpol.api.ISessionClient;
+import htwsaar.nordpol.api.session.ISessionClient;
 import htwsaar.nordpol.api.dto.SessionDto;
 import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.exception.SessionNotFoundException;
