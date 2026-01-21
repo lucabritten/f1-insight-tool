@@ -4,7 +4,10 @@ import picocli.CommandLine.Command;
 
 @Command(name = "F1Insight",
         mixinStandardHelpOptions = true,
-        subcommands = {DriverCommand.class}
+        subcommands = {
+            DriverCommand.class,
+            WeatherCommand.class
+        }
 )
 public class F1CLI {
 
