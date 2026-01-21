@@ -82,8 +82,8 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute("-fn", "Foo", "-ln", "Bar");
 
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString())
+        assertThat(exitCode).isNotZero();
+        assertThat(errorStream.toString())
                 .contains("not found");
     }
 
@@ -117,8 +117,8 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute("-fn", "Max", "-ln", "Verstappen", "-s", "1899");
 
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString())
+        assertThat(exitCode).isNotZero();
+        assertThat(errorStream.toString())
                 .contains("1899");
     }
 }

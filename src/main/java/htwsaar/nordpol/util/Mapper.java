@@ -39,7 +39,6 @@ public class Mapper {
                 dto.meeting_key(),
                 dto.session_type(),
                 dto.session_name()
-
         );
     }
 

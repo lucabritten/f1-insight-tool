@@ -4,8 +4,8 @@ import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.service.DriverService;
 import htwsaar.nordpol.config.ApplicationContext;
 
-import htwsaar.nordpol.exception.DriverNotFoundException;
 import htwsaar.nordpol.util.Formatter;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -54,10 +54,11 @@ public class DriverCommand implements Runnable {
             Driver driver = driverService.getDriverByNameAndSeason(firstName, lastName, season);
             String output = Formatter.formatDriver(driver);
             System.out.println(output);
-        } catch (DriverNotFoundException e){
-            System.out.println("Driver with name: " + firstName + " " + lastName + " not found.");
-        } catch (IllegalArgumentException e){
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            throw new CommandLine.ExecutionException(
+                    new CommandLine(this),
+                    e.getMessage()
+            );
         }
     }
 }

@@ -2,9 +2,9 @@ package htwsaar.nordpol.cli;
 
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.Weather;
-import htwsaar.nordpol.exception.WeatherNotFoundException;
 import htwsaar.nordpol.service.WeatherService;
 import htwsaar.nordpol.util.Formatter;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -59,8 +59,11 @@ public class WeatherCommand implements Runnable {
             String output = Formatter.formatWeather(weather);
             System.out.println(output);
 
-        } catch (WeatherNotFoundException | IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+           throw new CommandLine.ExecutionException(
+                   new CommandLine(this),
+                   e.getMessage()
+           );
         }
     }
 }
