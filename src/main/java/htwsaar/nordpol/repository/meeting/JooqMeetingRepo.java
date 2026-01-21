@@ -57,7 +57,7 @@ public class JooqMeetingRepo implements IMeetingRepo {
     }
 
     @Override
-    public Optional<MeetingDto> getMeetingBySeasonAndLocation(int season, String location) {
+    public Optional<MeetingDto> getMeetingByYearAndLocation(int season, String location) {
         var record = create.select(MEETINGS.COUNTRY_CODE, MEETINGS.COUNTRY_NAME, MEETINGS.LOCATION, MEETINGS.MEETING_KEY, MEETINGS.MEETING_NAME, MEETINGS.YEAR)
                 .from(MEETINGS)
                 .where(MEETINGS.YEAR.eq(season)

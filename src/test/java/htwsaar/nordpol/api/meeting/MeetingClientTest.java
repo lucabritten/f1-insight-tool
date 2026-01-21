@@ -50,7 +50,7 @@ public class MeetingClientTest {
                 .setResponseCode(200)
         );
 
-        Optional<MeetingDto> result = meetingClient.getMeetingBySeasonAndLocation(2024, "Austin");
+        Optional<MeetingDto> result = meetingClient.getMeetingByYearAndLocation(2024, "Austin");
 
         assertThat(result).isPresent();
 
@@ -61,7 +61,7 @@ public class MeetingClientTest {
     }
 
     @Test
-    void getMeetingBySeasonAndLocation_returnsEmptyOptional_whenApiResponseIsEmpty(){
+    void getMeetingByYearAndLocation_returnsEmptyOptional_whenApiResponseIsEmpty(){
         String json = "[]";
 
         mockWebServer.enqueue(new MockResponse()
@@ -70,13 +70,13 @@ public class MeetingClientTest {
                 .setResponseCode(200)
         );
 
-        Optional<MeetingDto> result = meetingClient.getMeetingBySeasonAndLocation(2027, "Saarbrücken");
+        Optional<MeetingDto> result = meetingClient.getMeetingByYearAndLocation(2027, "Saarbrücken");
 
         assertThat(result).isEmpty();
     }
 
     @Test
-    void getMeetingBySeasonAndLocation_throwsException_whenJsonIsInvalid() {
+    void getMeetingByYearAndLocation_throwsException_whenJsonIsInvalid() {
         String invalidJson = "{invalid";
 
         mockWebServer.enqueue(new MockResponse()
@@ -85,29 +85,29 @@ public class MeetingClientTest {
         );
 
         assertThatThrownBy(() ->
-                meetingClient.getMeetingBySeasonAndLocation(2027, "Saarbrücken")
+                meetingClient.getMeetingByYearAndLocation(2027, "Saarbrücken")
         )
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
-    void getMeetingBySeasonAndLocation_returnsEmptyOptional_whenHttpStatusIsNotSuccessful() {
+    void getMeetingByYearAndLocation_returnsEmptyOptional_whenHttpStatusIsNotSuccessful() {
         mockWebServer.enqueue(new MockResponse()
                 .setResponseCode(500)
         );
 
         Optional<MeetingDto> result =
-                meetingClient.getMeetingBySeasonAndLocation(2024, "Austin");
+                meetingClient.getMeetingByYearAndLocation(2024, "Austin");
 
         assertThat(result).isEmpty();
     }
 
     @Test
-    void getMeetingBySeasonAndLocation_throwsRuntimeException_whenConnectionFails() throws IOException{
+    void getMeetingByYearAndLocation_throwsRuntimeException_whenConnectionFails() throws IOException{
         mockWebServer.shutdown();
 
         assertThatThrownBy(() ->
-                meetingClient.getMeetingBySeasonAndLocation(2024, "Austin")
+                meetingClient.getMeetingByYearAndLocation(2024, "Austin")
         ).isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Failed to fetch meeting");
     }

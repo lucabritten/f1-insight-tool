@@ -27,20 +27,20 @@ public class MeetingService {
         this.meetingClient = meetingClient;
     }
 
-    public Meeting getMeetingBySeasonAndLocation(int season, String location){
-        Optional<MeetingDto> dtoFromDB = meetingRepo.getMeetingBySeasonAndLocation(season, location);
+    public Meeting getMeetingByYearAndLocation(int year, String location){
+        Optional<MeetingDto> dtoFromDB = meetingRepo.getMeetingByYearAndLocation(year, location);
         if (dtoFromDB.isPresent()) {
             return Mapper.toMeeting(dtoFromDB.get());
         }
 
         Optional<MeetingDto> dtoFromApi =
-                meetingClient.getMeetingBySeasonAndLocation(season, location);
+                meetingClient.getMeetingByYearAndLocation(year, location);
 
         if (dtoFromApi.isPresent()) {
             MeetingDto meetingDto = dtoFromApi.get();
             meetingRepo.save(meetingDto);
             return Mapper.toMeeting(meetingDto);
         }
-        throw new MeetingNotFoundException(season, location);
+        throw new MeetingNotFoundException(year, location);
     }
 }

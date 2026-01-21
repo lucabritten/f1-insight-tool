@@ -56,7 +56,7 @@ public class MeetingRepoTest {
         IMeetingRepo.save(meetingData);
 
         Optional<MeetingDto> stored =
-                IMeetingRepo.getMeetingBySeasonAndLocation(2024, "Austin");
+                IMeetingRepo.getMeetingByYearAndLocation(2024, "Austin");
 
         assertThat(stored).isPresent();
 

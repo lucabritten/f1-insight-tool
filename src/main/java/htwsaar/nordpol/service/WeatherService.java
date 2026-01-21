@@ -36,7 +36,7 @@ public class WeatherService {
     }
 
     public Weather getWeatherByLocationSeasonAndSessionType(String location, int season, String sessionType) {
-        Meeting meeting = meetingService.getMeetingBySeasonAndLocation(season, location);
+        Meeting meeting = meetingService.getMeetingByYearAndLocation(season, location);
         int meetingKey = meeting.meetingKey();
 
         Session session = sessionService.getSessionByMeetingKeyAndSessionType(meetingKey, sessionType);
