@@ -1,5 +1,9 @@
 package htwsaar.nordpol.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+
 public record WeatherDto(int session_key,
                          int meeting_key,
                          double air_temperature,
