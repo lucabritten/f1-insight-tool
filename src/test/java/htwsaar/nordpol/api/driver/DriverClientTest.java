@@ -1,7 +1,6 @@
-package htwsaar.nordpol.api;
+package htwsaar.nordpol.api.driver;
 
 import htwsaar.nordpol.api.dto.DriverDto;
-import htwsaar.nordpol.api.driver.DriverClient;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.MockResponse;
 import org.junit.jupiter.api.AfterEach;
