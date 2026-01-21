@@ -2,6 +2,8 @@ package htwsaar.nordpol.service;
 
 import htwsaar.nordpol.api.dto.WeatherDto;
 import htwsaar.nordpol.api.weather.IWeatherClient;
+import htwsaar.nordpol.domain.Meeting;
+import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.exception.WeatherNotFoundException;
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
@@ -14,15 +16,33 @@ public class WeatherService {
 
     private final IWeatherClient weatherClient;
     private final IWeatherRepo weatherRepo;
+    private final SessionService sessionService;
+    private final MeetingService meetingService;
 
-    public WeatherService(IWeatherClient client, IWeatherRepo repo){
+    public WeatherService(IWeatherClient client, IWeatherRepo repo, SessionService sessionService, MeetingService meetingService){
         if(client == null)
             throw new IllegalArgumentException("WeatherClient must not be null.");
         if(repo == null)
             throw new IllegalArgumentException("WeatherRepo must not be null.");
+        if(sessionService == null)
+            throw new IllegalArgumentException("SessionService must not be null.");
+        if(meetingService == null)
+            throw new IllegalArgumentException("MeetingService must not be null,");
 
         this.weatherClient = client;
         this.weatherRepo = repo;
+        this.sessionService = sessionService;
+        this.meetingService = meetingService;
+    }
+
+    public Weather getWeatherByLocationSeasonAndSessionType(String location, int season, String sessionType) {
+        Meeting meeting = meetingService.getMeetingBySeasonAndLocation(season, location);
+        int meetingKey = meeting.meetingKey();
+
+        Session session = sessionService.getSessionByMeetingKeyAndSessionType(meetingKey, sessionType);
+        int sessionKey = session.sessionKey();
+
+        return getWeatherByMeetingAndSessionKey(meetingKey, sessionKey);
     }
 
     public Weather getWeatherByMeetingAndSessionKey(int meetingKey, int sessionKey) {

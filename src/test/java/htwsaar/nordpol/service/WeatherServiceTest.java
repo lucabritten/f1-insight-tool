@@ -27,20 +27,26 @@ public class WeatherServiceTest {
     @Mock
     JooqWeatherRepo weatherRepo;
 
+    @Mock
+    MeetingService meetingService;
+
+    @Mock
+    SessionService sessionService;
+
     @InjectMocks
     WeatherService weatherService;
 
     @Test
     void constructor_nullRepository_throwsException(){
         assertThatThrownBy(() ->
-                new WeatherService(weatherClient, null)
+                new WeatherService(weatherClient, null, sessionService, meetingService)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void constructor_null_Client_throwsException(){
         assertThatThrownBy(() ->
-                new WeatherService(null, weatherRepo)
+                new WeatherService(null, weatherRepo, sessionService, meetingService)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
