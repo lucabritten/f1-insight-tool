@@ -3,9 +3,11 @@ package htwsaar.nordpol.util;
 import htwsaar.nordpol.api.dto.DriverDto;
 import htwsaar.nordpol.api.dto.MeetingDto;
 import htwsaar.nordpol.api.dto.SessionDto;
+import htwsaar.nordpol.api.dto.WeatherDto;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.domain.Session;
+import htwsaar.nordpol.domain.Weather;
 
 public class Mapper {
 
@@ -38,6 +40,21 @@ public class Mapper {
                 dto.session_type(),
                 dto.session_name()
 
+        );
+    }
+
+    public static Weather toWeather(WeatherDto dto){
+        boolean isRainfall = dto.rainfall() == 1;
+
+        return new Weather(
+                dto.session_key(),
+                dto.meeting_key(),
+                dto.air_temperature(),
+                dto.humidity(),
+                isRainfall,
+                dto.track_temperature(),
+                dto.wind_direction(),
+                dto.wind_speed()
         );
     }
 

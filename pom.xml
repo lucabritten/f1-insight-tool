@@ -132,6 +132,12 @@
             <database>
               <name>org.jooq.meta.sqlite.SQLiteDatabase</name>
               <includes>.*</includes>
+              <forcedTypes>
+                <forcedType>
+                  <name>DOUBLE</name>
+                  <includeTypes>REAL</includeTypes>
+                </forcedType>
+              </forcedTypes>
             </database>
 
             <target>
