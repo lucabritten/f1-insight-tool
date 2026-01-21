@@ -2,6 +2,8 @@ package htwsaar.nordpol.service;
 
 import htwsaar.nordpol.api.dto.WeatherDto;
 import htwsaar.nordpol.api.weather.IWeatherClient;
+import htwsaar.nordpol.domain.Meeting;
+import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.exception.WeatherNotFoundException;
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
@@ -14,15 +16,25 @@ public class WeatherService {
 
     private final IWeatherClient weatherClient;
     private final IWeatherRepo weatherRepo;
+    private final MeetingService meetingService;
+    private final SessionService sessionService;
 
-    public WeatherService(IWeatherClient client, IWeatherRepo repo){
+
+    public WeatherService(IWeatherClient client, IWeatherRepo repo, MeetingService meetingService, SessionService sessionService){
         if(client == null)
             throw new IllegalArgumentException("WeatherClient must not be null.");
         if(repo == null)
             throw new IllegalArgumentException("WeatherRepo must not be null.");
+        if (meetingService == null)
+            throw new IllegalArgumentException("MeetingService must not be null.");
+        if (sessionService == null)
+            throw new IllegalArgumentException("SessionService must not be null.");
 
         this.weatherClient = client;
         this.weatherRepo = repo;
+        this.meetingService = meetingService;
+        this.sessionService = sessionService;
+
     }
 
     public Weather getWeatherByMeetingAndSessionKey(int meetingKey, int sessionKey) {
@@ -90,4 +102,23 @@ public class WeatherService {
                 avgWindDirection,
                 avgWindSpeed);
     }
+
+    public Weather getWeatherByLocationYearAndSessionType(String location, int year, String sessionType) {
+        if (location == null || location.isBlank())
+            throw new IllegalArgumentException("Location must not be blank.");
+        if (sessionType == null || sessionType.isBlank())
+            throw new IllegalArgumentException("SessionType must not be blank.");
+
+        Meeting meeting = meetingService.getMeetingBySeasonAndLocation(year, location);
+        Session session = sessionService.getSessionByMeetingKeyAndSessionType(
+                meeting.meetingKey(),
+                sessionType
+        );
+
+        return getWeatherByMeetingAndSessionKey(
+                meeting.meetingKey(),
+                session.sessionKey()
+        );
+    }
+
 }

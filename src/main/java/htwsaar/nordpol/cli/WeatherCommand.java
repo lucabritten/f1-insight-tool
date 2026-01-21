@@ -10,24 +10,31 @@ import picocli.CommandLine.Option;
 
 @Command(
         name = "weather-info",
-        description = "Print averaged weather information for a specific meeting and session",
+        description = "Print averaged weather information for a specific for a specific location, year and session type",
         mixinStandardHelpOptions = true
 )
 public class WeatherCommand implements Runnable {
 
     @Option(
-            names = {"--meetingKey", "-mk"},
-            description = "The meeting key",
+            names = {"--location", "-l"},
+            description = "The location of the race (e.g. Austin)",
             required = true
     )
-    private int meetingKey;
+    private String location;
 
     @Option(
-            names = {"--sessionKey", "-sk"},
-            description = "The session key",
+            names = {"--year", "-y"},
+            description = "The season year",
+            defaultValue = "2024"
+    )
+    private int year;
+
+    @Option(
+            names = {"--sessionType", "-st"},
+            description = "The session type (e.g. Race, Qualifying, Practice)",
             required = true
     )
-    private int sessionKey;
+    private String sessionType;
 
     private final WeatherService weatherService;
 
@@ -42,13 +49,22 @@ public class WeatherCommand implements Runnable {
     @Override
     public void run() {
         try {
-            Weather weather = weatherService.getWeatherByMeetingAndSessionKey(meetingKey, sessionKey);
+            Weather weather =
+                    weatherService.getWeatherByLocationYearAndSessionType(
+                            location,
+                            year,
+                            sessionType
+                    );
+
             String output = Formatter.formatWeather(weather);
             System.out.println(output);
 
         } catch (WeatherNotFoundException e) {
-            System.out.println("No weather data found for meetingKey=" + meetingKey
-                    + " and sessionKey=" + sessionKey + ".");
+            System.out.println(
+                    "No weather data found for location=" + location +
+                            ", year=" + year +
+                            " and sessionType=" + sessionType + "."
+            );
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
