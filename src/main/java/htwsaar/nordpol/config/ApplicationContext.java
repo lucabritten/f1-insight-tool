@@ -1,9 +1,13 @@
 package htwsaar.nordpol.config;
 
 import htwsaar.nordpol.api.driver.DriverClient;
+import htwsaar.nordpol.api.weather.WeatherClient;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.repository.driver.JooqDriverRepo;
+import htwsaar.nordpol.repository.weather.IWeatherRepo;
+import htwsaar.nordpol.repository.weather.JooqWeatherRepo;
 import htwsaar.nordpol.service.DriverService;
+import htwsaar.nordpol.service.WeatherService;
 
 /**
  * Simple application context responsible for wiring application services.
@@ -31,5 +35,11 @@ public class ApplicationContext {
         IDriverRepo IDriverRepo = new JooqDriverRepo(JooqConfig.createContext());
         DriverClient driverClient = new DriverClient();
         return new DriverService(IDriverRepo, driverClient);
+    }
+
+    public static WeatherService weatherService() {
+        IWeatherRepo weatherRepo = new JooqWeatherRepo(JooqConfig.createContext());
+        WeatherClient weatherClient = new WeatherClient();
+        return new WeatherService(weatherClient, weatherRepo);
     }
 }

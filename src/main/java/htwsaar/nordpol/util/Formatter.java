@@ -1,6 +1,7 @@
 package htwsaar.nordpol.util;
 
 import htwsaar.nordpol.domain.Driver;
+import htwsaar.nordpol.domain.Weather;
 
 public class Formatter {
 
@@ -20,5 +21,28 @@ public class Formatter {
                     driver.driverNumber(),
                     driver.countryCode()
             );
+    }
+
+    public static String formatWeather(Weather weather) {
+        return """
+                ========== WEATHER ==========
+                Meeting Key        : %d
+                Session Key        : %d
+                Air Temperature    : %.1f °C
+                Humidity           : %.1f %%
+                Track Temperature  : %.1f °C
+                Wind Speed         : %.1f m/s
+                Wind Direction     : %.1f °
+                Rainfall           : %s
+                """.formatted(
+                weather.meetingKey(),
+                weather.sessionKey(),
+                weather.avgAirTemperature(),
+                weather.avgHumidity(),
+                weather.avgTrackTemperature(),
+                weather.avgWindSpeed(),
+                weather.avgWindDirection(),
+                weather.isRainfall() ? "Yes" : "No"
+        );
     }
 }
