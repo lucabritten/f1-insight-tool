@@ -3,7 +3,7 @@ import htwsaar.nordpol.api.dto.DriverDto;
 
 import java.util.Optional;
 
-public interface DriverRepo {
+public interface IDriverRepo {
 
     void saveOrUpdateDriverForSeason(DriverDto driverDto, int season);
     Optional<DriverDto> getDriverByFullNameForSeason(String fistName, String lastName, int season);

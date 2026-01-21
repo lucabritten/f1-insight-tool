@@ -4,7 +4,7 @@ package htwsaar.nordpol.service;
 import htwsaar.nordpol.api.dto.DriverDto;
 import htwsaar.nordpol.api.driver.DriverClient;
 import htwsaar.nordpol.domain.Driver;
-import htwsaar.nordpol.repository.driver.DriverRepo;
+import htwsaar.nordpol.repository.driver.IDriverRepo;
 
 import htwsaar.nordpol.exception.DriverNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 public class DriverServiceTest {
 
     @Mock
-    DriverRepo driverRepo;
+    IDriverRepo IDriverRepo;
 
     @Mock
     DriverClient driverClient;
@@ -36,7 +36,7 @@ public class DriverServiceTest {
         DriverDto dbDto =
                 new DriverDto("Lewis", "Hamilton", 44, "GBR");
 
-        when(driverRepo.getDriverByFullNameForSeason("Lewis", "Hamilton", 2025))
+        when(IDriverRepo.getDriverByFullNameForSeason("Lewis", "Hamilton", 2025))
                 .thenReturn(Optional.of(dbDto));
 
         Driver result =
@@ -45,12 +45,12 @@ public class DriverServiceTest {
         assertThat(result.firstName()).isEqualTo("Lewis");
 
         verify(driverClient, never()).getDriverByName(anyString(), anyString(), anyInt());
-        verify(driverRepo).getDriverByFullNameForSeason("Lewis", "Hamilton", 2025);
+        verify(IDriverRepo).getDriverByFullNameForSeason("Lewis", "Hamilton", 2025);
     }
 
     @Test
     void getDriverByName_fetchesFromApiAndSavesDriver() {
-        when(driverRepo.getDriverByFullNameForSeason("Max", "Verstappen", 2025))
+        when(IDriverRepo.getDriverByFullNameForSeason("Max", "Verstappen", 2025))
                 .thenReturn(Optional.empty());
 
         DriverDto apiDto =
@@ -64,12 +64,12 @@ public class DriverServiceTest {
 
         assertThat(result.firstName()).isEqualTo("Max");
 
-        verify(driverRepo).saveOrUpdateDriverForSeason(apiDto, 2025);
+        verify(IDriverRepo).saveOrUpdateDriverForSeason(apiDto, 2025);
     }
 
     @Test
     void getDriverByName_throwsException_whenDriverNotFoundAnywhere() {
-        when(driverRepo.getDriverByFullNameForSeason(anyString(), anyString(), anyInt()))
+        when(IDriverRepo.getDriverByFullNameForSeason(anyString(), anyString(), anyInt()))
                 .thenReturn(Optional.empty());
 
         when(driverClient.getDriverByName(anyString(), anyString(), anyInt()))

@@ -1,7 +1,7 @@
 package htwsaar.nordpol.config;
 
 import htwsaar.nordpol.api.driver.DriverClient;
-import htwsaar.nordpol.repository.driver.DriverRepo;
+import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.repository.driver.JooqDriverRepo;
 import htwsaar.nordpol.service.DriverService;
 
@@ -28,8 +28,8 @@ public class ApplicationContext {
      * @return a fully initialized DriverService
      */
     public static DriverService driverService(){
-        DriverRepo driverRepo = new JooqDriverRepo(JooqConfig.createContext());
+        IDriverRepo IDriverRepo = new JooqDriverRepo(JooqConfig.createContext());
         DriverClient driverClient = new DriverClient();
-        return new DriverService(driverRepo, driverClient);
+        return new DriverService(IDriverRepo, driverClient);
     }
 }

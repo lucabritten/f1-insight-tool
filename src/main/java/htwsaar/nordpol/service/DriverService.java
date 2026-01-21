@@ -4,7 +4,7 @@ import htwsaar.nordpol.api.dto.DriverDto;
 import htwsaar.nordpol.api.driver.DriverClient;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.exception.DriverNotFoundException;
-import htwsaar.nordpol.repository.driver.DriverRepo;
+import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.util.Mapper;
 
 import java.util.HashMap;
@@ -25,18 +25,18 @@ import java.util.Optional;
  */
 public class DriverService {
 
-    private final DriverRepo driverRepo;
+    private final IDriverRepo IDriverRepo;
     private final DriverClient driverClient;
     private final Map<Integer, Integer> meetingSeasonMap;
 
-    public DriverService(DriverRepo driverRepo, DriverClient driverClient) {
-        if (driverRepo == null) {
+    public DriverService(IDriverRepo IDriverRepo, DriverClient driverClient) {
+        if (IDriverRepo == null) {
             throw new IllegalArgumentException("driverRepo must not be null.");
         }
         if (driverClient == null) {
             throw new IllegalArgumentException("driverClient must not be null.");
         }
-        this.driverRepo = driverRepo;
+        this.IDriverRepo = IDriverRepo;
         this.driverClient = driverClient;
         meetingSeasonMap = new HashMap<>(Map.of(
                 2023, 1143,
@@ -55,7 +55,7 @@ public class DriverService {
      * @throws IllegalArgumentException if season is not provided by the api
      */
     public Driver getDriverByNameAndSeason(String firstName, String lastName, int season) {
-        Optional<DriverDto> dtoFromDB = driverRepo.getDriverByFullNameForSeason(firstName, lastName, season);
+        Optional<DriverDto> dtoFromDB = IDriverRepo.getDriverByFullNameForSeason(firstName, lastName, season);
         if (dtoFromDB.isPresent()) {
             return Mapper.toDriver(dtoFromDB.get());
         }
@@ -65,7 +65,7 @@ public class DriverService {
         Optional<DriverDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName, seasonalMeetingKey);
         if(dtoFromApi.isPresent()){
             DriverDto driverDto = dtoFromApi.get();
-            driverRepo.saveOrUpdateDriverForSeason(driverDto, season);
+            IDriverRepo.saveOrUpdateDriverForSeason(driverDto, season);
             return Mapper.toDriver(driverDto);
         }
         throw new DriverNotFoundException(firstName, lastName, season);
