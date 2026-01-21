@@ -48,7 +48,7 @@ public class JooqSessionRepo implements ISessionRepo{
 
     @Override
     public Optional<SessionDto> getSessionByMeetingKeyAndSessionType(int meetingKey, String sessionType) {
-        var record = create.select(SESSIONS.SESSION_KEY, SESSIONS.MEETING_KEY, SESSIONS.SESSION_NAME, SESSIONS.SESSION_TYPE)
+        var record = create.select(SESSIONS.MEETING_KEY, SESSIONS.SESSION_KEY, SESSIONS.SESSION_NAME, SESSIONS.SESSION_TYPE)
                 .from(SESSIONS)
                 .where(SESSIONS.MEETING_KEY.eq(meetingKey)
                         .and(SESSIONS.SESSION_TYPE.eq(sessionType)))
