@@ -1,4 +1,4 @@
-package htwsaar.nordpol.api;
+package htwsaar.nordpol.api.session;
 
 import htwsaar.nordpol.api.dto.SessionDto;
 

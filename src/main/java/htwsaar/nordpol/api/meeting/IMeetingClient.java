@@ -1,4 +1,4 @@
-package htwsaar.nordpol.api;
+package htwsaar.nordpol.api.meeting;
 
 import htwsaar.nordpol.api.dto.MeetingDto;
 

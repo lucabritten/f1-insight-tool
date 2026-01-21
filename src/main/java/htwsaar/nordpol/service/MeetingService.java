@@ -1,7 +1,7 @@
 package htwsaar.nordpol.service;
 
 
-import htwsaar.nordpol.api.IMeetingClient;
+import htwsaar.nordpol.api.meeting.IMeetingClient;
 import htwsaar.nordpol.api.dto.MeetingDto;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.exception.MeetingNotFoundException;

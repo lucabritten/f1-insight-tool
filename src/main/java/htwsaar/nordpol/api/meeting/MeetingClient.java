@@ -1,6 +1,5 @@
-package htwsaar.nordpol.api;
+package htwsaar.nordpol.api.meeting;
 
-import htwsaar.nordpol.api.dto.DriverDto;
 import htwsaar.nordpol.api.dto.MeetingDto;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -29,7 +28,7 @@ public class MeetingClient implements IMeetingClient {
     @Override
     public Optional<MeetingDto> getMeetingBySeasonAndLocation(int season, String location) {
         String url = BASE_URL + "/meetings?"
-                    + "season=" + season
+                    + "year=" + season
                     + "&location=" + location;
 
         Request request = new Request.Builder()

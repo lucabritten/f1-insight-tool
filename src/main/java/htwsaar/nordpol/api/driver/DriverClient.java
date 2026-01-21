@@ -1,4 +1,4 @@
-package htwsaar.nordpol.api;
+package htwsaar.nordpol.api.driver;
 
 import htwsaar.nordpol.api.dto.DriverDto;
 import okhttp3.OkHttpClient;
