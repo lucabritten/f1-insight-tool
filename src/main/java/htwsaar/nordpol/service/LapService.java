@@ -8,7 +8,6 @@ import htwsaar.nordpol.repository.lap.ILapRepo;
 import htwsaar.nordpol.util.Mapper;
 
 import java.util.List;
-import java.util.Optional;
 
 public class LapService implements ILapService {
 
@@ -35,13 +34,12 @@ public class LapService implements ILapService {
                     .toList();
         }
 
-        Optional<List<LapDto>> dtoFromApi =
+        List<LapDto> dtoFromApi =
                 lapsClient.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
 
-        if (dtoFromApi.isPresent()) {
-            List<LapDto> lapsDto = dtoFromApi.get();
-            lapRepo.saveAll(lapsDto);
-            return lapsDto.stream()
+        if (!dtoFromApi.isEmpty()) {
+            lapRepo.saveAll(dtoFromApi);
+            return dtoFromApi.stream()
                     .map(Mapper::toLap)
                     .toList();
         }
