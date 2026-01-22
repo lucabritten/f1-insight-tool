@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class JooqLapRepoTest {
+public class LapRepoTest {
 
     private Connection connection;
     private DSLContext create;
