@@ -2,6 +2,7 @@ package htwsaar.nordpol.service;
 
 import htwsaar.nordpol.api.dto.WeatherDto;
 import htwsaar.nordpol.api.weather.IWeatherClient;
+import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.Weather;
@@ -35,14 +36,15 @@ public class WeatherService {
         this.meetingService = meetingService;
     }
 
-    public Weather getWeatherByLocationSeasonAndSessionType(String location, int season, String sessionType) {
+    public WeatherWithContext getWeatherByLocationSeasonAndSessionType(String location, int season, String sessionType) {
         Meeting meeting = meetingService.getMeetingByYearAndLocation(season, location);
         int meetingKey = meeting.meetingKey();
 
         Session session = sessionService.getSessionByMeetingKeyAndSessionType(meetingKey, sessionType);
         int sessionKey = session.sessionKey();
 
-        return getWeatherByMeetingAndSessionKey(meetingKey, sessionKey);
+        Weather weather = getWeatherByMeetingAndSessionKey(meetingKey, sessionKey);
+        return new WeatherWithContext(meeting.location(), meeting.countryName(), session.sessionName(), weather);
     }
 
     public Weather getWeatherByMeetingAndSessionKey(int meetingKey, int sessionKey) {

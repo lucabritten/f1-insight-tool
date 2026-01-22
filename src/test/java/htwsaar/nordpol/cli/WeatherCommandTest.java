@@ -1,5 +1,6 @@
 package htwsaar.nordpol.cli;
 
+import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.exception.SessionNotFoundException;
@@ -21,13 +22,17 @@ public class WeatherCommandTest {
     private WeatherService mockWeatherService;
     private ByteArrayOutputStream outputStream;
     private ByteArrayOutputStream errorStream;
-    private Weather sampleWeather;
+    private WeatherWithContext sampleWeatherContext;
 
     @BeforeEach
     void setup() {
         mockWeatherService = mock(WeatherService.class);
 
-        sampleWeather = new Weather(
+        sampleWeatherContext = new WeatherWithContext(
+                "Austin",
+                "United States",
+                "Race",
+                new Weather(
                 1234,
                 4321,
                 20,
@@ -36,6 +41,7 @@ public class WeatherCommandTest {
                 30,
                 10,
                 10
+                 )
         );
 
         outputStream = new ByteArrayOutputStream();
@@ -54,7 +60,7 @@ public class WeatherCommandTest {
     @Test
     void weatherInfo_printsFormattedWeather() {
         when(mockWeatherService.getWeatherByLocationSeasonAndSessionType("Austin", 2024, "Race"))
-                .thenReturn(sampleWeather);
+                .thenReturn(sampleWeatherContext);
 
         int exitCode = new CommandLine(
                 new WeatherCommand(mockWeatherService)
@@ -103,7 +109,7 @@ public class WeatherCommandTest {
     @Test
     void shortAndLongOptions_work() {
         when(mockWeatherService.getWeatherByLocationSeasonAndSessionType("Austin", 2024, "Race"))
-                .thenReturn(sampleWeather);
+                .thenReturn(sampleWeatherContext);
 
         int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
                 .execute("--location", "Austin", "--year", "2024", "--sessionType", "Race");

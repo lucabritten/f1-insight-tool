@@ -1,5 +1,6 @@
 package htwsaar.nordpol.cli;
 
+import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.service.WeatherService;
@@ -49,14 +50,14 @@ public class WeatherCommand implements Runnable {
     @Override
     public void run() {
         try {
-            Weather weather =
+            WeatherWithContext weatherWithContext =
                     weatherService.getWeatherByLocationSeasonAndSessionType(
                             location,
                             year,
                             sessionType
                     );
 
-            String output = Formatter.formatWeather(weather);
+            String output = Formatter.formatWeather(weatherWithContext);
             System.out.println(output);
 
         } catch (Exception e) {
