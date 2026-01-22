@@ -31,8 +31,8 @@ public class WeatherCommand implements Runnable {
     private int year;
 
     @Option(
-            names = {"--sessionName", "-st"},
-            description = "The session type (e.g. Race, Qualifying, Practice)",
+            names = {"--sessionName", "-sn"},
+            description = "The session type (e.g. Race, Qualifying, FP)",
             required = true
     )
     private String sessionName;
