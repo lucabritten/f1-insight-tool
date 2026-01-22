@@ -68,7 +68,7 @@ public class SessionRepoTest {
         ISessionRepo.save(sessionData);
 
         Optional<SessionDto> stored =
-                ISessionRepo.getSessionByMeetingKeyAndSessionType(1256, "Practice");
+                ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice");
 
         assertThat(stored).isPresent();
 
@@ -81,15 +81,15 @@ public class SessionRepoTest {
     }
 
     @Test
-    void getSessionByMeetingKeyAndSessionType_returnsEmptyWhenMissing() {
+    void getSessionByMeetingKeyAndsessionName_returnsEmptyWhenMissing() {
         Optional<SessionDto> stored =
-                ISessionRepo.getSessionByMeetingKeyAndSessionType(1256, "Race");
+                ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Race");
 
         assertThat(stored).isEmpty();
     }
 
     @Test
-    void getSessionByMeetingKeyAndSessionType_returnsCorrectSession_forMultipleEntries() {
+    void getSessionByMeetingKeyAndsessionName_returnsCorrectSession_forMultipleEntries() {
         SessionDto practice =
                 new SessionDto(1256, 9999, "Practice 1", "Practice");
         SessionDto race =
@@ -99,7 +99,7 @@ public class SessionRepoTest {
         ISessionRepo.save(race);
 
         Optional<SessionDto> stored =
-                ISessionRepo.getSessionByMeetingKeyAndSessionType(1256, "Race");
+                ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Race");
 
         assertThat(stored).isPresent();
 
@@ -137,7 +137,7 @@ public class SessionRepoTest {
     }
 
     @Test
-    void saveSession_throwsException_whenSessionTypeIsNull() {
+    void saveSession_throwsException_whensessionNameIsNull() {
         SessionDto sessionDto =
                 new SessionDto(1256, 9999, "Practice 1", null);
 

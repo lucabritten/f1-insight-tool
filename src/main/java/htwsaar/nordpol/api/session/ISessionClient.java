@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface ISessionClient {
 
-    Optional<SessionDto> getSessionByMeetingKeyAndSessionType(int meetingKey, String sessionType);
+    Optional<SessionDto> getSessionByMeetingKeyAndsessionName(int meetingKey, String sessionName);
 }

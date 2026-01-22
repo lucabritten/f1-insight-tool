@@ -1,6 +1,7 @@
 package htwsaar.nordpol.cli;
 
 import htwsaar.nordpol.cli.view.WeatherWithContext;
+import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.exception.SessionNotFoundException;
@@ -59,7 +60,7 @@ public class WeatherCommandTest {
 
     @Test
     void weatherInfo_printsFormattedWeather() {
-        when(mockWeatherService.getWeatherByLocationSeasonAndSessionType("Austin", 2024, "Race"))
+        when(mockWeatherService.getWeatherByLocationSeasonAndSessionName("Austin", 2024, SessionName.RACE))
                 .thenReturn(sampleWeatherContext);
 
         int exitCode = new CommandLine(
@@ -71,7 +72,7 @@ public class WeatherCommandTest {
     }
 
     @Test
-    void missingSessionType_causesError() {
+    void missingsessionName_causesError() {
         int exitCode = new CommandLine(
                 new WeatherCommand(mockWeatherService)
         ).execute("-l", "Austin", "-y", "2024");
@@ -79,12 +80,12 @@ public class WeatherCommandTest {
         assertThat(exitCode).isNotZero();
         assertThat(errorStream.toString())
                 .contains("Missing required option")
-                .contains("--sessionType");
+                .contains("--sessionName");
     }
 
     @Test
     void unknownLocation_printsMessage() {
-        when(mockWeatherService.getWeatherByLocationSeasonAndSessionType("Saarbrücken", 2024, "Race"))
+        when(mockWeatherService.getWeatherByLocationSeasonAndSessionName("Saarbrücken", 2024, SessionName.RACE))
                 .thenThrow(new MeetingNotFoundException(2024, "Saarbrücken"));
 
         int exitCode = new CommandLine(
@@ -108,26 +109,24 @@ public class WeatherCommandTest {
 
     @Test
     void shortAndLongOptions_work() {
-        when(mockWeatherService.getWeatherByLocationSeasonAndSessionType("Austin", 2024, "Race"))
+        when(mockWeatherService.getWeatherByLocationSeasonAndSessionName("Austin", 2024, SessionName.RACE))
                 .thenReturn(sampleWeatherContext);
 
         int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
-                .execute("--location", "Austin", "--year", "2024", "--sessionType", "Race");
+                .execute("--location", "Austin", "--year", "2024", "--sessionName", "Race");
 
         assertThat(exitCode).isEqualTo(0);
     }
 
     @Test
-    void invalidSessionType_printsErrorMessage() {
-        when(mockWeatherService.getWeatherByLocationSeasonAndSessionType("Austin", 2024, "Cruising"))
-                .thenThrow(new SessionNotFoundException(1234, "Cruising"));
-
+    void invalidsessionName_printsErrorMessage() {
         int exitCode = new CommandLine(
                 new WeatherCommand(mockWeatherService)
         ).execute("-l", "Austin", "-y", "2024", "-st", "Cruising");
 
         assertThat(exitCode).isNotZero();
         assertThat(errorStream.toString())
+                .contains("Unknown session name")
                 .contains("Cruising");
     }
 }
