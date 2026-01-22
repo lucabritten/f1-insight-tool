@@ -55,10 +55,7 @@ public class DriverCommand implements Runnable {
             String output = Formatter.formatDriver(driver);
             System.out.println(output);
         } catch (Exception e) {
-            throw new CommandLine.ExecutionException(
-                    new CommandLine(this),
-                    e.getMessage()
-            );
+            System.out.println(e.getMessage());
         }
     }
 }

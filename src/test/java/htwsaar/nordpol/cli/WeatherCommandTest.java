@@ -65,7 +65,7 @@ public class WeatherCommandTest {
 
         int exitCode = new CommandLine(
                 new WeatherCommand(mockWeatherService)
-        ).execute("-l", "Austin", "-y", "2024", "-st", "Race");
+        ).execute("-l", "Austin", "-y", "2024", "-sn", "Race");
 
         assertThat(exitCode).isZero();
         assertThat(outputStream.toString()).contains("WEATHER");
@@ -90,10 +90,10 @@ public class WeatherCommandTest {
 
         int exitCode = new CommandLine(
                 new WeatherCommand(mockWeatherService)
-        ).execute("-l", "Saarbrücken", "-y", "2024", "-st", "Race");
+        ).execute("-l", "Saarbrücken", "-y", "2024", "-sn", "Race");
 
-        assertThat(exitCode).isNotZero();
-        assertThat(errorStream.toString())
+        assertThat(exitCode).isZero();
+        assertThat(outputStream.toString())
                 .contains("not found");
     }
 
@@ -115,17 +115,17 @@ public class WeatherCommandTest {
         int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
                 .execute("--location", "Austin", "--year", "2024", "--sessionName", "Race");
 
-        assertThat(exitCode).isEqualTo(0);
+        assertThat(exitCode).isZero();
     }
 
     @Test
-    void invalidsessionName_printsErrorMessage() {
+    void invalidSessionName_printsErrorMessage() {
         int exitCode = new CommandLine(
                 new WeatherCommand(mockWeatherService)
-        ).execute("-l", "Austin", "-y", "2024", "-st", "Cruising");
+        ).execute("-l", "Austin", "-y", "2024", "-sn", "Cruising");
 
-        assertThat(exitCode).isNotZero();
-        assertThat(errorStream.toString())
+        assertThat(exitCode).isZero();
+        assertThat(outputStream.toString())
                 .contains("Unknown session name")
                 .contains("Cruising");
     }

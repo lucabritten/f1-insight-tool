@@ -37,7 +37,7 @@ public enum SessionName {
             if (t.dbValue.equalsIgnoreCase(v)) return t;
             if (Arrays.stream(t.aliases).anyMatch(a -> a.equalsIgnoreCase(v))) return t;
         }
-        throw new IllegalArgumentException("Unknown session type: " + value);
+        throw new IllegalArgumentException("Unknown session name: " + value);
     }
 
 }

@@ -1,6 +1,8 @@
 package htwsaar.nordpol.cli;
 
+import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
+import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.service.WeatherService;
 import htwsaar.nordpol.util.Formatter;
@@ -50,7 +52,7 @@ public class WeatherCommand implements Runnable {
     public void run() {
         try {
             WeatherWithContext weatherWithContext =
-                    weatherService.getWeatherByLocationSeasonAndSessionType(
+                    weatherService.getWeatherByLocationSeasonAndSessionName(
                             location,
                             year,
                             SessionName.fromString(sessionName)
@@ -60,10 +62,7 @@ public class WeatherCommand implements Runnable {
             System.out.println(output);
 
         } catch (Exception e) {
-           throw new CommandLine.ExecutionException(
-                   new CommandLine(this),
-                   e.getMessage()
-           );
+            System.out.println(e.getMessage());
         }
     }
 }

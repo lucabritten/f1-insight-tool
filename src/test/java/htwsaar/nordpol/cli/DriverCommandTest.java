@@ -58,7 +58,7 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute("-fn", "Max");
 
-        assertThat(exitCode).isNotZero();
+        assertThat(exitCode).isEqualTo(2);
         assertThat(errorStream.toString())
                 .contains("Missing required option")
                 .contains("--lastName");
@@ -70,7 +70,7 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute();
 
-        assertThat(exitCode).isNotZero();
+        assertThat(exitCode).isEqualTo(2);
     }
 
     @Test
@@ -82,8 +82,8 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute("-fn", "Foo", "-ln", "Bar");
 
-        assertThat(exitCode).isNotZero();
-        assertThat(errorStream.toString())
+        assertThat(exitCode).isZero();
+        assertThat(outputStream.toString())
                 .contains("not found");
     }
 
@@ -93,7 +93,7 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute("--help");
 
-        assertThat(exitCode).isEqualTo(0);
+        assertThat(exitCode).isZero();
         assertThat(outputStream.toString()).contains("driver-info");
     }
 
@@ -105,7 +105,7 @@ public class DriverCommandTest {
         int exitCode = new CommandLine(new DriverCommand(mockDriverService))
                 .execute("--firstName", "Max", "--lastName", "Verstappen", "--season", "2024");
 
-        assertThat(exitCode).isEqualTo(0);
+        assertThat(exitCode).isZero();
     }
 
     @Test
@@ -117,8 +117,8 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute("-fn", "Max", "-ln", "Verstappen", "-s", "1899");
 
-        assertThat(exitCode).isNotZero();
-        assertThat(errorStream.toString())
+        assertThat(exitCode).isZero();
+        assertThat(outputStream.toString())
                 .contains("1899");
     }
 }
