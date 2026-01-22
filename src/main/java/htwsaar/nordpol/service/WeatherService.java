@@ -37,8 +37,8 @@ public class WeatherService {
         this.meetingService = meetingService;
     }
 
-    public WeatherWithContext getWeatherByLocationSeasonAndSessionType(String location, int season, SessionName sessionName) {
-        Meeting meeting = meetingService.getMeetingByYearAndLocation(season, location);
+    public Weather getWeatherByLocationYearAndSessionName(String location, int year, SessionName sessionName) {
+        Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
         int meetingKey = meeting.meetingKey();
 
         Session session = sessionService.getSessionByMeetingKeyAndSessionName(meetingKey, sessionName);

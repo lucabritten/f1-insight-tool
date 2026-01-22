@@ -60,7 +60,7 @@ public class WeatherCommandTest {
 
     @Test
     void weatherInfo_printsFormattedWeather() {
-        when(mockWeatherService.getWeatherByLocationSeasonAndSessionName("Austin", 2024, SessionName.RACE))
+        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.RACE))
                 .thenReturn(sampleWeatherContext);
 
         int exitCode = new CommandLine(
@@ -85,7 +85,7 @@ public class WeatherCommandTest {
 
     @Test
     void unknownLocation_printsMessage() {
-        when(mockWeatherService.getWeatherByLocationSeasonAndSessionName("Saarbrücken", 2024, SessionName.RACE))
+        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Saarbrücken", 2024, SessionName.RACE))
                 .thenThrow(new MeetingNotFoundException(2024, "Saarbrücken"));
 
         int exitCode = new CommandLine(
@@ -109,7 +109,7 @@ public class WeatherCommandTest {
 
     @Test
     void shortAndLongOptions_work() {
-        when(mockWeatherService.getWeatherByLocationSeasonAndSessionName("Austin", 2024, SessionName.RACE))
+        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.RACE))
                 .thenReturn(sampleWeatherContext);
 
         int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))

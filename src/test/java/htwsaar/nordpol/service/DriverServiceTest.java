@@ -36,21 +36,21 @@ public class DriverServiceTest {
         DriverDto dbDto =
                 new DriverDto("Lewis", "Hamilton", 44, "GBR");
 
-        when(IDriverRepo.getDriverByFullNameForSeason("Lewis", "Hamilton", 2025))
+        when(IDriverRepo.getDriverByFullNameForYear("Lewis", "Hamilton", 2025))
                 .thenReturn(Optional.of(dbDto));
 
         Driver result =
-                driverService.getDriverByNameAndSeason("Lewis", "Hamilton", 2025);
+                driverService.getDriverByNameAndYear("Lewis", "Hamilton", 2025);
 
         assertThat(result.firstName()).isEqualTo("Lewis");
 
         verify(driverClient, never()).getDriverByName(anyString(), anyString(), anyInt());
-        verify(IDriverRepo).getDriverByFullNameForSeason("Lewis", "Hamilton", 2025);
+        verify(IDriverRepo).getDriverByFullNameForYear("Lewis", "Hamilton", 2025);
     }
 
     @Test
     void getDriverByName_fetchesFromApiAndSavesDriver() {
-        when(IDriverRepo.getDriverByFullNameForSeason("Max", "Verstappen", 2025))
+        when(IDriverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2025))
                 .thenReturn(Optional.empty());
 
         DriverDto apiDto =
@@ -60,31 +60,31 @@ public class DriverServiceTest {
                 .thenReturn(Optional.of(apiDto));
 
         Driver result =
-                driverService.getDriverByNameAndSeason("Max", "Verstappen", 2025);
+                driverService.getDriverByNameAndYear("Max", "Verstappen", 2025);
 
         assertThat(result.firstName()).isEqualTo("Max");
 
-        verify(IDriverRepo).saveOrUpdateDriverForSeason(apiDto, 2025);
+        verify(IDriverRepo).saveOrUpdateDriverForYear(apiDto, 2025);
     }
 
     @Test
     void getDriverByName_throwsException_whenDriverNotFoundAnywhere() {
-        when(IDriverRepo.getDriverByFullNameForSeason(anyString(), anyString(), anyInt()))
+        when(IDriverRepo.getDriverByFullNameForYear(anyString(), anyString(), anyInt()))
                 .thenReturn(Optional.empty());
 
         when(driverClient.getDriverByName(anyString(), anyString(), anyInt()))
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
-                driverService.getDriverByNameAndSeason("Alice", "Bob", 2025)
+                driverService.getDriverByNameAndYear("Alice", "Bob", 2025)
         ).isInstanceOf(DriverNotFoundException.class);
     }
 
     @Test
-    void getDriverByName_throwsException_whenSeasonIsInvalid() {
+    void getDriverByName_throwsException_whenYearIsInvalid() {
         assertThatThrownBy(() ->
-                driverService.getDriverByNameAndSeason("Max", "Verstappen", 2022)
+                driverService.getDriverByNameAndYear("Max", "Verstappen", 2022)
         ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("No data for season");
+                .hasMessageContaining("No data for year");
     }
 }

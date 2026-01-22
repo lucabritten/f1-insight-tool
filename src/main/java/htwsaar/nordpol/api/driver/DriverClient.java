@@ -32,7 +32,7 @@ public class DriverClient {
     }
 
     /**
-     * Fetches a driver from the OpenF1 APi by name and season.
+     * Fetches a driver from the OpenF1 APi by name and year.
      *
      * @return an Optional containing the driver DTO if found
      */

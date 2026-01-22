@@ -50,7 +50,7 @@ public class WeatherCommand implements Runnable {
     public void run() {
         try {
             WeatherWithContext weatherWithContext =
-                    weatherService.getWeatherByLocationSeasonAndSessionType(
+                    weatherService.getWeatherByLocationYearAndSessionName(
                             location,
                             year,
                             SessionName.fromString(sessionName)

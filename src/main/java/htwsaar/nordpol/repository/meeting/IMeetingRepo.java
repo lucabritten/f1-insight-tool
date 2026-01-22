@@ -7,5 +7,5 @@ import java.util.Optional;
 public interface IMeetingRepo {
 
     void save(MeetingDto dto);
-    Optional<MeetingDto> getMeetingByYearAndLocation(int season, String location);
+    Optional<MeetingDto> getMeetingByYearAndLocation(int year, String location);
 }

@@ -15,16 +15,16 @@ import static com.nordpol.jooq.tables.DriverNumbers.*;
 public class JooqDriverRepo implements IDriverRepo {
 
     private final DSLContext create;
-    private final static int FIRST_F1_SEASON = 1950;
+    private final static int FIRST_F1_YEAR = 1950;
 
     public JooqDriverRepo(DSLContext create) {
         this.create = create;
     }
 
     @Override
-    public void saveOrUpdateDriverForSeason(DriverDto driverDto, int season) {
+    public void saveOrUpdateDriverForYear(DriverDto driverDto, int year) {
         validateDriver(driverDto);
-        validateSeason(season);
+        validateYear(year);
         Integer driverId = create
                 .select(DRIVERS.DRIVER_ID)
                 .from(DRIVERS)
@@ -50,23 +50,23 @@ public class JooqDriverRepo implements IDriverRepo {
                 .select(DRIVER_NUMBERS.START_NUMBER)
                 .from(DRIVER_NUMBERS)
                 .where(DRIVER_NUMBERS.DRIVER_ID.eq(driverId)
-                        .and(DRIVER_NUMBERS.SEASON.eq(season)))
+                        .and(DRIVER_NUMBERS.YEAR.eq(year)))
                 .fetchOneInto(Integer.class);
 
         if(existing == null) {
             create.insertInto(
                     DRIVER_NUMBERS,
                     DRIVER_NUMBERS.DRIVER_ID,
-                    DRIVER_NUMBERS.SEASON,
+                    DRIVER_NUMBERS.YEAR,
                     DRIVER_NUMBERS.START_NUMBER)
-                    .values(driverId, season, driverDto.driver_number())
+                    .values(driverId, year, driverDto.driver_number())
                     .execute();
 
         } else if (existing != driverDto.driver_number()) {
             create.update(DRIVER_NUMBERS)
                     .set(DRIVER_NUMBERS.START_NUMBER, driverDto.driver_number())
                     .where(DRIVER_NUMBERS.DRIVER_ID.eq(driverId)
-                            .and(DRIVER_NUMBERS.SEASON.eq(season)))
+                            .and(DRIVER_NUMBERS.YEAR.eq(year)))
                     .execute();
         }
     }
@@ -88,27 +88,27 @@ public class JooqDriverRepo implements IDriverRepo {
             throw new IllegalArgumentException("country_code must not be null or blank.");
     }
 
-    private void validateSeason(int season){
-        if (season < FIRST_F1_SEASON)
-            throw new IllegalArgumentException("Season must be 1950 or younger");
+    private void validateYear(int year){
+        if (year < FIRST_F1_YEAR)
+            throw new IllegalArgumentException("Year must be 1950 or younger");
     }
 
     @Override
-    public Optional<DriverDto> getDriverByFullNameForSeason(String firstName, String lastName, int season) {
+    public Optional<DriverDto> getDriverByFullNameForYear(String firstName, String lastName, int year) {
         var record = create.select(DRIVERS.FIRST_NAME, DRIVERS.LAST_NAME, DRIVER_NUMBERS.START_NUMBER.as("driver_number"), DRIVERS.COUNTRY_CODE)
                 .from(DRIVERS)
                 .join(DRIVER_NUMBERS)
                     .on(DRIVER_NUMBERS.DRIVER_ID.eq(DRIVERS.DRIVER_ID))
                 .where(DRIVERS.FIRST_NAME.eq(firstName)
                         .and(DRIVERS.LAST_NAME.eq(lastName))
-                        .and(DRIVER_NUMBERS.SEASON.eq(season)))
+                        .and(DRIVER_NUMBERS.YEAR.eq(year)))
                 .fetchOneInto(DriverDto.class);
 
         return Optional.ofNullable(record);
     }
 
     @Override
-    public Optional<DriverDto> getDriverByStartNumberForSeason(int startNumber, int season) {
+    public Optional<DriverDto> getDriverByStartNumberForYear(int startNumber, int year) {
         var record = create.select(
                         DRIVERS.FIRST_NAME, DRIVERS.LAST_NAME,
                         DRIVER_NUMBERS.START_NUMBER.as("driver_number"),
@@ -116,7 +116,7 @@ public class JooqDriverRepo implements IDriverRepo {
                 .from(DRIVER_NUMBERS)
                 .join(DRIVERS)
                 .on(DRIVER_NUMBERS.DRIVER_ID.eq(DRIVERS.DRIVER_ID))
-                .where(DRIVER_NUMBERS.SEASON.eq(season)
+                .where(DRIVER_NUMBERS.YEAR.eq(year)
                         .and(DRIVER_NUMBERS.START_NUMBER.eq(startNumber)))
                 .fetchOneInto(DriverDto.class);
 

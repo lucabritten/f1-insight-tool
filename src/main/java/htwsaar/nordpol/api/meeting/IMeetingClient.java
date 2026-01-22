@@ -5,5 +5,5 @@ import htwsaar.nordpol.api.dto.MeetingDto;
 import java.util.Optional;
 
 public interface IMeetingClient {
-    Optional<MeetingDto> getMeetingByYearAndLocation(int season, String location);
+    Optional<MeetingDto> getMeetingByYearAndLocation(int year, String location);
 }

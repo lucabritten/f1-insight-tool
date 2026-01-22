@@ -15,7 +15,7 @@ mvn clean package
 
 ## Quick-start (driver-info cmd)
 ```bash
-mvn -q exec:java -Dexec.args="driver-info --firstName Max --lastName Verstappen --season 2025"
+mvn -q exec:java -Dexec.args="driver-info --firstName Max --lastName Verstappen --year 2025"
 ```
 
 ## Features
@@ -24,7 +24,7 @@ required arguments:
 
  1. firstname (---firstName, -fn)
  2. lastname (--lastName, -ln)
- 3. season (--season, -s) → Supported from season 2023 ongoing 
+ 3. year (--year, -y) → Supported from year 2023 ongoing 
 
 ```bash
 driver-info --firstName FIRSTNAME --lastName LASTNAME

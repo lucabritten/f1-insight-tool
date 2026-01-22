@@ -31,12 +31,12 @@ public class DriverCommand implements Runnable {
     private String lastName;
 
     @Option(names = {
-            "--season",
-            "-s"},
-            description = "The season the data is related to. This tool provides data from 2023 onwards.",
+            "--year",
+            "-y"},
+            description = "The year the data is related to. This tool provides data from 2023 onwards.",
             defaultValue = "2024"
     )
-    private int season;
+    private int year;
 
     private final DriverService driverService;
 
@@ -51,7 +51,7 @@ public class DriverCommand implements Runnable {
     @Override
     public void run() {
         try {
-            Driver driver = driverService.getDriverByNameAndSeason(firstName, lastName, season);
+            Driver driver = driverService.getDriverByNameAndYear(firstName, lastName, year);
             String output = Formatter.formatDriver(driver);
             System.out.println(output);
         } catch (Exception e) {

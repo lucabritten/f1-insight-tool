@@ -115,7 +115,7 @@ public class DriverClientTest {
     }
 
     @Test
-    void getMeetingBySeasonAndLocation_throwsRuntimeException_whenConnectionFails() throws IOException{
+    void getMeetingByYearAndLocation_throwsRuntimeException_whenConnectionFails() throws IOException{
         mockWebServer.shutdown();
 
         assertThatThrownBy(() ->
