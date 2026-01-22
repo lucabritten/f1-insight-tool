@@ -27,7 +27,7 @@ public class SessionClient implements ISessionClient {
 
     @Override
     public Optional<SessionDto> getSessionByMeetingKeyAndSessionType(int meetingKey, String sessionType) {
-            String url = BASE_URL + "/session?"
+            String url = BASE_URL + "/sessions?"
                     + "meeting_key=" + meetingKey
                     + "&session_type=" + sessionType;
 
