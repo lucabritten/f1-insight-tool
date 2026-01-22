@@ -1,9 +1,11 @@
 package htwsaar.nordpol.service;
 
-import htwsaar.nordpol.api.dto.LapsDto;
 import htwsaar.nordpol.api.laps.ILapsClient;
+import htwsaar.nordpol.api.dto.LapsDto;
+import htwsaar.nordpol.domain.Laps;
 import htwsaar.nordpol.exception.LapsNotFoundException;
 import htwsaar.nordpol.repository.laps.ILapsRepo;
+import htwsaar.nordpol.util.Mapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,10 +27,12 @@ public class LapsService implements ILapsService {
     }
 
 
-    public List<LapsDto> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
+    public List<Laps> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
         Optional<List<LapsDto>> dtoFromDB = lapsRepo.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
         if (dtoFromDB.isPresent()) {
-            return dtoFromDB.get();
+            return dtoFromDB.get().stream()
+                    .map(Mapper::toLaps)
+                    .toList();
         }
 
         Optional<List<LapsDto>> dtoFromApi =
@@ -37,7 +41,9 @@ public class LapsService implements ILapsService {
         if (dtoFromApi.isPresent()) {
             List<LapsDto> lapsDto = dtoFromApi.get();
             lapsRepo.saveAll(lapsDto);
-            return lapsDto;
+            return lapsDto.stream()
+                    .map(Mapper::toLaps)
+                    .toList();
         }
         throw new LapsNotFoundException(sessionKey, driverNumber);
     }

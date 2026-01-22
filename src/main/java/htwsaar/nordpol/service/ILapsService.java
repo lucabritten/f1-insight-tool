@@ -1,9 +1,9 @@
 package htwsaar.nordpol.service;
 
-import htwsaar.nordpol.api.dto.LapsDto;
+import htwsaar.nordpol.domain.Laps;
 
 import java.util.List;
 
 public interface ILapsService {
-    List<LapsDto> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber);
+    List<Laps> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber);
 }

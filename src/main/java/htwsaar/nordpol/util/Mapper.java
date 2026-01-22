@@ -1,6 +1,7 @@
 package htwsaar.nordpol.util;
 
 import htwsaar.nordpol.api.dto.DriverDto;
+import htwsaar.nordpol.api.dto.LapsDto;
 import htwsaar.nordpol.api.dto.MeetingDto;
 import htwsaar.nordpol.api.dto.SessionDto;
 import htwsaar.nordpol.api.dto.WeatherDto;
@@ -51,6 +52,19 @@ public class Mapper {
                 dto.track_temperature(),
                 dto.wind_direction(),
                 dto.wind_speed()
+        );
+    }
+
+    public static Laps toLaps(LapsDto dto) {
+        return new Laps(
+                dto.driver_number(),
+                dto.lap_number(),
+                dto.session_key(),
+                dto.duration_sector_1(),
+                dto.duration_sector_2(),
+                dto.duration_sector_3(),
+                dto.lap_duration(),
+                dto.is_pit_out_lap()
         );
     }
 
