@@ -1,6 +1,7 @@
 package htwsaar.nordpol.cli;
 
 import htwsaar.nordpol.config.ApplicationContext;
+import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.service.WeatherService;
 import htwsaar.nordpol.util.Formatter;
@@ -30,11 +31,11 @@ public class WeatherCommand implements Runnable {
     private int year;
 
     @Option(
-            names = {"--sessionType", "-st"},
+            names = {"--sessionName", "-st"},
             description = "The session type (e.g. Race, Qualifying, Practice)",
             required = true
     )
-    private String sessionType;
+    private String sessionName;
 
     private final WeatherService weatherService;
 
@@ -50,10 +51,10 @@ public class WeatherCommand implements Runnable {
     public void run() {
         try {
             Weather weather =
-                    weatherService.getWeatherByLocationSeasonAndSessionType(
+                    weatherService.getWeatherByLocationSeasonAndSessionName(
                             location,
                             year,
-                            sessionType
+                            SessionName.fromString(sessionName)
                     );
 
             String output = Formatter.formatWeather(weather);

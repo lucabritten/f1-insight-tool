@@ -31,7 +31,7 @@ public class SessionClientTest {
     }
 
     @Test
-    void getSessionByMeetingKeyAndSessionType_returnsSession(){
+    void getSessionByMeetingKeyAndsessionName_returnsSession(){
         String json = """
                 [
                     {
@@ -49,7 +49,7 @@ public class SessionClientTest {
                 .setResponseCode(200)
         );
 
-        Optional<SessionDto> result = sessionClient.getSessionByMeetingKeyAndSessionType(1256, "Practice");
+        Optional<SessionDto> result = sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice");
 
         assertThat(result).isPresent();
 
@@ -61,7 +61,7 @@ public class SessionClientTest {
     }
 
     @Test
-    void getSessionByMeetingKeyAndSessionType_returnsEmptyOptional_whenApiResponseIsEmpty(){
+    void getSessionByMeetingKeyAndsessionName_returnsEmptyOptional_whenApiResponseIsEmpty(){
         String json = "[]";
 
         mockWebServer.enqueue(new MockResponse()
@@ -70,29 +70,29 @@ public class SessionClientTest {
                 .setResponseCode(200)
         );
 
-        Optional<SessionDto> result = sessionClient.getSessionByMeetingKeyAndSessionType(2021, "DestroyHeadset");
+        Optional<SessionDto> result = sessionClient.getSessionByMeetingKeyAndsessionName(2021, "DestroyHeadset");
 
         assertThat(result).isEmpty();
     }
 
     @Test
-    void getSessionByMeetingKeyAndSessionType_returnsEmptyOptional_whenHttpStatusIsNotSuccessful(){
+    void getSessionByMeetingKeyAndsessionName_returnsEmptyOptional_whenHttpStatusIsNotSuccessful(){
         mockWebServer.enqueue(new MockResponse()
                 .setResponseCode(500)
         );
 
         Optional<SessionDto> result =
-                sessionClient.getSessionByMeetingKeyAndSessionType(1256, "Practice");
+                sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice");
 
         assertThat(result).isEmpty();
     }
 
     @Test
-    void getSessionByMeetingKeyAndSessionType_throwsRuntimeException_whenConnectionFails() throws IOException {
+    void getSessionByMeetingKeyAndsessionName_throwsRuntimeException_whenConnectionFails() throws IOException {
         mockWebServer.shutdown();
 
         assertThatThrownBy(() ->
-                sessionClient.getSessionByMeetingKeyAndSessionType(1256, "Practice"))
+                sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice"))
         .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Failed to fetch session from OpenF1 API");
     }

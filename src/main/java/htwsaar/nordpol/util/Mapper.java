@@ -4,10 +4,7 @@ import htwsaar.nordpol.api.dto.DriverDto;
 import htwsaar.nordpol.api.dto.MeetingDto;
 import htwsaar.nordpol.api.dto.SessionDto;
 import htwsaar.nordpol.api.dto.WeatherDto;
-import htwsaar.nordpol.domain.Driver;
-import htwsaar.nordpol.domain.Meeting;
-import htwsaar.nordpol.domain.Session;
-import htwsaar.nordpol.domain.Weather;
+import htwsaar.nordpol.domain.*;
 
 public class Mapper {
 
@@ -37,7 +34,7 @@ public class Mapper {
         return new Session(
                 dto.session_key(),
                 dto.meeting_key(),
-                dto.session_type(),
+                SessionName.fromString(dto.session_name()),
                 dto.session_name()
         );
     }

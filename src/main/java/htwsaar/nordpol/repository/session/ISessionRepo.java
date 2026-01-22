@@ -7,6 +7,6 @@ import java.util.Optional;
 public interface ISessionRepo {
 
     void save(SessionDto dto);
-    Optional<SessionDto> getSessionByMeetingKeyAndSessionType(int meetingKey, String sessionType);
+    Optional<SessionDto> getSessionByMeetingKeyAndSessionName(int meetingKey, String sessionName);
 
 }

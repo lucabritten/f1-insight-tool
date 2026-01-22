@@ -26,10 +26,10 @@ public class SessionClient implements ISessionClient {
     }
 
     @Override
-    public Optional<SessionDto> getSessionByMeetingKeyAndSessionType(int meetingKey, String sessionType) {
+    public Optional<SessionDto> getSessionByMeetingKeyAndsessionName(int meetingKey, String sessionName) {
             String url = BASE_URL + "/sessions?"
                     + "meeting_key=" + meetingKey
-                    + "&session_type=" + sessionType;
+                    + "&session_name=" + sessionName;
 
             Request request = new Request.Builder()
                     .url(url)

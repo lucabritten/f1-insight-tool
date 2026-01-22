@@ -4,6 +4,7 @@ import htwsaar.nordpol.api.dto.WeatherDto;
 import htwsaar.nordpol.api.weather.IWeatherClient;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.domain.Session;
+import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.exception.WeatherNotFoundException;
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
@@ -35,11 +36,11 @@ public class WeatherService {
         this.meetingService = meetingService;
     }
 
-    public Weather getWeatherByLocationSeasonAndSessionType(String location, int season, String sessionType) {
+    public Weather getWeatherByLocationSeasonAndSessionName(String location, int season, SessionName sessionName) {
         Meeting meeting = meetingService.getMeetingByYearAndLocation(season, location);
         int meetingKey = meeting.meetingKey();
 
-        Session session = sessionService.getSessionByMeetingKeyAndSessionType(meetingKey, sessionType);
+        Session session = sessionService.getSessionByMeetingKeyAndSessionName(meetingKey, sessionName);
         int sessionKey = session.sessionKey();
 
         return getWeatherByMeetingAndSessionKey(meetingKey, sessionKey);

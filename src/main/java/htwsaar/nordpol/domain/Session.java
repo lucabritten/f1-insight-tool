@@ -2,7 +2,7 @@ package htwsaar.nordpol.domain;
 
 public record Session(int sessionKey,
                       int meetingKey,
-                      String sessionName,
+                      SessionName sessionName,
                       String sessionType) {
 }
 
