@@ -31,7 +31,7 @@ public class MeetingClientTest {
     }
 
     @Test
-    void getMeetingBySeasonAndLocation_returnsMeeting() {
+    void getMeetingByYearAndLocation_returnsMeeting() {
         String json = """
                 [
                     {

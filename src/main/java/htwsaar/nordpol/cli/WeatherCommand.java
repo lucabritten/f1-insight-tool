@@ -3,7 +3,6 @@ package htwsaar.nordpol.cli;
 import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
-import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.service.WeatherService;
 import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine;

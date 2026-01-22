@@ -40,7 +40,7 @@ public class DriverCommandTest {
 
     @Test
     void driverInfo_printsFormattedDriver(){
-        when(mockDriverService.getDriverByNameAndSeason("Max", "Verstappen", 2024))
+        when(mockDriverService.getDriverByNameAndYear("Max", "Verstappen", 2024))
                 .thenReturn(new Driver("Max", "Verstappen", 1, "NED"));
 
         int exitCode = new CommandLine(
@@ -75,7 +75,7 @@ public class DriverCommandTest {
 
     @Test
     void unknownDriver_printsMessage() {
-        when(mockDriverService.getDriverByNameAndSeason("Foo", "Bar", 2024))
+        when(mockDriverService.getDriverByNameAndYear("Foo", "Bar", 2024))
                 .thenThrow(new DriverNotFoundException("Foo", "Bar", 2024));
 
         int exitCode = new CommandLine(
@@ -99,19 +99,19 @@ public class DriverCommandTest {
 
     @Test
     void shortAndLongOptions_work() {
-        when(mockDriverService.getDriverByNameAndSeason("Max", "Verstappen", 2024))
+        when(mockDriverService.getDriverByNameAndYear("Max", "Verstappen", 2024))
                 .thenReturn(new Driver("Max", "Verstappen", 1, "NED"));
 
         int exitCode = new CommandLine(new DriverCommand(mockDriverService))
-                .execute("--firstName", "Max", "--lastName", "Verstappen", "--season", "2024");
+                .execute("--firstName", "Max", "--lastName", "Verstappen", "--year", "2024");
 
         assertThat(exitCode).isZero();
     }
 
     @Test
-    void invalidSeason_printsErrorMessage() {
-        when(mockDriverService.getDriverByNameAndSeason("Max", "Verstappen", 1899))
-                .thenThrow(new IllegalArgumentException("No data for season: 1899"));
+    void invalidYear_printsErrorMessage() {
+        when(mockDriverService.getDriverByNameAndYear("Max", "Verstappen", 1899))
+                .thenThrow(new IllegalArgumentException("No data for year: 1899"));
 
         int exitCode = new CommandLine(
                 new DriverCommand(mockDriverService)

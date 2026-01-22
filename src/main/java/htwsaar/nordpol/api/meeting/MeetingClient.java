@@ -26,9 +26,9 @@ public class MeetingClient implements IMeetingClient {
     }
 
     @Override
-    public Optional<MeetingDto> getMeetingByYearAndLocation(int season, String location) {
+    public Optional<MeetingDto> getMeetingByYearAndLocation(int year, String location) {
         String url = BASE_URL + "/meetings?"
-                    + "year=" + season
+                    + "year=" + year
                     + "&location=" + location;
 
         Request request = new Request.Builder()

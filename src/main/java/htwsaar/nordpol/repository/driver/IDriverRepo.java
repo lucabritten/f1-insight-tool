@@ -5,9 +5,9 @@ import java.util.Optional;
 
 public interface IDriverRepo {
 
-    void saveOrUpdateDriverForSeason(DriverDto driverDto, int season);
-    Optional<DriverDto> getDriverByFullNameForSeason(String fistName, String lastName, int season);
-    Optional<DriverDto> getDriverByStartNumberForSeason(int startNumber, int season);
+    void saveOrUpdateDriverForYear(DriverDto driverDto, int year);
+    Optional<DriverDto> getDriverByFullNameForYear(String fistName, String lastName, int year);
+    Optional<DriverDto> getDriverByStartNumberForYear(int startNumber, int year);
     // DriverApiDto getDriverByNumber(int driverNumber);
 
 }
