@@ -1,34 +1,34 @@
 package htwsaar.nordpol.service;
 
-import htwsaar.nordpol.api.laps.ILapsClient;
+import htwsaar.nordpol.api.laps.ILapClient;
 import htwsaar.nordpol.api.dto.LapDto;
 import htwsaar.nordpol.domain.Lap;
-import htwsaar.nordpol.exception.LapsNotFoundException;
-import htwsaar.nordpol.repository.laps.ILapsRepo;
+import htwsaar.nordpol.exception.LapNotFoundException;
+import htwsaar.nordpol.repository.laps.ILapRepo;
 import htwsaar.nordpol.util.Mapper;
 
 import java.util.List;
 import java.util.Optional;
 
-public class LapsService implements ILapsService {
+public class LapService implements ILapService {
 
-    private final ILapsRepo lapsRepo;
-    private final ILapsClient lapsClient;
+    private final ILapRepo lapRepo;
+    private final ILapClient lapsClient;
 
-    public LapsService(ILapsRepo lapsRepo, ILapsClient lapsClient) {
+    public LapService(ILapRepo lapRepo, ILapClient lapsClient) {
         if (lapsClient == null) {
             throw new IllegalArgumentException("LapsClient cannot be null");
         }
-        if (lapsRepo == null) {
+        if (lapRepo == null) {
             throw new IllegalArgumentException("LapsRepo cannot be null");
         }
-        this.lapsRepo = lapsRepo;
+        this.lapRepo = lapRepo;
         this.lapsClient = lapsClient;
     }
 
 
     public List<Lap> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
-        List<LapDto> dtoFromDB = lapsRepo.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
+        List<LapDto> dtoFromDB = lapRepo.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
         if (!dtoFromDB.isEmpty()) {
             return dtoFromDB.stream()
                     .map(Mapper::toLap)
@@ -40,11 +40,11 @@ public class LapsService implements ILapsService {
 
         if (dtoFromApi.isPresent()) {
             List<LapDto> lapsDto = dtoFromApi.get();
-            lapsRepo.saveAll(lapsDto);
+            lapRepo.saveAll(lapsDto);
             return lapsDto.stream()
                     .map(Mapper::toLap)
                     .toList();
         }
-        throw new LapsNotFoundException(sessionKey, driverNumber);
+        throw new LapNotFoundException(sessionKey, driverNumber);
     }
 }

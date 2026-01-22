@@ -1,6 +1,6 @@
 package htwsaar.nordpol.util;
 
-import htwsaar.nordpol.cli.view.LapsWithContext;
+import htwsaar.nordpol.cli.view.LapWithContext;
 import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Lap;
@@ -57,9 +57,9 @@ public class Formatter {
         );
     }
 
-    public static String formatLaps(LapsWithContext lapsWithContext) {
+    public static String formatLaps(LapWithContext lapWithContext) {
         StringBuilder rows = new StringBuilder();
-        for (Lap lap : lapsWithContext.laps()) {
+        for (Lap lap : lapWithContext.laps()) {
             rows.append(String.format(
                     "%-4d %-7.3f %-7.3f %-7.3f %-7.3f %s%n",
                     lap.lapNumber(),
@@ -82,10 +82,10 @@ public class Formatter {
                 %s
                 """.formatted(
                 BOLD, RESET,
-                lapsWithContext.meetingName(),
-                lapsWithContext.driverName(),
-                lapsWithContext.sessionName(),
-                lapsWithContext.laps().size(),
+                lapWithContext.meetingName(),
+                lapWithContext.driverName(),
+                lapWithContext.sessionName(),
+                lapWithContext.laps().size(),
                 rows
         );
     }

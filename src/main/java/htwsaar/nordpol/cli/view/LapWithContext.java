@@ -4,7 +4,7 @@ import htwsaar.nordpol.domain.Lap;
 
 import java.util.List;
 
-public record LapsWithContext(
+public record LapWithContext(
         String meetingName,
         String driverName,
         String sessionName,

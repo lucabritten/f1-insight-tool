@@ -4,6 +4,6 @@ import htwsaar.nordpol.domain.Lap;
 
 import java.util.List;
 
-public interface ILapsService {
+public interface ILapService {
     List<Lap> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber);
 }

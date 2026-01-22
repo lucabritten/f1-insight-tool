@@ -5,6 +5,6 @@ import htwsaar.nordpol.api.dto.LapDto;
 import java.util.List;
 import java.util.Optional;
 
-public interface ILapsClient {
+public interface ILapClient {
     Optional<List<LapDto>> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber);
 }
