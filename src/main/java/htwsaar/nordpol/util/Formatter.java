@@ -1,7 +1,9 @@
 package htwsaar.nordpol.util;
 
+import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.domain.Driver;
+import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.domain.Weather;
 
 public class Formatter {
@@ -52,6 +54,39 @@ public class Formatter {
                 relatedWeatherData.avgWindSpeed(),
                 relatedWeatherData.avgWindDirection(),
                 relatedWeatherData.isRainfall() ? "Yes" : "No"
+        );
+    }
+
+    public static String formatLaps(LapsWithContext lapsWithContext) {
+        StringBuilder rows = new StringBuilder();
+        for (Lap lap : lapsWithContext.laps()) {
+            rows.append(String.format(
+                    "%-4d %-7.3f %-7.3f %-7.3f %-7.3f %s%n",
+                    lap.lapNumber(),
+                    lap.durationSector1(),
+                    lap.durationSector2(),
+                    lap.durationSector3(),
+                    lap.lapDuration(),
+                    lap.isPitOutLap() ? "Yes" : "No"
+            ));
+        }
+
+        return """
+                %s========== LAPS ==========%s
+                Meeting  : %s
+                Driver   : %s
+                Session  : %s
+                Laps     : %d
+                
+                Lap  S1(s)   S2(s)   S3(s)   Lap(s)  Pit Out
+                %s
+                """.formatted(
+                BOLD, RESET,
+                lapsWithContext.meetingName(),
+                lapsWithContext.driverName(),
+                lapsWithContext.sessionName(),
+                lapsWithContext.laps().size(),
+                rows
         );
     }
 }
