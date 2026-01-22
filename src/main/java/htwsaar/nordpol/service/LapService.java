@@ -1,10 +1,10 @@
 package htwsaar.nordpol.service;
 
-import htwsaar.nordpol.api.laps.ILapClient;
+import htwsaar.nordpol.api.lap.ILapClient;
 import htwsaar.nordpol.api.dto.LapDto;
 import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.exception.LapNotFoundException;
-import htwsaar.nordpol.repository.laps.ILapRepo;
+import htwsaar.nordpol.repository.lap.ILapRepo;
 import htwsaar.nordpol.util.Mapper;
 
 import java.util.List;

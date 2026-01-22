@@ -1,4 +1,4 @@
-package htwsaar.nordpol.api.laps;
+package htwsaar.nordpol.api.lap;
 
 import htwsaar.nordpol.api.dto.LapDto;
 

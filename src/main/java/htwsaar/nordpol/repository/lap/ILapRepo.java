@@ -1,10 +1,10 @@
-package htwsaar.nordpol.repository.laps;
+package htwsaar.nordpol.repository.lap;
 
 import htwsaar.nordpol.api.dto.LapDto;
 
 import java.util.List;
 
-public interface ILapsRepo {
-    void saveAll(List<LapDto> lapsDto);
+public interface ILapRepo {
+    void saveAll(List<LapDto> lapDto);
     List<LapDto> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber);
 }

@@ -1,4 +1,4 @@
-package htwsaar.nordpol.repository.laps;
+package htwsaar.nordpol.repository.lap;
 
 import htwsaar.nordpol.api.dto.LapDto;
 import org.jooq.DSLContext;
