@@ -59,7 +59,7 @@ public class LapClient implements ILapClient{
             return List.of(result);
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to fetch laps from OpenF1 API: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to fetch laps from OpenF1 API: ", e);
         }
     }
 }

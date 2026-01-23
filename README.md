@@ -15,6 +15,7 @@ A command-line tool to explore Formula 1 data such as drivers, weather, sessions
   - [Global Help](#global-help)
   - [driver-info](#driver-info)
   - [weather-info](#weather-info)
+  - [fastest-lap](#fastest-lap)
 - [Build & Run](#build--run)
 - [Configuration](#configuration)
 - [Data Sources](#data-sources)
@@ -35,6 +36,7 @@ It is built with a layered architecture and a clean separation between CLI, serv
 ## Features
 - Driver lookup by first and last name for a specific year
 - Weather aggregation by location, year and session name (e.g., Race, Qualifying)
+- Fastest lap lookup by location, year, session, with optional driver filter
 - Local persistence via SQLite, with jOOQ for type-safe data access
 - Simple, consistent CLI UX with Picocli
 - Tested with JUnit 5 and AssertJ
@@ -42,7 +44,7 @@ It is built with a layered architecture and a clean separation between CLI, serv
 ## Architecture
 High-level components:
 - `F1CLI` – root command that wires subcommands
-- `DriverCommand` and `WeatherCommand` – CLI entry points (Picocli)
+- `DriverCommand`, `WeatherCommand` and `LapCommand` – CLI entry points (Picocli)
 - `DriverService`, `WeatherService`, ... – domain/business logic
 - `Jooq*Repo` – repositories using jOOQ over SQLite
 - `*Client` – HTTP clients integrating with OpenF1
@@ -106,6 +108,21 @@ Examples:
 ```bash
 mvn -q exec:java -Dexec.args="weather-info --location Austin --year 2024 --sessionName Race"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar weather-info -l Austin -y 2024 -sn Qualifying
+```
+
+### fastest-lap
+Prints the fastest lap for a given event location, year, and session. Optionally filter by driver number.
+
+Options:
+- `--location, -l` (required): event location (e.g., Austin)
+- `--year, -y` (optional, default: `2024`)
+- `--sessionName, -sn` (required): session type (e.g., `Race`, `Qualifying`, `Practice`)
+- `--driverNumber, -dn` (optional): driver number to filter by
+
+Examples:
+```bash
+mvn -q exec:java -Dexec.args="fastest-lap --location Austin --year 2024 --sessionName Race"
+java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar fastest-lap -l Austin -y 2024 -sn Race -dn 44
 ```
 
 ## Build & Run
