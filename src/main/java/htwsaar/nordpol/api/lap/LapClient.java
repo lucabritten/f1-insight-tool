@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.util.List;
 
 
-// src/main/java/htwsaar/nordpol/api/lap/LapClient.java
-public class LapClient implements ILapClient {
+public class LapClient implements ILapClient{
+
     private final OkHttpClient okHttpClient;
     private final ObjectMapper objectMapper;
     private final String BASE_URL;
@@ -20,8 +20,7 @@ public class LapClient implements ILapClient {
         this.objectMapper = new ObjectMapper();
         this.BASE_URL = url;
     }
-
-    public LapClient() {
+    public LapClient(){
         this("https://api.openf1.org/v1");
     }
 
@@ -46,14 +45,14 @@ public class LapClient implements ILapClient {
                 .build();
 
         try (Response response = okHttpClient.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
+            if(!response.isSuccessful()){
                 return List.of();
             }
 
             LapDto[] result =
                     objectMapper.readValue(response.body().string(), LapDto[].class);
 
-            if (result.length == 0) {
+            if(result.length == 0){
                 return List.of();
             }
 

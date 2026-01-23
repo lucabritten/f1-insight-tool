@@ -25,7 +25,6 @@ public class LapService implements ILapService {
         this.lapsClient = lapsClient;
     }
 
-
     public List<Lap> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
         List<LapDto> dtoFromDB = lapRepo.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
         if (!dtoFromDB.isEmpty()) {
