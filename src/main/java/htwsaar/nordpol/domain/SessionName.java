@@ -8,9 +8,9 @@ public enum SessionName {
     PRACTICE2("Practice 2","Practice%202", "FP2"),
     PRACTICE3("Practice 3","Practice%20", "FP3"),
     QUALIFYING("Qualifying","Qualifying", "Quali"),
-    SPRINT_SHOOTOUT("Sprint Shootout", "SprintQuali"),
+    SPRINT_SHOOTOUT("Sprint%20Shootout", "SprintQuali"),
     SPRINT("Sprint", "Sprint"),
-    RACE("Race", "Grand Prix", "GP");
+    RACE("Race", "Race", "GP");
 
     private final String dbValue;        // what we store/send to DB/API
     private final String[] aliases;        // accepted inputs

@@ -1,6 +1,5 @@
 package htwsaar.nordpol.repository.session;
 
-import com.nordpol.jooq.tables.Sessions;
 import htwsaar.nordpol.api.dto.SessionDto;
 import org.jooq.DSLContext;
 
@@ -51,7 +50,7 @@ public class JooqSessionRepo implements ISessionRepo{
         var record = create.select(SESSIONS.MEETING_KEY, SESSIONS.SESSION_KEY, SESSIONS.SESSION_NAME, SESSIONS.SESSION_TYPE)
                 .from(SESSIONS)
                 .where(SESSIONS.MEETING_KEY.eq(meetingKey)
-                        .and(SESSIONS.SESSION_TYPE.eq(sessionName)))
+                        .and(SESSIONS.SESSION_NAME.eq(sessionName)))
                 .fetchOneInto(SessionDto.class);
 
         return Optional.ofNullable(record);
