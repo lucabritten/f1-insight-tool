@@ -1,11 +1,14 @@
 package htwsaar.nordpol.config;
 
 import htwsaar.nordpol.api.driver.DriverClient;
+import htwsaar.nordpol.api.lap.LapClient;
 import htwsaar.nordpol.api.meeting.MeetingClient;
 import htwsaar.nordpol.api.session.SessionClient;
 import htwsaar.nordpol.api.weather.WeatherClient;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.repository.driver.JooqDriverRepo;
+import htwsaar.nordpol.repository.lap.ILapRepo;
+import htwsaar.nordpol.repository.lap.JooqLapRepo;
 import htwsaar.nordpol.repository.meeting.IMeetingRepo;
 import htwsaar.nordpol.repository.meeting.JooqMeetingRepo;
 import htwsaar.nordpol.repository.session.ISessionRepo;
@@ -13,6 +16,7 @@ import htwsaar.nordpol.repository.session.JooqSessionRepo;
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
 import htwsaar.nordpol.repository.weather.JooqWeatherRepo;
 import htwsaar.nordpol.service.DriverService;
+import htwsaar.nordpol.service.LapService;
 import htwsaar.nordpol.service.MeetingService;
 import htwsaar.nordpol.service.SessionService;
 import htwsaar.nordpol.service.WeatherService;
@@ -61,5 +65,11 @@ public class ApplicationContext {
         IWeatherRepo weatherRepo = new JooqWeatherRepo(JooqConfig.createContext());
         WeatherClient weatherClient = new WeatherClient();
         return new WeatherService(weatherClient, weatherRepo, sessionService(),meetingService());
+    }
+
+    public static LapService lapService() {
+        ILapRepo lapRepo = new JooqLapRepo(JooqConfig.createContext());
+        LapClient lapClient = new LapClient();
+        return new LapService(lapRepo, lapClient);
     }
 }

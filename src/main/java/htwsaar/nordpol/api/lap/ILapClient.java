@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface ILapClient {
     List<LapDto> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber);
+    List<LapDto> getLapsBySessionKey(int sessionKey);
 }

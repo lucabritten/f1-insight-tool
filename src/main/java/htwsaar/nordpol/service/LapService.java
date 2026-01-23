@@ -45,4 +45,35 @@ public class LapService implements ILapService {
         }
         throw new LapNotFoundException(sessionKey, driverNumber);
     }
+
+    public Lap getFastestLapBySessionKey(int sessionKey) {
+        List<LapDto> fastestFromDb = lapRepo.getFastestLapBySessionKey(sessionKey);
+        if (!fastestFromDb.isEmpty()) {
+            return Mapper.toLap(fastestFromDb.get(0));
+        }
+
+        List<LapDto> apiLaps = lapsClient.getLapsBySessionKey(sessionKey);
+        if (apiLaps.isEmpty()) {
+            throw new LapNotFoundException(sessionKey, -1);
+        }
+
+        lapRepo.saveAll(apiLaps);
+
+        return apiLaps.stream()
+                .filter(l -> l.lap_duration() > 0)
+                .filter(l -> !l.is_pit_out_lap())
+                .min(java.util.Comparator.comparingDouble(LapDto::lap_duration))
+                .map(Mapper::toLap)
+                .orElseThrow(() -> new LapNotFoundException(sessionKey, -1));
+    }
+
+    public Lap getFastestLapBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
+        List<Lap> laps = getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
+        return laps.stream()
+                .filter(l -> l.lapDuration() > 0)
+                .filter(l -> !l.isPitOutLap())
+                .min(java.util.Comparator.comparingDouble(Lap::lapDuration))
+                .orElseThrow(() -> new LapNotFoundException(sessionKey, driverNumber));
+    }
+
 }

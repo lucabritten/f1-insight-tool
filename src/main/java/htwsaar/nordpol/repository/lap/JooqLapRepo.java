@@ -4,6 +4,7 @@ import htwsaar.nordpol.api.dto.LapDto;
 import org.jooq.DSLContext;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.nordpol.jooq.tables.Laps.LAPS;
 
@@ -83,5 +84,26 @@ public class JooqLapRepo implements ILapRepo {
                             .and(LAPS.DRIVER_NUMBER.eq(driverNumber))
                     ).orderBy(LAPS.LAP_NUMBER)
                     .fetchInto(LapDto.class).stream().toList();
+    }
+
+    @Override
+    public List<LapDto> getFastestLapBySessionKey(int sessionKey) {
+        return create.select(
+                        LAPS.DRIVER_NUMBER,
+                        LAPS.SESSION_KEY,
+                        LAPS.LAP_NUMBER,
+                        LAPS.DURATION_SECTOR_1,
+                        LAPS.DURATION_SECTOR_2,
+                        LAPS.DURATION_SECTOR_3,
+                        LAPS.LAP_DURATION,
+                        LAPS.IS_PIT_OUT_LAP
+                )
+                .from(LAPS)
+                .where(LAPS.SESSION_KEY.eq(sessionKey))
+                .and(LAPS.LAP_DURATION.gt(0.0))
+                .and(LAPS.IS_PIT_OUT_LAP.eq(0))
+                .orderBy(LAPS.LAP_DURATION.asc())
+                .limit(1)
+                .fetchInto(LapDto.class);
     }
 }

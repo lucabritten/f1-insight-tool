@@ -1,5 +1,6 @@
 package htwsaar.nordpol.util;
 
+import htwsaar.nordpol.cli.view.FastestLapWithContext;
 import htwsaar.nordpol.cli.view.LapWithContext;
 import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.domain.Driver;
@@ -80,13 +81,40 @@ public class Formatter {
                 
                 Lap  S1(s)   S2(s)   S3(s)   Lap(s)  Pit Out
                 %s
-                """.formatted(
+        """.formatted(
                 BOLD, RESET,
                 lapWithContext.meetingName(),
                 lapWithContext.driverName(),
                 lapWithContext.sessionName(),
                 lapWithContext.laps().size(),
                 rows
+        );
+    }
+
+    public static String formatFastestLap(FastestLapWithContext fastestLapWithContext) {
+        Lap lap = fastestLapWithContext.fastestLap();
+        return """
+                %s========== FASTEST LAP ==========%s
+                Meeting  : %s
+                Session  : %s
+                Driver # : %d
+                Lap #    : %d
+                Lap(s)   : %.3f
+                S1(s)    : %.3f
+                S2(s)    : %.3f
+                S3(s)    : %.3f
+                Pit Out  : %s
+                """.formatted(
+                BOLD, RESET,
+                fastestLapWithContext.meetingName(),
+                fastestLapWithContext.sessionName(),
+                lap.driverNumber(),
+                lap.lapNumber(),
+                lap.lapDuration(),
+                lap.durationSector1(),
+                lap.durationSector2(),
+                lap.durationSector3(),
+                lap.isPitOutLap() ? "Yes" : "No"
         );
     }
 }

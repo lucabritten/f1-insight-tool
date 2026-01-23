@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.util.List;
 
 
-public class LapClient implements ILapClient{
-
+// src/main/java/htwsaar/nordpol/api/lap/LapClient.java
+public class LapClient implements ILapClient {
     private final OkHttpClient okHttpClient;
     private final ObjectMapper objectMapper;
     private final String BASE_URL;
@@ -20,35 +20,47 @@ public class LapClient implements ILapClient{
         this.objectMapper = new ObjectMapper();
         this.BASE_URL = url;
     }
-    public LapClient(){
+
+    public LapClient() {
         this("https://api.openf1.org/v1");
     }
 
     @Override
     public List<LapDto> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
         String url = BASE_URL + "/laps?"
-                + "sessionKey=" + sessionKey
-                + "&driverNumber=" + driverNumber;
+                + "session_key=" + sessionKey
+                + "&driver_number=" + driverNumber;
+        return fetch(url);
+    }
 
+    @Override
+    public List<LapDto> getLapsBySessionKey(int sessionKey) {
+        String url = BASE_URL + "/laps?"
+                + "session_key=" + sessionKey;
+        return fetch(url);
+    }
+
+    private List<LapDto> fetch(String url) {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
 
-        try(Response response = okHttpClient.newCall(request).execute()){
-
-            if(!response.isSuccessful())
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
                 return List.of();
+            }
 
             LapDto[] result =
                     objectMapper.readValue(response.body().string(), LapDto[].class);
 
-            if(result.length == 0)
+            if (result.length == 0) {
                 return List.of();
+            }
 
             return List.of(result);
 
-        } catch (IOException e){
-            throw new RuntimeException("Failed to fetch laps from OpenF1 API", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to fetch laps from OpenF1 API: " + e.getMessage(), e);
         }
     }
 }
