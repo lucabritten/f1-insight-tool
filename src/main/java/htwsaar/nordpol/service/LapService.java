@@ -2,7 +2,8 @@ package htwsaar.nordpol.service;
 
 import htwsaar.nordpol.api.lap.ILapClient;
 import htwsaar.nordpol.api.dto.LapDto;
-import htwsaar.nordpol.domain.Lap;
+import htwsaar.nordpol.cli.view.LapsWithContext;
+import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.exception.LapNotFoundException;
 import htwsaar.nordpol.repository.lap.ILapRepo;
 import htwsaar.nordpol.util.Mapper;
@@ -14,15 +15,44 @@ public class LapService implements ILapService {
     private final ILapRepo lapRepo;
     private final ILapClient lapsClient;
 
-    public LapService(ILapRepo lapRepo, ILapClient lapsClient) {
-        if (lapsClient == null) {
-            throw new IllegalArgumentException("LapsClient cannot be null");
-        }
-        if (lapRepo == null) {
-            throw new IllegalArgumentException("LapsRepo cannot be null");
-        }
+    private final MeetingService meetingService;
+    private final SessionService sessionService;
+    private final DriverService driverService;
+
+    public LapService(ILapRepo lapRepo, ILapClient lapsClient, MeetingService meetingService, SessionService sessionService, DriverService driverService) {
+        if (lapsClient == null)
+            throw new IllegalArgumentException("LapsClient cannot be null.");
+        if (lapRepo == null)
+            throw new IllegalArgumentException("LapsRepo cannot be null.");
+        if(meetingService == null)
+            throw new IllegalArgumentException("MeetingService cannot be null.");
+        if(sessionService == null)
+            throw new IllegalArgumentException("SessionService cannot be null.");
+        if(driverService == null)
+            throw new IllegalArgumentException("DriverService cannot be null");
+
         this.lapRepo = lapRepo;
         this.lapsClient = lapsClient;
+        this.meetingService = meetingService;
+        this.sessionService = sessionService;
+        this.driverService = driverService;
+    }
+
+    public LapsWithContext getLapsByLocationYearSessionNameAndDriverNumber(String location, int year, SessionName sessionName, int driverNumber){
+        Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
+        int meetingKey = meeting.meetingKey();
+
+        Session session = sessionService.getSessionByMeetingKeyAndSessionName(meetingKey, sessionName);
+        int sessionKey = session.sessionKey();
+
+        Driver driver = driverService.getDriverByNumberAndYear(driverNumber, year);
+
+        List<Lap> laps = getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
+        return new LapsWithContext(meeting.location(),
+                driver.firstName() + " " + driver.lastName(),
+                session.sessionName().name(),
+                laps
+        );
     }
 
     public List<Lap> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
@@ -45,10 +75,28 @@ public class LapService implements ILapService {
         throw new LapNotFoundException(sessionKey, driverNumber);
     }
 
-    public Lap getFastestLapBySessionKey(int sessionKey) {
+    public LapsWithContext getFastestLapByLocationYearAndSessionName(String location, int year, SessionName sessionName) {
+        Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
+        int meetingKey = meeting.meetingKey();
+
+        Session session = sessionService.getSessionByMeetingKeyAndSessionName(meetingKey, sessionName);
+        int sessionKey = session.sessionKey();
+
+        Lap fastestLap = getFastestLapBySessionKey(sessionKey);
+
+        Driver driver = driverService.getDriverByNumberAndYear(fastestLap.driverNumber(), year);
+
+        return new LapsWithContext(meeting.location(),
+                driver.firstName() + " " + driver.lastName(),
+                session.sessionName().name(),
+                List.of(fastestLap)
+        );
+    }
+
+    private Lap getFastestLapBySessionKey(int sessionKey) {
         List<LapDto> fastestFromDb = lapRepo.getFastestLapBySessionKey(sessionKey);
         if (!fastestFromDb.isEmpty()) {
-            return Mapper.toLap(fastestFromDb.get(0));
+            return Mapper.toLap(fastestFromDb.getFirst());
         }
 
         List<LapDto> apiLaps = lapsClient.getLapsBySessionKey(sessionKey);
@@ -66,7 +114,25 @@ public class LapService implements ILapService {
                 .orElseThrow(() -> new LapNotFoundException(sessionKey, -1));
     }
 
-    public Lap getFastestLapBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
+    public LapsWithContext getFastestLapByLocationYearSessionNameAndDriverNumber(String location, int year, SessionName sessionName, int driverNumber){
+        Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
+        int meetingKey = meeting.meetingKey();
+
+        Session session = sessionService.getSessionByMeetingKeyAndSessionName(meetingKey, sessionName);
+        int sessionKey = session.sessionKey();
+
+        Lap fastestLap = getFastestLapBySessionKeyAndDriverNumber(sessionKey, driverNumber);
+
+        Driver driver = driverService.getDriverByNumberAndYear(driverNumber, year);
+
+        return new LapsWithContext(meeting.location(),
+                driver.firstName() + " " + driver.lastName(),
+                session.sessionName().name(),
+                List.of(fastestLap)
+        );
+    }
+
+    private Lap getFastestLapBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
         List<Lap> laps = getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
         return laps.stream()
                 .filter(l -> l.lapDuration() > 0)

@@ -1,14 +1,9 @@
 package htwsaar.nordpol.cli;
 
-import htwsaar.nordpol.cli.view.FastestLapWithContext;
+import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
-import htwsaar.nordpol.domain.Lap;
-import htwsaar.nordpol.domain.Meeting;
-import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.service.LapService;
-import htwsaar.nordpol.service.MeetingService;
-import htwsaar.nordpol.service.SessionService;
 import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -39,7 +34,7 @@ public class FastestLapCommand implements Runnable {
             description = "The session name (e.g. Race, Qualifying, Practice)",
             required = true
     )
-    private String sessionName;
+    private SessionName sessionName;
 
     @Option(
             names = {"--driverNumber", "-dn"},
@@ -48,42 +43,24 @@ public class FastestLapCommand implements Runnable {
     private Integer driverNumber;
 
     private final LapService lapService;
-    private final MeetingService meetingService;
-    private final SessionService sessionService;
 
     public FastestLapCommand() {
-        this(ApplicationContext.lapService(),
-                ApplicationContext.meetingService(),
-                ApplicationContext.sessionService());
+        this(ApplicationContext.lapService());
     }
 
-    public FastestLapCommand(LapService lapService,
-                             MeetingService meetingService,
-                             SessionService sessionService) {
+    public FastestLapCommand(LapService lapService) {
         this.lapService = lapService;
-        this.meetingService = meetingService;
-        this.sessionService = sessionService;
     }
 
     @Override
     public void run() {
         try {
-            Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
-            Session session = sessionService.getSessionByMeetingKeyAndSessionName(
-                    meeting.meetingKey(),
-                    SessionName.fromString(sessionName)
-            );
+            LapsWithContext fastestLap = driverNumber == null
+                    ? lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName)
+                    : lapService.getFastestLapByLocationYearSessionNameAndDriverNumber(location, year, sessionName,driverNumber);
 
-            Lap fastestLap = driverNumber == null
-                    ? lapService.getFastestLapBySessionKey(session.sessionKey())
-                    : lapService.getFastestLapBySessionKeyAndDriverNumber(session.sessionKey(), driverNumber);
-            String output = Formatter.formatFastestLap(
-                    new FastestLapWithContext(
-                            meeting.location(),
-                            session.sessionName().name(),
-                            fastestLap
-                    )
-            );
+            String output = Formatter.formatFastestLap(fastestLap);
+
             System.out.println(output);
         } catch (Exception e) {
             System.out.println(e.getMessage());

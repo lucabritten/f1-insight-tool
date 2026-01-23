@@ -2,8 +2,11 @@ package htwsaar.nordpol.cli.view;
 
 import htwsaar.nordpol.domain.Lap;
 
-public record FastestLapWithContext(
+import java.util.List;
+
+public record LapsWithContext(
         String meetingName,
+        String driverName,
         String sessionName,
-        Lap fastestLap) {
+        List<Lap> laps) {
 }

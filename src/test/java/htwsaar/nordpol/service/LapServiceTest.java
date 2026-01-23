@@ -26,6 +26,15 @@ public class LapServiceTest {
     @Mock
     ILapClient lapClient;
 
+    @Mock
+    MeetingService meetingService;
+
+    @Mock
+    SessionService sessionService;
+
+    @Mock
+    DriverService driverService;
+
     @InjectMocks
     LapService lapService;
 
