@@ -68,7 +68,7 @@ public class SessionRepoTest {
         ISessionRepo.save(sessionData);
 
         Optional<SessionDto> stored =
-                ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice");
+                ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1");
 
         assertThat(stored).isPresent();
 
