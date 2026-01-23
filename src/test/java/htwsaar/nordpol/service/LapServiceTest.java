@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -87,6 +86,6 @@ public class LapServiceTest {
                 .thenReturn(List.of());
 
         assertThatThrownBy(() -> lapService.getLapsBySessionKeyAndDriverNumber(1011, 33))
-                .isInstanceOf(LapNotFoundException.class).hasMessageContaining("Laps not found with given parameters: ");
+                .isInstanceOf(LapNotFoundException.class).hasMessageContaining("Laps not found with given parameters ");
     }
 }

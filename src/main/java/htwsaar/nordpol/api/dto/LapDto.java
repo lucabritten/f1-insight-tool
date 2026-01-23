@@ -1,5 +1,9 @@
 package htwsaar.nordpol.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+
 public record LapDto(int driver_number,
                      int session_key,
                      int lap_number,

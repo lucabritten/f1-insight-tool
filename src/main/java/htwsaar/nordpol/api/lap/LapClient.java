@@ -27,8 +27,8 @@ public class LapClient implements ILapClient{
     @Override
     public List<LapDto> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
         String url = BASE_URL + "/laps?"
-                + "sessionKey=" + sessionKey
-                + "&driverNumber=" + driverNumber;
+                + "session_key=" + sessionKey
+                + "&driver_number=" + driverNumber;
 
         Request request = new Request.Builder()
                 .url(url)
