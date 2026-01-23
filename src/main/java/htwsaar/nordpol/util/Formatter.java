@@ -1,7 +1,6 @@
 package htwsaar.nordpol.util;
 
-import htwsaar.nordpol.cli.view.FastestLapWithContext;
-import htwsaar.nordpol.cli.view.LapWithContext;
+import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Lap;
@@ -58,7 +57,7 @@ public class Formatter {
         );
     }
 
-    public static String formatLaps(LapWithContext lapWithContext) {
+    public static String formatLaps(LapsWithContext lapWithContext) {
         StringBuilder rows = new StringBuilder();
         for (Lap lap : lapWithContext.laps()) {
             rows.append(String.format(
@@ -73,14 +72,14 @@ public class Formatter {
         }
 
         return """
-                %s========== LAPS ==========%s
-                Meeting  : %s
-                Driver   : %s
-                Session  : %s
-                Laps     : %d
+       %s========== LAPS ==========%s
+       Meeting  : %s
+       Driver   : %s
+       Session  : %s
+       Laps     : %d
                 
-                Lap  S1(s)   S2(s)   S3(s)   Lap(s)  Pit Out
-                %s
+       Lap  S1(s)   S2(s)   S3(s)   Lap(s)  Pit Out
+       %s
         """.formatted(
                 BOLD, RESET,
                 lapWithContext.meetingName(),
@@ -91,30 +90,28 @@ public class Formatter {
         );
     }
 
-    public static String formatFastestLap(FastestLapWithContext fastestLapWithContext) {
-        Lap lap = fastestLapWithContext.fastestLap();
+    public static String formatFastestLap(LapsWithContext fastestLap) {
+        Lap lap = fastestLap.laps().getFirst();
         return """
                 %s========== FASTEST LAP ==========%s
                 Meeting  : %s
                 Session  : %s
-                Driver # : %d
+                Driver   : %s
                 Lap #    : %d
                 Lap(s)   : %.3f
                 S1(s)    : %.3f
                 S2(s)    : %.3f
                 S3(s)    : %.3f
-                Pit Out  : %s
                 """.formatted(
                 BOLD, RESET,
-                fastestLapWithContext.meetingName(),
-                fastestLapWithContext.sessionName(),
-                lap.driverNumber(),
+                fastestLap.meetingName(),
+                fastestLap.sessionName(),
+                fastestLap.driverName(),
                 lap.lapNumber(),
                 lap.lapDuration(),
                 lap.durationSector1(),
                 lap.durationSector2(),
-                lap.durationSector3(),
-                lap.isPitOutLap() ? "Yes" : "No"
+                lap.durationSector3()
         );
     }
 }
