@@ -66,6 +66,6 @@ public class ApplicationContext {
     public static LapService lapService() {
         ILapRepo lapRepo = new JooqLapRepo(JooqConfig.createContext());
         LapClient lapClient = new LapClient();
-        return new LapService(lapRepo, lapClient);
+        return new LapService(lapRepo, lapClient, meetingService(), sessionService(), driverService());
     }
 }

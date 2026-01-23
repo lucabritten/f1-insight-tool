@@ -63,4 +63,31 @@ public class DriverClient {
             throw new RuntimeException("Failed to fetch driver from OpenF1 API", e);
         }
     }
+
+    public Optional<DriverDto> getDriverByNumberAndMeetingKey(int number, int meetingKey){
+        String url = BASE_URL + "/drivers?"
+                    + "driver_number=" + number
+                    + "&meeting_key=" + meetingKey;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        try(Response response = okHttpClient.newCall(request).execute()){
+
+            if(!response.isSuccessful())
+                return Optional.empty();
+
+            DriverDto[] result =
+                    objectMapper.readValue(response.body().string(), DriverDto[].class);
+
+            if(result.length == 0)
+                return Optional.empty();
+
+            return Optional.of(result[0]);
+
+        } catch (IOException e){
+            throw new RuntimeException("Failed to fetch driver from OpenF1 API", e);
+        }
+    }
 }

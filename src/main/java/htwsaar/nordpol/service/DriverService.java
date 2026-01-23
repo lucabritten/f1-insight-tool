@@ -56,12 +56,12 @@ public class DriverService {
      */
     public Driver getDriverByNameAndYear(String firstName, String lastName, int year) {
         Optional<DriverDto> dtoFromDB = IDriverRepo.getDriverByFullNameForYear(firstName, lastName, year);
-        if (dtoFromDB.isPresent()) {
+        if (dtoFromDB.isPresent())
             return Mapper.toDriver(dtoFromDB.get());
-        }
 
         int seasonalMeetingKey = Optional.ofNullable(meetingYearMap.get(year))
                 .orElseThrow(() -> new IllegalArgumentException("No data for year: " + year));
+
         Optional<DriverDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName, seasonalMeetingKey);
         if(dtoFromApi.isPresent()){
             DriverDto driverDto = dtoFromApi.get();
@@ -69,5 +69,22 @@ public class DriverService {
             return Mapper.toDriver(driverDto);
         }
         throw new DriverNotFoundException(firstName, lastName, year);
+    }
+
+    public Driver getDriverByNumberAndYear(int number, int year){
+        Optional<DriverDto> dtoFromDB = IDriverRepo.getDriverByStartNumberForYear(number, year);
+        if(dtoFromDB.isPresent())
+            return Mapper.toDriver(dtoFromDB.get());
+
+        int seasonalMeetingKey = Optional.ofNullable(meetingYearMap.get(year))
+                .orElseThrow(() -> new IllegalArgumentException("No data for year: " + year));
+
+        Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumberAndMeetingKey(number, seasonalMeetingKey);
+        if(dtoFromApi.isPresent()) {
+            DriverDto driverDto = dtoFromApi.get();
+            IDriverRepo.saveOrUpdateDriverForYear(driverDto, year);
+            return Mapper.toDriver(driverDto);
+        }
+        throw new DriverNotFoundException(number, year);
     }
 }
