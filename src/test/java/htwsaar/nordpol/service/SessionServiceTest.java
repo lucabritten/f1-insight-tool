@@ -31,7 +31,7 @@ public class SessionServiceTest {
     SessionService sessionService;
 
     @Test
-    void getSessionByMeetingKeyAndsessionName_returnsSessionFromDatabase() {
+    void getSessionByMeetingKeyAndSessionName_returnsSessionFromDatabase() {
         SessionDto sessionDto =
                 new SessionDto(1256, 9999, "Practice 1", "Practice 1");
 
@@ -48,7 +48,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    void getSessionByMeetingKeyAndsessionName_fetchesFromApiAndSavesSession(){
+    void getSessionByMeetingKeyAndSessionName_fetchesFromApiAndSavesSession(){
         when(ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
                 .thenReturn(Optional.empty());
 
@@ -67,7 +67,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    void getSessionByMeetingKeyAndsessionName_throwsException_ifSessionIsNotFound() {
+    void getSessionByMeetingKeyAndSessionName_throwsException_ifSessionIsNotFound() {
         when(ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
                 .thenReturn(Optional.empty());
 
