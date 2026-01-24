@@ -94,7 +94,7 @@ public class LapService implements ILapService {
     }
 
     private Lap getFastestLapBySessionKey(int sessionKey) {
-        List<LapDto> fastestFromDb = lapRepo.getFastestLapBySessionKey(sessionKey);
+        List<LapDto> fastestFromDb = lapRepo.getFastestLapsBySessionKey(sessionKey, 1);
         if (!fastestFromDb.isEmpty()) {
             return Mapper.toLap(fastestFromDb.getFirst());
         }

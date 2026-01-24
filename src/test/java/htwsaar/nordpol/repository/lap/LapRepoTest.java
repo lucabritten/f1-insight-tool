@@ -58,7 +58,13 @@ public class LapRepoTest {
         (44, 1, 2002, 30.5, 30.0, 31.8, 92.3, 0),
 
         -- Anderer Fahrer, gleiche Session
-        (33, 1, 1001, 29.5, 29.3, 30.9, 89.7, 0);
+        (33, 1, 1001, 29.5, 29.3, 30.9, 89.7, 0),
+        
+        (4, 1, 3033, 20.1, 20.2, 20.3, 60.6, 1),
+        (4, 2, 3033, 20.2, 20.2, 20.3, 60.7, 0),
+        (4, 3, 3033, 0, 0, 0, 0, 1),
+        
+        (4, 1, 9999, 20.1, 20.2, 20.3, 60.6, 1);
 """);
 
         lapRepo = new JooqLapRepo(create);
@@ -242,5 +248,57 @@ public class LapRepoTest {
         List<LapDto> result = lapRepo.getLapsBySessionKeyAndDriverNumber(9999, 1111);
 
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void getFastestLapsBySessionKey_returnsFastestLap_whenLimitIs1() {
+        List<LapDto> result = lapRepo.getFastestLapsBySessionKey(1001,1);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().lap_duration()).isEqualTo(89.7);
+    }
+
+    @Test
+    void getFastestLapsBySessionKey_respectsLimit() {
+        List<LapDto> result = lapRepo.getFastestLapsBySessionKey(1001, 0);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void getFastestLapsBySessionKey_returnsAllValidLaps_whenHigherLimitThanLaps() {
+        List<LapDto> result = lapRepo.getFastestLapsBySessionKey(3033, 100);
+
+        assertThat(result).hasSize(1);
+    }
+
+    @Test
+    void getFastestLapsBySessionKey_ignoresPitOutLaps() {
+        List<LapDto> result = lapRepo.getFastestLapsBySessionKey(3033, 1);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().lap_duration()).isEqualTo(60.7);
+    }
+
+    @Test
+    void getFastestLapsBySessionKey_ignoresZeroLapDuration() {
+        List<LapDto> result = lapRepo.getFastestLapsBySessionKey(3033, 3);
+
+        assertThat(result).hasSize(1);
+    }
+
+    @Test
+    void getFastestLapsBySessionKey_returnsEmptyList_whenNoValidLapExists() {
+        List<LapDto> result = lapRepo.getFastestLapsBySessionKey(9999, 1);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void getFastestLapsBySessionKey_doesNotMixSessions() {
+        List<LapDto> result = lapRepo.getFastestLapsBySessionKey(1001, 5);
+
+        assertThat(result).hasSize(3);
+        assertThat(result.get(2).lap_duration()).isEqualTo(91.1);
     }
 }
