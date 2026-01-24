@@ -15,6 +15,7 @@ A command-line tool to explore Formula 1 data such as drivers, weather, sessions
   - [Global Help](#global-help)
   - [driver-info](#driver-info)
   - [weather-info](#weather-info)
+  - [lap-info](#lap-info)
   - [fastest-lap](#fastest-lap)
 - [Build & Run](#build--run)
 - [Configuration](#configuration)
@@ -102,12 +103,27 @@ Prints averaged weather information for a given event location, year, and sessio
 Options:
 - `--location, -l` (required): event location (e.g., Austin)
 - `--year, -y` (optional, default: `2024`)
-- `--sessionName, -sn` (required): session type (e.g., `Race`, `Qualifying`, `Practice`)
+- `--sessionName, -sn`(required): session name (e.g., `Race`, PRACTICE1)
 
 Examples:
 ```bash
 mvn -q exec:java -Dexec.args="weather-info --location Austin --year 2024 --sessionName Race"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar weather-info -l Austin -y 2024 -sn Qualifying
+```
+
+### lap-info
+Prints all laps a driver has completed in a specified session of a race-weekend.
+
+Options:
+- `--location, -l`(required): event location (e.g., Austin)
+- `--year, -y' (optional, default: `2024`)
+- `--sessionName, -sn` (required): session name (e.g., `Race`, PRACTICE1)
+- `--driverNumber, -dn` (required): driver number to filter by
+
+Examples:
+```bash
+mvn -q exec:java -Dexec.args="lap-info --location Austin --year 2024 --sessionName Race --driverNumber 44"
+java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar lap-info -l Austin -y 2024 -sn Race -dn 44
 ```
 
 ### fastest-lap
@@ -116,7 +132,7 @@ Prints the fastest lap for a given event location, year, and session. Optionally
 Options:
 - `--location, -l` (required): event location (e.g., Austin)
 - `--year, -y` (optional, default: `2024`)
-- `--sessionName, -sn` (required): session type (e.g., `Race`, `Qualifying`, `Practice`)
+- `--sessionName, -sn`(required): session name (e.g., `Race`, PRACTICE1)
 - `--driverNumber, -dn` (optional): driver number to filter by
 
 Examples:
