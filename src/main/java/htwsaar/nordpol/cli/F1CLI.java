@@ -7,7 +7,8 @@ import picocli.CommandLine.Command;
         subcommands = {
             DriverCommand.class,
             WeatherCommand.class,
-            FastestLapCommand.class
+            FastestLapCommand.class,
+            LapCommand.class
         }
 )
 public class F1CLI {
