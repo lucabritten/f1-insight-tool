@@ -301,4 +301,11 @@ public class LapRepoTest {
         assertThat(result).hasSize(3);
         assertThat(result.get(2).lap_duration()).isEqualTo(91.1);
     }
+
+    @Test
+    void getFastestLapsBySessionKey_negativeLimit_returnsEmptyList() {
+        List<LapDto> result = lapRepo.getFastestLapsBySessionKey(1001, -1);
+
+        assertThat(result).hasSize(0);
+    }
 }

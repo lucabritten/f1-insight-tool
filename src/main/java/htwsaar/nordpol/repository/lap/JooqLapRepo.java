@@ -88,6 +88,9 @@ public class JooqLapRepo implements ILapRepo {
 
     @Override
     public List<LapDto> getFastestLapsBySessionKey(int sessionKey, int limit) {
+        if(limit <= 0)
+            return List.of();
+
         return create.select(
                         LAPS.DRIVER_NUMBER,
                         LAPS.SESSION_KEY,
