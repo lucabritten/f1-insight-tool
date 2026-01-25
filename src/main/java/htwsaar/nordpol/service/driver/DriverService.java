@@ -50,9 +50,8 @@ public class DriverService implements IDriverService {
      * @throws IllegalArgumentException if year is not provided by the api
      */
     public Driver getDriverByNameAndYear(String firstName, String lastName, int year) {
-        if (year < MIN_YEAR) {
-            throw new IllegalArgumentException("Only data from 2023 onwards is available.");
-        }
+        validateInputYear(year);
+
         Optional<DriverDto> dtoFromDB = IDriverRepo.getDriverByFullNameForYear(firstName, lastName, year);
         if (dtoFromDB.isPresent())
             return Mapper.toDriver(dtoFromDB.get());
@@ -67,13 +66,11 @@ public class DriverService implements IDriverService {
     }
 
     public Driver getDriverByNumberAndYear(int number, int year){
-        if (year < MIN_YEAR) {
-            throw new IllegalArgumentException("Only data from 2023 onwards is available.");
-        }
+        validateInputYear(year);
+
         Optional<DriverDto> dtoFromDB = IDriverRepo.getDriverByStartNumberForYear(number, year);
         if(dtoFromDB.isPresent())
             return Mapper.toDriver(dtoFromDB.get());
-
 
         Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumberAndMeetingKey(number, year);
         if(dtoFromApi.isPresent()) {
@@ -82,5 +79,11 @@ public class DriverService implements IDriverService {
             return Mapper.toDriver(driverDto);
         }
         throw new DriverNotFoundException(number, year);
+    }
+
+    private void validateInputYear(int year) {
+        if (year < MIN_YEAR) {
+            throw new IllegalArgumentException("Only data from " + MIN_YEAR + " onwards is available.");
+        }
     }
 }
