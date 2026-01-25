@@ -38,13 +38,6 @@ public class DriverClientTest {
 
     @Test
     void getDriverByFullName_returnsDriver(){
-        String meeting_key = """
-                [
-                    {
-                        "meeting_key": 1256
-                    }
-                ]
-                """;
 
         String json = """
                 [
@@ -56,12 +49,6 @@ public class DriverClientTest {
                     }
                 ]
                 """;
-
-        mockWebServer.enqueue(new MockResponse()
-                .setHeader("Content-Type", "application/json")
-                .setBody(meeting_key)
-                .setResponseCode(200)
-        );
 
         mockWebServer.enqueue(new MockResponse()
                 .addHeader("Content-Type", "application/json")
@@ -83,21 +70,8 @@ public class DriverClientTest {
 
     @Test
     void getDriverByFullName_returnsEmptyOptional_whenApiReturnsEmptyArray(){
-        String meeting_key = """
-                [
-                    {
-                        "meeting_key": 1256
-                    }
-                ]
-                """;
 
         String json = "[]";
-
-        mockWebServer.enqueue(new MockResponse()
-                .setHeader("Content-Type", "application/json")
-                .setBody(meeting_key)
-                .setResponseCode(200)
-        );
 
         mockWebServer.enqueue(new MockResponse()
                 .addHeader("Content-Type", "application/json")
@@ -112,9 +86,6 @@ public class DriverClientTest {
 
     @Test
     void getDriverByFullName_returnsEmptyOptional_whenApiReturns404(){
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(404)
-        );
 
         mockWebServer.enqueue(new MockResponse()
                 .setResponseCode(404)
@@ -170,19 +141,12 @@ public class DriverClientTest {
                 driverClient.getDriverByName("Lewis", "Hamilton", 1234)
 
         ).isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch meetings from OpenF1 API during Driverlookup");
+                .hasMessageContaining("Failed to fetch driver from OpenF1 API");
     }
 
 
     @Test
     void getDriverByNumberAndMeetingKey_returnsDriver() {
-        String meeting_key = """
-                [
-                    {
-                        "meeting_key": 1256
-                    }
-                ]
-                """;
 
         String json = """
                 [
@@ -194,12 +158,6 @@ public class DriverClientTest {
                     }
                 ]
                 """;
-
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(meeting_key)
-                .setResponseCode(200)
-        );
 
         mockWebServer.enqueue(new MockResponse()
                 .addHeader("Content-Type", "application/json")
@@ -221,19 +179,6 @@ public class DriverClientTest {
 
     @Test
     void getDriverByNumberAndMeetingKey_returnsEmptyOptional_whenApiReturnsEmptyArray() {
-        String meeting_key = """
-                [
-                    {
-                        "meeting_key": 1256
-                    }
-                ]
-                """;
-
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(meeting_key)
-                .setResponseCode(200)
-        );
 
         mockWebServer.enqueue(new MockResponse()
                 .addHeader("Content-Type", "application/json")
@@ -249,19 +194,6 @@ public class DriverClientTest {
 
     @Test
     void getDriverByNumberAndMeetingKey_returnsEmptyOptional_whenApiReturns404() {
-        String meeting_key = """
-                [
-                    {
-                        "meeting_key": 1256
-                    }
-                ]
-                """;
-
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(meeting_key)
-                .setResponseCode(200)
-        );
 
         mockWebServer.enqueue(new MockResponse()
                 .setResponseCode(404)
@@ -275,20 +207,6 @@ public class DriverClientTest {
 
     @Test
     void getDriverByNumberAndMeetingKey_returnsEmptyOptional_whenHttpStatusIsNotSuccessful() {
-        String meeting_key = """
-                [
-                    {
-                        "meeting_key": 1256
-                    }
-                ]
-                """;
-
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(meeting_key)
-                .setResponseCode(200)
-        );
-
 
         mockWebServer.enqueue(new MockResponse()
                 .setResponseCode(500)
@@ -303,20 +221,6 @@ public class DriverClientTest {
     @Test
     void getDriverByNumberAndMeetingKey_throwsException_whenJsonIsInvalid() {
         String invalidJson = "{invalid";
-
-        String meeting_key = """
-                [
-                    {
-                        "meeting_key": 1256
-                    }
-                ]
-                """;
-
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(meeting_key)
-                .setResponseCode(200)
-        );
 
         mockWebServer.enqueue(new MockResponse()
                 .setBody(invalidJson)
@@ -335,6 +239,6 @@ public class DriverClientTest {
         assertThatThrownBy(() ->
                 driverClient.getDriverByNumberAndMeetingKey(44, 2025)
         ).isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch meetings from OpenF1 API during Driverlookup");
+                .hasMessageContaining("Failed to fetch driver from OpenF1 API");
     }
 }

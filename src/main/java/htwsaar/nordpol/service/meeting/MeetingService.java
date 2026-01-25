@@ -43,4 +43,16 @@ public class MeetingService implements IMeetingService {
         }
         throw new MeetingNotFoundException(year, location);
     }
+
+    public Meeting getMeetingsByYear(int year){
+
+        Optional<MeetingDto> dtoFromApi =
+                meetingClient.getMeetingsByYear(year);
+
+        if (dtoFromApi.isPresent()) {
+            return Mapper.toMeeting(dtoFromApi.get());
+        }
+        throw new MeetingNotFoundException(year, "");
+    }
+
 }

@@ -46,7 +46,7 @@ public class ApplicationContext {
     public static DriverService driverService() {
         IDriverRepo IDriverRepo = new JooqDriverRepo(JooqConfig.createContext());
         DriverClient driverClient = new DriverClient();
-        return new DriverService(IDriverRepo, driverClient);
+        return new DriverService(IDriverRepo, driverClient, meetingService());
     }
 
     public static MeetingService meetingService() {

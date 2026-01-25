@@ -6,6 +6,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -43,43 +44,28 @@ public class DriverClient {
      *
      * @return an Optional containing the driver DTO if found
      */
-    public Optional<DriverDto> getDriverByName(String firstName, String lastName, int year) {
-        int meetingKey = yearToMeetingKey(year);
+    public Optional<DriverDto> getDriverByName(String firstName, String lastName, int meetingKey) {
 
         String url = BASE_URL + "/drivers?"
                      + "first_name=" + firstName
                      + "&last_name=" + lastName
                      + "&meeting_key=" + meetingKey;
 
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        try(Response response = okHttpClient.newCall(request).execute()){
-
-            if(!response.isSuccessful())
-                return Optional.empty();
-
-            DriverDto[] result =
-                    objectMapper.readValue(response.body().string(), DriverDto[].class);
-
-            if(result.length == 0)
-                return Optional.empty();
-
-            return Optional.of(result[0]);
-
-        } catch (IOException e){
-            throw new RuntimeException("Failed to fetch driver from OpenF1 API", e);
-        }
+        return getDriverDto(url);
     }
 
-    public Optional<DriverDto> getDriverByNumberAndMeetingKey(int number, int year){
-        int meetingKey = yearToMeetingKey(year);
+
+    public Optional<DriverDto> getDriverByNumberAndMeetingKey(int number, int meetingKey) {
 
         String url = BASE_URL + "/drivers?"
                     + "driver_number=" + number
                     + "&meeting_key=" + meetingKey;
 
+        return getDriverDto(url);
+    }
+
+    @NotNull
+    private Optional<DriverDto> getDriverDto(String url) {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -102,28 +88,4 @@ public class DriverClient {
         }
     }
 
-    private int yearToMeetingKey(int year){
-        String url = BASE_URL + "/meetings?year="
-                + year;
-
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        try(Response response = okHttpClient.newCall(request).execute()){
-            if(!response.isSuccessful())
-                return 0;
-
-            MeetingDto[] result =
-                    objectMapper.readValue(response.body().string(), MeetingDto[].class);
-
-            if(result.length == 0)
-                return 0;
-
-            return result[0].meeting_key();
-
-        } catch (IOException e){
-            throw new RuntimeException("Failed to fetch meetings from OpenF1 API during Driverlookup", e);
-        }
-    }
 }

@@ -3,8 +3,10 @@ package htwsaar.nordpol.service.driver;
 import htwsaar.nordpol.api.dto.DriverDto;
 import htwsaar.nordpol.api.driver.DriverClient;
 import htwsaar.nordpol.domain.Driver;
+import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.exception.DriverNotFoundException;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
+import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.util.Mapper;
 
 import java.util.Optional;
@@ -27,17 +29,22 @@ public class DriverService implements IDriverService {
 
     private final IDriverRepo IDriverRepo;
     private final DriverClient driverClient;
+    private final MeetingService meetingService;
 
-    public DriverService(IDriverRepo IDriverRepo, DriverClient driverClient) {
+    public DriverService(IDriverRepo IDriverRepo, DriverClient driverClient, MeetingService meetingService) {
         if (IDriverRepo == null) {
             throw new IllegalArgumentException("driverRepo must not be null.");
         }
         if (driverClient == null) {
             throw new IllegalArgumentException("driverClient must not be null.");
         }
+        if (meetingService == null) {
+            throw new IllegalArgumentException("meetingService must not be null.");
+        }
 
         this.IDriverRepo = IDriverRepo;
         this.driverClient = driverClient;
+        this.meetingService = meetingService;
     }
 
     /**
@@ -56,7 +63,9 @@ public class DriverService implements IDriverService {
         if (dtoFromDB.isPresent())
             return Mapper.toDriver(dtoFromDB.get());
 
-        Optional<DriverDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName, year);
+        int meetingKey = getMeetingKeyForYear(year);
+
+        Optional<DriverDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName, meetingKey);
         if(dtoFromApi.isPresent()){
             DriverDto driverDto = dtoFromApi.get();
             IDriverRepo.saveOrUpdateDriverForYear(driverDto, year);
@@ -72,7 +81,9 @@ public class DriverService implements IDriverService {
         if(dtoFromDB.isPresent())
             return Mapper.toDriver(dtoFromDB.get());
 
-        Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumberAndMeetingKey(number, year);
+        int meetingKey = getMeetingKeyForYear(year);
+
+        Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumberAndMeetingKey(number, meetingKey);
         if(dtoFromApi.isPresent()) {
             DriverDto driverDto = dtoFromApi.get();
             IDriverRepo.saveOrUpdateDriverForYear(driverDto, year);
@@ -86,4 +97,10 @@ public class DriverService implements IDriverService {
             throw new IllegalArgumentException("Only data from " + MIN_YEAR + " onwards is available.");
         }
     }
+
+    private int getMeetingKeyForYear(int year) {
+        Meeting meeting = meetingService.getMeetingsByYear(year);
+        return meeting.meetingKey();
+    }
+
 }

@@ -4,10 +4,12 @@ package htwsaar.nordpol.service;
 import htwsaar.nordpol.api.dto.DriverDto;
 import htwsaar.nordpol.api.driver.DriverClient;
 import htwsaar.nordpol.domain.Driver;
+import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
 
 import htwsaar.nordpol.exception.DriverNotFoundException;
 import htwsaar.nordpol.service.driver.DriverService;
+import htwsaar.nordpol.service.meeting.MeetingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,6 +30,9 @@ public class DriverServiceTest {
 
     @Mock
     DriverClient driverClient;
+
+    @Mock
+    MeetingService meetingService;
 
     @InjectMocks
     DriverService driverService;
@@ -60,6 +65,9 @@ public class DriverServiceTest {
         when(driverClient.getDriverByName(eq("Max"), eq("Verstappen"), anyInt()))
                 .thenReturn(Optional.of(apiDto));
 
+        when(meetingService.getMeetingsByYear(anyInt()))
+                .thenReturn(new Meeting(0, null , null, null, 0));
+
         Driver result =
                 driverService.getDriverByNameAndYear("Max", "Verstappen", 2025);
 
@@ -72,6 +80,9 @@ public class DriverServiceTest {
     void getDriverByName_throwsException_whenDriverNotFoundAnywhere() {
         when(IDriverRepo.getDriverByFullNameForYear(anyString(), anyString(), anyInt()))
                 .thenReturn(Optional.empty());
+
+        when(meetingService.getMeetingsByYear(anyInt()))
+                .thenReturn(new Meeting(0, null , null, null, 0));
 
         when(driverClient.getDriverByName(anyString(), anyString(), anyInt()))
                 .thenReturn(Optional.empty());
