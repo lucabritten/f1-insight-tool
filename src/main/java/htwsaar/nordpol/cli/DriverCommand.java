@@ -8,11 +8,13 @@ import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.util.concurrent.Callable;
+
 @Command(name = "driver-info",
         description = "Print driver infos",
         mixinStandardHelpOptions = true
 )
-public class DriverCommand implements Runnable {
+public class DriverCommand implements Callable<Integer> {
 
     @Option(names = {"--firstName",
             "-fn"},
@@ -48,13 +50,15 @@ public class DriverCommand implements Runnable {
     }
 
     @Override
-    public void run() {
+    public Integer call() {
         try {
             Driver driver = driverService.getDriverByNameAndYear(firstName, lastName, year);
             String output = Formatter.formatDriver(driver);
             System.out.println(output);
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
+            return 2;
         }
     }
 }

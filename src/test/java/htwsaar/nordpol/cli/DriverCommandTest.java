@@ -21,6 +21,8 @@ public class DriverCommandTest {
     private ByteArrayOutputStream outputStream;
     private ByteArrayOutputStream errorStream;
 
+    private static final int BUSINESS_LOGIC_ERROR = 2;
+
     @BeforeEach
     void setup(){
         mockDriverService = mock(DriverService.class);
@@ -58,7 +60,7 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute("-fn", "Max");
 
-        assertThat(exitCode).isEqualTo(2);
+        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
         assertThat(errorStream.toString())
                 .contains("Missing required option")
                 .contains("--lastName");
@@ -70,7 +72,7 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute();
 
-        assertThat(exitCode).isEqualTo(2);
+        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
     }
 
     @Test
@@ -82,8 +84,8 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute("-fn", "Foo", "-ln", "Bar");
 
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString())
+        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+        assertThat(errorStream.toString())
                 .contains("not found");
     }
 
@@ -117,7 +119,7 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute("-fn", "Max", "-ln", "Verstappen", "-s", "1899");
 
-        assertThat(exitCode).isNotZero();
+        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
         assertThat(errorStream.toString())
                 .contains("1899");
     }

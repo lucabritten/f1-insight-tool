@@ -8,12 +8,14 @@ import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.util.concurrent.Callable;
+
 @Command(
         name = "weather-info",
         description = "Print averaged weather information for a specific location, year and session type",
         mixinStandardHelpOptions = true
 )
-public class WeatherCommand implements Runnable {
+public class WeatherCommand implements Callable<Integer> {
 
     @Option(
             names = {"--location", "-l"},
@@ -47,7 +49,7 @@ public class WeatherCommand implements Runnable {
     }
 
     @Override
-    public void run() {
+    public Integer call() {
         try {
             WeatherWithContext weatherWithContext =
                     weatherService.getWeatherByLocationYearAndSessionName(
@@ -58,9 +60,10 @@ public class WeatherCommand implements Runnable {
 
             String output = Formatter.formatWeather(weatherWithContext);
             System.out.println(output);
-
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
+            return 2;
         }
     }
 }

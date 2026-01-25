@@ -2,6 +2,11 @@ package htwsaar.nordpol.cli;
 
 import picocli.CommandLine.Command;
 
+/**
+ * Exit codes:
+ * 0 - success
+ * 2 - Entity not found / invalid input / BUSINESS LOGIC ERROR
+ */
 @Command(name = "F1Insight",
         mixinStandardHelpOptions = true,
         subcommands = {

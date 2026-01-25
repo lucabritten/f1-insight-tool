@@ -8,12 +8,14 @@ import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.util.concurrent.Callable;
+
 @Command(
         name = "fastest-lap",
         description = "Print the fastest lap for a given location, year, and session",
         mixinStandardHelpOptions = true
 )
-public class FastestLapCommand implements Runnable {
+public class FastestLapCommand implements Callable<Integer> {
 
     @Option(
             names = {"--location", "-l"},
@@ -53,7 +55,7 @@ public class FastestLapCommand implements Runnable {
     }
 
     @Override
-    public void run() {
+    public Integer call() {
         try {
             LapsWithContext fastestLap = driverNumber == null
                     ? lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName)
@@ -62,8 +64,10 @@ public class FastestLapCommand implements Runnable {
             String output = Formatter.formatFastestLap(fastestLap);
 
             System.out.println(output);
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
+            return 2;
         }
     }
 }

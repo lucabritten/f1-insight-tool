@@ -7,10 +7,12 @@ import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.util.concurrent.Callable;
+
 @Command(name = "lap-info",
         description = "Print lap infos",
         mixinStandardHelpOptions = true)
-public class LapCommand implements Runnable {
+public class LapCommand implements Callable<Integer> {
 
     @Option(names = {"--location", "-l"},
             description = "The meeting location (e.g., \"Monza\")",
@@ -44,15 +46,15 @@ public class LapCommand implements Runnable {
     }
 
     @Override
-    public void run() {
+    public Integer call() {
         try {
             LapsWithContext lap = lapService.getLapsByLocationYearSessionNameAndDriverNumber(location, year, sessionName, driverNumber);
             String output = Formatter.formatLaps(lap);
             System.out.println(output);
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
+            return 2;
         }
-
     }
-
 }

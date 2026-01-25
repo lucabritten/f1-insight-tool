@@ -24,6 +24,8 @@ public class WeatherCommandTest {
     private ByteArrayOutputStream errorStream;
     private WeatherWithContext sampleWeatherContext;
 
+    private static final int BUSINESS_LOGIC_ERROR = 2;
+
     @BeforeEach
     void setup() {
         mockWeatherService = mock(WeatherService.class);
@@ -71,19 +73,19 @@ public class WeatherCommandTest {
     }
 
     @Test
-    void missingsessionName_causesError() {
+    void missingSessionName_causesError() {
         int exitCode = new CommandLine(
                 new WeatherCommand(mockWeatherService)
         ).execute("-l", "Austin", "-y", "2024");
 
-        assertThat(exitCode).isNotZero();
+        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
         assertThat(errorStream.toString())
                 .contains("Missing required option")
                 .contains("--sessionName");
     }
 
     @Test
-    void unknownLocation_printsMessage() {
+    void unknownLocation_printsErrorMessage() {
         when(mockWeatherService.getWeatherByLocationYearAndSessionName("Saarbrücken", 2024, SessionName.RACE))
                 .thenThrow(new MeetingNotFoundException(2024, "Saarbrücken"));
 
@@ -91,8 +93,8 @@ public class WeatherCommandTest {
                 new WeatherCommand(mockWeatherService)
         ).execute("-l", "Saarbrücken", "-y", "2024", "-sn", "Race");
 
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString())
+        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+        assertThat(errorStream.toString())
                 .contains("not found");
     }
 
@@ -102,7 +104,7 @@ public class WeatherCommandTest {
                 new WeatherCommand(mockWeatherService)
         ).execute("--help");
 
-        assertThat(exitCode).isEqualTo(0);
+        assertThat(exitCode).isZero();
         assertThat(outputStream.toString()).contains("weather-info");
     }
 
@@ -123,8 +125,8 @@ public class WeatherCommandTest {
                 new WeatherCommand(mockWeatherService)
         ).execute("-l", "Austin", "-y", "2024", "-sn", "Cruising");
 
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString())
+        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+        assertThat(errorStream.toString())
                 .contains("Unknown session name")
                 .contains("Cruising");
     }
