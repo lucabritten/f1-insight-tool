@@ -24,6 +24,15 @@ public class LapService implements ILapService {
     private final DriverService driverService;
 
     public LapService(ILapRepo lapRepo, ILapClient lapsClient, MeetingService meetingService, SessionService sessionService, DriverService driverService) {
+        validateLapConstructor(lapRepo, lapsClient, meetingService, sessionService, driverService);
+        this.lapRepo = lapRepo;
+        this.lapClient = lapsClient;
+        this.meetingService = meetingService;
+        this.sessionService = sessionService;
+        this.driverService = driverService;
+    }
+
+    private void validateLapConstructor(ILapRepo lapRepo, ILapClient lapsClient, MeetingService meetingService, SessionService sessionService, DriverService driverService){
         if (lapsClient == null)
             throw new IllegalArgumentException("LapsClient cannot be null.");
         if (lapRepo == null)
@@ -34,12 +43,6 @@ public class LapService implements ILapService {
             throw new IllegalArgumentException("SessionService cannot be null.");
         if(driverService == null)
             throw new IllegalArgumentException("DriverService cannot be null");
-
-        this.lapRepo = lapRepo;
-        this.lapClient = lapsClient;
-        this.meetingService = meetingService;
-        this.sessionService = sessionService;
-        this.driverService = driverService;
     }
 
     public LapsWithContext getLapsByLocationYearSessionNameAndDriverNumber(String location, int year, SessionName sessionName, int driverNumber){

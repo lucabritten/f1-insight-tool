@@ -7,8 +7,6 @@ import htwsaar.nordpol.exception.DriverNotFoundException;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.util.Mapper;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -25,9 +23,10 @@ import java.util.Optional;
  */
 public class DriverService implements IDriverService {
 
+    private static final int MIN_YEAR = 2023;
+
     private final IDriverRepo IDriverRepo;
     private final DriverClient driverClient;
-    private final Map<Integer, Integer> meetingYearMap;
 
     public DriverService(IDriverRepo IDriverRepo, DriverClient driverClient) {
         if (IDriverRepo == null) {
@@ -36,13 +35,9 @@ public class DriverService implements IDriverService {
         if (driverClient == null) {
             throw new IllegalArgumentException("driverClient must not be null.");
         }
+
         this.IDriverRepo = IDriverRepo;
         this.driverClient = driverClient;
-        meetingYearMap = new HashMap<>(Map.of(
-                2023, 1143,
-                2024, 1231,
-                2025, 1250)
-        );
     }
 
     /**
@@ -55,14 +50,14 @@ public class DriverService implements IDriverService {
      * @throws IllegalArgumentException if year is not provided by the api
      */
     public Driver getDriverByNameAndYear(String firstName, String lastName, int year) {
+        if (year < MIN_YEAR) {
+            throw new IllegalArgumentException("Only data from 2023 onwards is available.");
+        }
         Optional<DriverDto> dtoFromDB = IDriverRepo.getDriverByFullNameForYear(firstName, lastName, year);
         if (dtoFromDB.isPresent())
             return Mapper.toDriver(dtoFromDB.get());
 
-        int seasonalMeetingKey = Optional.ofNullable(meetingYearMap.get(year))
-                .orElseThrow(() -> new IllegalArgumentException("No data for year: " + year));
-
-        Optional<DriverDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName, seasonalMeetingKey);
+        Optional<DriverDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName, year);
         if(dtoFromApi.isPresent()){
             DriverDto driverDto = dtoFromApi.get();
             IDriverRepo.saveOrUpdateDriverForYear(driverDto, year);
@@ -72,14 +67,15 @@ public class DriverService implements IDriverService {
     }
 
     public Driver getDriverByNumberAndYear(int number, int year){
+        if (year < MIN_YEAR) {
+            throw new IllegalArgumentException("Only data from 2023 onwards is available.");
+        }
         Optional<DriverDto> dtoFromDB = IDriverRepo.getDriverByStartNumberForYear(number, year);
         if(dtoFromDB.isPresent())
             return Mapper.toDriver(dtoFromDB.get());
 
-        int seasonalMeetingKey = Optional.ofNullable(meetingYearMap.get(year))
-                .orElseThrow(() -> new IllegalArgumentException("No data for year: " + year));
 
-        Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumberAndMeetingKey(number, seasonalMeetingKey);
+        Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumberAndMeetingKey(number, year);
         if(dtoFromApi.isPresent()) {
             DriverDto driverDto = dtoFromApi.get();
             IDriverRepo.saveOrUpdateDriverForYear(driverDto, year);
