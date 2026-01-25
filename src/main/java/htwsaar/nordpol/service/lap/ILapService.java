@@ -1,4 +1,4 @@
-package htwsaar.nordpol.service;
+package htwsaar.nordpol.service.lap;
 
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.domain.Lap;

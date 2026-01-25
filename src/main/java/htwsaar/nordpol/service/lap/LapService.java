@@ -1,4 +1,4 @@
-package htwsaar.nordpol.service;
+package htwsaar.nordpol.service.lap;
 
 import htwsaar.nordpol.api.lap.ILapClient;
 import htwsaar.nordpol.api.dto.LapDto;
@@ -6,6 +6,9 @@ import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.exception.LapNotFoundException;
 import htwsaar.nordpol.repository.lap.ILapRepo;
+import htwsaar.nordpol.service.meeting.MeetingService;
+import htwsaar.nordpol.service.session.SessionService;
+import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.util.Mapper;
 
 import java.util.List;

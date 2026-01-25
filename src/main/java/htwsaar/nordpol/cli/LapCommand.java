@@ -2,7 +2,7 @@ package htwsaar.nordpol.cli;
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
-import htwsaar.nordpol.service.LapService;
+import htwsaar.nordpol.service.lap.LapService;
 import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
