@@ -1,5 +1,6 @@
 package htwsaar.nordpol.cli;
 
+import htwsaar.nordpol.cli.converter.SessionNameConverter;
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
@@ -33,8 +34,9 @@ public class FastestLapCommand implements Callable<Integer> {
 
     @Option(
             names = {"--sessionName", "-sn"},
-            description = "The session name (e.g. Race, Qualifying, Practice)",
-            required = true
+            description = "Session name (e.g. FP1, PRACTICE1, Quali, Race,...)",
+            required = true,
+            converter = SessionNameConverter.class
     )
     private SessionName sessionName;
 

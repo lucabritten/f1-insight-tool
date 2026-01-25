@@ -33,7 +33,7 @@ public class WeatherCommandTest {
         sampleWeatherContext = new WeatherWithContext(
                 "Austin",
                 "United States",
-                "Race",
+                SessionName.RACE,
                 new Weather(
                 1234,
                 4321,
@@ -129,5 +129,88 @@ public class WeatherCommandTest {
         assertThat(errorStream.toString())
                 .contains("Unknown session name")
                 .contains("Cruising");
+    }
+
+
+    @Test
+    void fieldSessionName_differentAliasesAreAcceptedForRace() {
+        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.RACE))
+                .thenReturn(sampleWeatherContext);
+
+        int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
+                .execute("-l","Austin", "-y", "2024", "-sn", "GP");
+
+        assertThat(exitCode).isZero();
+        assertThat(outputStream.toString()).contains("Austin");
+        assertThat(outputStream.toString()).contains("Race");
+    }
+
+    @Test
+    void fieldSessionName_differentAliasesAreAcceptedForQualifying() {
+        WeatherWithContext sample = new WeatherWithContext(
+                "Austin",
+                "United States",
+                SessionName.QUALIFYING,
+                new Weather(
+                        1234,
+                        4321,
+                        20,
+                        50,
+                        true,
+                        30,
+                        10,
+                        10
+                )
+        );
+        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.QUALIFYING))
+                .thenReturn(sample);
+
+        int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
+                .execute("-l","Austin", "-y", "2024", "-sn", "Quali");
+
+        assertThat(exitCode).isZero();
+        assertThat(outputStream.toString()).contains("Austin");
+        assertThat(outputStream.toString()).contains("Qualifying");
+    }
+
+    @Test
+    void fieldSessionName_differentAliasesAreAcceptedForPractice() {
+        WeatherWithContext sample = new WeatherWithContext(
+                "Austin",
+                "United States",
+                SessionName.PRACTICE1,
+                new Weather(
+                        1234,
+                        4321,
+                        20,
+                        50,
+                        true,
+                        30,
+                        10,
+                        10
+                )
+        );
+        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.PRACTICE1))
+                .thenReturn(sample);
+
+        int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
+                .execute("-l","Austin", "-y", "2024", "-sn", "FP1");
+
+        assertThat(exitCode).isZero();
+        assertThat(outputStream.toString()).contains("Austin");
+        assertThat(outputStream.toString()).contains("Practice 1");
+    }
+
+    @Test
+    void fieldSessionName_ignoresLetterCase() {
+        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.RACE))
+                .thenReturn(sampleWeatherContext);
+
+        int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
+                .execute("-l","Austin", "-y", "2024", "-sn", "rAcE");
+
+        assertThat(exitCode).isZero();
+        assertThat(outputStream.toString()).contains("Austin");
+        assertThat(outputStream.toString()).contains("Race");
     }
 }

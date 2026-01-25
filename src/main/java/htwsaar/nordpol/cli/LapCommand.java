@@ -1,4 +1,5 @@
 package htwsaar.nordpol.cli;
+import htwsaar.nordpol.cli.converter.SessionNameConverter;
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
@@ -11,22 +12,28 @@ import java.util.concurrent.Callable;
 
 @Command(name = "lap-info",
         description = "Print lap infos",
-        mixinStandardHelpOptions = true)
+        mixinStandardHelpOptions = true
+)
 public class LapCommand implements Callable<Integer> {
 
     @Option(names = {"--location", "-l"},
             description = "The meeting location (e.g., \"Monza\")",
-            required = true)
+            required = true
+    )
     private String location;
 
     @Option(names = {"--year", "-y"},
             description = "The season year (e.g., 2024)",
-            defaultValue = "2024")
+            defaultValue = "2024"
+    )
     private int year;
 
-    @Option(names = {"--sessionName", "-sn"},
-            description = "The session name (e.g., PRACTICE_1, QUALIFYING, RACE)",
-            required = true)
+    @Option(
+            names = {"--sessionName", "-sn"},
+            description = "Session name (e.g. FP1, PRACTICE1, Quali, Race,...)",
+            required = true,
+            converter = SessionNameConverter.class
+    )
     private SessionName sessionName;
 
     @Option(names = {"--driverNumber", "-d"},

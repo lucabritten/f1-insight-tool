@@ -1,6 +1,7 @@
 package htwsaar.nordpol.domain;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 public enum SessionName {
 
@@ -8,7 +9,7 @@ public enum SessionName {
     PRACTICE2("Practice 2","Practice%202", "FP2"),
     PRACTICE3("Practice 3","Practice%20", "FP3"),
     QUALIFYING("Qualifying","Qualifying", "Quali"),
-    SPRINT_SHOOTOUT("Sprint%20Shootout", "SprintQuali"),
+    SPRINT_SHOOTOUT("Sprint Qualifying","Sprint%20Shootout", "SprintQuali"),
     SPRINT("Sprint", "Sprint"),
     RACE("Race", "Race", "GP");
 
@@ -31,7 +32,9 @@ public enum SessionName {
     }
 
     public static SessionName fromString(String value) {
-        if (value == null) return null; // or throw IllegalArgumentException
+        if (value == null || value.isBlank())
+            throw new IllegalArgumentException("Session name must not be null or empty.");
+
         String v = value.trim();
         for (SessionName t : values()) {
             if (t.dbValue.equalsIgnoreCase(v)) return t;
@@ -40,4 +43,7 @@ public enum SessionName {
         throw new IllegalArgumentException("Unknown session name: " + value);
     }
 
+    public String displayName() {
+        return dbValue;
+    }
 }

@@ -57,7 +57,7 @@ public class LapService implements ILapService {
         List<Lap> laps = getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
         return new LapsWithContext(meeting.location(),
                 driver.firstName() + " " + driver.lastName(),
-                session.sessionName().name(),
+                session.sessionName(),
                 laps
         );
     }
@@ -97,7 +97,7 @@ public class LapService implements ILapService {
 
         return new LapsWithContext(meeting.location(),
                 driver.firstName() + " " + driver.lastName(),
-                session.sessionName().name(),
+                session.sessionName(),
                 List.of(fastestLap)
         );
     }
@@ -135,7 +135,7 @@ public class LapService implements ILapService {
 
         return new LapsWithContext(meeting.location(),
                 driver.firstName() + " " + driver.lastName(),
-                session.sessionName().name(),
+                session.sessionName(),
                 List.of(fastestLap)
         );
     }

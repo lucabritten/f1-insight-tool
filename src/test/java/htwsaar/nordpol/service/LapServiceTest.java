@@ -122,7 +122,7 @@ public class LapServiceTest {
         LapsWithContext result = lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName);
 
         assertThat(result.meetingName()).isEqualTo(location);
-        assertThat(result.sessionName()).isEqualTo(sessionName.name());
+        assertThat(result.sessionName().displayName()).isEqualTo(sessionName.displayName());
         assertThat(result.driverName()).isEqualTo("Lewis Hamilton");
         assertThat(result.laps()).hasSize(1);
         Lap lap = result.laps().getFirst();
@@ -159,7 +159,7 @@ public class LapServiceTest {
         LapsWithContext result = lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName);
 
         assertThat(result.meetingName()).isEqualTo(location);
-        assertThat(result.sessionName()).isEqualTo(sessionName.name());
+        assertThat(result.sessionName().displayName()).isEqualTo(sessionName.displayName());
         assertThat(result.driverName()).isEqualTo("Max Verstappen");
         assertThat(result.laps()).hasSize(1);
         Lap lap = result.laps().getFirst();

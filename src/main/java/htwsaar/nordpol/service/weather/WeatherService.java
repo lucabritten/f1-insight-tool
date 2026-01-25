@@ -47,7 +47,7 @@ public class WeatherService implements IWeatherService {
         int sessionKey = session.sessionKey();
 
         Weather weather = getWeatherByMeetingAndSessionKey(meetingKey, sessionKey);
-        return new WeatherWithContext(meeting.location(), meeting.countryName(), session.sessionName().name(), weather);
+        return new WeatherWithContext(meeting.location(), meeting.countryName(), session.sessionName(), weather);
     }
 
     public Weather getWeatherByMeetingAndSessionKey(int meetingKey, int sessionKey) {

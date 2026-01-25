@@ -47,7 +47,7 @@ public class Formatter {
                         BOLD, RESET,
                 weatherWithContext.meetingName(),
                 weatherWithContext.countryName(),
-                weatherWithContext.sessionName(),
+                weatherWithContext.sessionName().displayName(),
                 relatedWeatherData.avgAirTemperature(),
                 relatedWeatherData.avgHumidity(),
                 relatedWeatherData.avgTrackTemperature(),
@@ -84,7 +84,7 @@ public class Formatter {
                 BOLD, RESET,
                 lapWithContext.meetingName(),
                 lapWithContext.driverName(),
-                lapWithContext.sessionName(),
+                lapWithContext.sessionName().displayName(),
                 lapWithContext.laps().size(),
                 rows
         );
@@ -105,7 +105,7 @@ public class Formatter {
                 """.formatted(
                 BOLD, RESET,
                 fastestLap.meetingName(),
-                fastestLap.sessionName(),
+                fastestLap.sessionName().displayName(),
                 fastestLap.driverName(),
                 lap.lapNumber(),
                 lap.lapDuration(),
