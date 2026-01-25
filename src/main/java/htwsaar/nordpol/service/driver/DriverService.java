@@ -1,4 +1,4 @@
-package htwsaar.nordpol.service;
+package htwsaar.nordpol.service.driver;
 
 import htwsaar.nordpol.api.dto.DriverDto;
 import htwsaar.nordpol.api.driver.DriverClient;
@@ -23,7 +23,7 @@ import java.util.Optional;
  *
  * <p>This class serves as a template for other domain services.</p>
  */
-public class DriverService {
+public class DriverService implements IDriverService {
 
     private final IDriverRepo IDriverRepo;
     private final DriverClient driverClient;

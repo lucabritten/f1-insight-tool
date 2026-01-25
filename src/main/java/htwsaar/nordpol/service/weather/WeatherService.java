@@ -1,4 +1,4 @@
-package htwsaar.nordpol.service;
+package htwsaar.nordpol.service.weather;
 
 import htwsaar.nordpol.api.dto.WeatherDto;
 import htwsaar.nordpol.api.weather.IWeatherClient;
@@ -9,12 +9,14 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.exception.WeatherNotFoundException;
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
+import htwsaar.nordpol.service.meeting.MeetingService;
+import htwsaar.nordpol.service.session.SessionService;
 import htwsaar.nordpol.util.Mapper;
 
 import java.util.List;
 import java.util.Optional;
 
-public class WeatherService {
+public class WeatherService implements IWeatherService {
 
     private final IWeatherClient weatherClient;
     private final IWeatherRepo weatherRepo;

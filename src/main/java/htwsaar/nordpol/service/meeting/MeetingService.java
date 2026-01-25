@@ -1,4 +1,4 @@
-package htwsaar.nordpol.service;
+package htwsaar.nordpol.service.meeting;
 
 
 import htwsaar.nordpol.api.meeting.IMeetingClient;
@@ -10,7 +10,7 @@ import htwsaar.nordpol.util.Mapper;
 
 import java.util.Optional;
 
-public class MeetingService {
+public class MeetingService implements IMeetingService {
 
 
     private final IMeetingRepo meetingRepo;

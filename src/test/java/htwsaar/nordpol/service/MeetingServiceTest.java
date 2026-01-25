@@ -6,6 +6,7 @@ import htwsaar.nordpol.api.meeting.MeetingClient;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.repository.meeting.IMeetingRepo;
+import htwsaar.nordpol.service.meeting.MeetingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

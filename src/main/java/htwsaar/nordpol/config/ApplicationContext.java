@@ -15,7 +15,11 @@ import htwsaar.nordpol.repository.session.ISessionRepo;
 import htwsaar.nordpol.repository.session.JooqSessionRepo;
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
 import htwsaar.nordpol.repository.weather.JooqWeatherRepo;
-import htwsaar.nordpol.service.*;
+import htwsaar.nordpol.service.driver.DriverService;
+import htwsaar.nordpol.service.lap.LapService;
+import htwsaar.nordpol.service.meeting.MeetingService;
+import htwsaar.nordpol.service.session.SessionService;
+import htwsaar.nordpol.service.weather.WeatherService;
 
 /**
  * Simple application context responsible for wiring application services.
