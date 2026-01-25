@@ -86,6 +86,6 @@ public class DriverServiceTest {
         assertThatThrownBy(() ->
                 driverService.getDriverByNameAndYear("Max", "Verstappen", 2022)
         ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("No data for year");
+                .hasMessageContaining("Only data from 2023 onwards is available.");
     }
 }
