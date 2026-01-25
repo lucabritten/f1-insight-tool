@@ -11,12 +11,13 @@ import htwsaar.nordpol.service.session.SessionService;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.util.Mapper;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class LapService implements ILapService {
 
     private final ILapRepo lapRepo;
-    private final ILapClient lapsClient;
+    private final ILapClient lapClient;
 
     private final MeetingService meetingService;
     private final SessionService sessionService;
@@ -35,7 +36,7 @@ public class LapService implements ILapService {
             throw new IllegalArgumentException("DriverService cannot be null");
 
         this.lapRepo = lapRepo;
-        this.lapsClient = lapsClient;
+        this.lapClient = lapsClient;
         this.meetingService = meetingService;
         this.sessionService = sessionService;
         this.driverService = driverService;
@@ -58,6 +59,7 @@ public class LapService implements ILapService {
         );
     }
 
+    @Override
     public List<Lap> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
         List<LapDto> dtoFromDB = lapRepo.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
         if (!dtoFromDB.isEmpty()) {
@@ -67,7 +69,7 @@ public class LapService implements ILapService {
         }
 
         List<LapDto> dtoFromApi =
-                lapsClient.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
+                lapClient.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
 
         if (!dtoFromApi.isEmpty()) {
             lapRepo.saveAll(dtoFromApi);
@@ -78,6 +80,7 @@ public class LapService implements ILapService {
         throw new LapNotFoundException(sessionKey, driverNumber);
     }
 
+    @Override
     public LapsWithContext getFastestLapByLocationYearAndSessionName(String location, int year, SessionName sessionName) {
         Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
         int meetingKey = meeting.meetingKey();
@@ -102,21 +105,20 @@ public class LapService implements ILapService {
             return Mapper.toLap(fastestFromDb.getFirst());
         }
 
-        List<LapDto> apiLaps = lapsClient.getLapsBySessionKey(sessionKey);
+        List<LapDto> apiLaps = lapClient.getLapsBySessionKey(sessionKey);
         if (apiLaps.isEmpty()) {
             throw new LapNotFoundException(sessionKey, -1);
         }
 
         lapRepo.saveAll(apiLaps);
-
-        return apiLaps.stream()
-                .filter(l -> l.lap_duration() > 0)
-                .filter(l -> !l.is_pit_out_lap())
-                .min(java.util.Comparator.comparingDouble(LapDto::lap_duration))
+        List<Lap> laps = apiLaps.stream()
                 .map(Mapper::toLap)
-                .orElseThrow(() -> new LapNotFoundException(sessionKey, -1));
+                .toList();
+
+        return filterFastestLap(laps);
     }
 
+    @Override
     public LapsWithContext getFastestLapByLocationYearSessionNameAndDriverNumber(String location, int year, SessionName sessionName, int driverNumber){
         Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
         int meetingKey = meeting.meetingKey();
@@ -137,11 +139,16 @@ public class LapService implements ILapService {
 
     private Lap getFastestLapBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
         List<Lap> laps = getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
+        return filterFastestLap(laps);
+    }
+
+    private Lap filterFastestLap(List<Lap> laps) {
+        int sessionKey = laps.getFirst().sessionKey();
         return laps.stream()
                 .filter(l -> l.lapDuration() > 0)
                 .filter(l -> !l.isPitOutLap())
-                .min(java.util.Comparator.comparingDouble(Lap::lapDuration))
-                .orElseThrow(() -> new LapNotFoundException(sessionKey, driverNumber));
+                .min(Comparator.comparingDouble(Lap::lapDuration))
+                .orElseThrow(() -> new LapNotFoundException(sessionKey));
     }
 
 }
