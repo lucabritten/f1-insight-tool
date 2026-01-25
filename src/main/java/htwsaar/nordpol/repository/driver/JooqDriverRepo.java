@@ -37,10 +37,10 @@ public class JooqDriverRepo implements IDriverRepo {
                             DRIVERS,
                             DRIVERS.FIRST_NAME,
                             DRIVERS.LAST_NAME,
-                            DRIVERS.COUNTRY_CODE)
+                            DRIVERS.TEAM_NAME)
                     .values(driverDto.first_name(),
                             driverDto.last_name(),
-                            driverDto.country_code()
+                            driverDto.team_name()
                     )
                     .returningResult(DRIVERS.DRIVER_ID)
                     .fetchOne(0, Integer.class);
@@ -84,8 +84,8 @@ public class JooqDriverRepo implements IDriverRepo {
         if (driverDto.last_name() == null || driverDto.last_name().isBlank())
             throw new IllegalArgumentException("last_name must not be null or blank.");
 
-        if (driverDto.country_code() == null || driverDto.country_code().isBlank())
-            throw new IllegalArgumentException("country_code must not be null or blank.");
+        if (driverDto.team_name() == null || driverDto.team_name().isBlank())
+            throw new IllegalArgumentException("team_name must not be null or blank.");
     }
 
     private void validateYear(int year){
@@ -95,7 +95,7 @@ public class JooqDriverRepo implements IDriverRepo {
 
     @Override
     public Optional<DriverDto> getDriverByFullNameForYear(String firstName, String lastName, int year) {
-        var record = create.select(DRIVERS.FIRST_NAME, DRIVERS.LAST_NAME, DRIVER_NUMBERS.START_NUMBER.as("driver_number"), DRIVERS.COUNTRY_CODE)
+        var record = create.select(DRIVERS.FIRST_NAME, DRIVERS.LAST_NAME, DRIVER_NUMBERS.START_NUMBER.as("driver_number"), DRIVERS.TEAM_NAME)
                 .from(DRIVERS)
                 .join(DRIVER_NUMBERS)
                     .on(DRIVER_NUMBERS.DRIVER_ID.eq(DRIVERS.DRIVER_ID))
@@ -112,7 +112,7 @@ public class JooqDriverRepo implements IDriverRepo {
         var record = create.select(
                         DRIVERS.FIRST_NAME, DRIVERS.LAST_NAME,
                         DRIVER_NUMBERS.START_NUMBER.as("driver_number"),
-                        DRIVERS.COUNTRY_CODE)
+                        DRIVERS.TEAM_NAME)
                 .from(DRIVER_NUMBERS)
                 .join(DRIVERS)
                 .on(DRIVER_NUMBERS.DRIVER_ID.eq(DRIVERS.DRIVER_ID))

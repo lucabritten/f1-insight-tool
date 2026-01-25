@@ -32,7 +32,7 @@ public class DriverRepoTest {
                 driver_id integer primary key autoincrement,
                 first_name text not null,
                 last_name text not null,
-                country_code text not null
+                team_name text not null
             );
         """);
         create.execute("""
@@ -59,7 +59,7 @@ public class DriverRepoTest {
     @Test
     void saveDriver_persistsDriver() {
         DriverDto driverData =
-                new DriverDto("Lando", "Norris", 4, "GBR");
+                new DriverDto("Lando", "Norris", 4, "McLaren RACING");
 
         IDriverRepo.saveOrUpdateDriverForYear(driverData, 2025);
 
@@ -73,7 +73,7 @@ public class DriverRepoTest {
         assertThat(dto.driver_number()).isEqualTo(4);
         assertThat(dto.first_name()).isEqualTo("Lando");
         assertThat(dto.last_name()).isEqualTo("Norris");
-        assertThat(dto.country_code()).isEqualTo("GBR");
+        assertThat(dto.team_name()).isEqualTo("McLaren RACING");
     }
 
     @Test
@@ -86,8 +86,8 @@ public class DriverRepoTest {
 
     @Test
     void getDriverByFullName_returnsCorrectDriver_forMultipleEntries() {
-        DriverDto lando = new DriverDto("Lando", "Norris", 4, "GBR");
-        DriverDto max = new DriverDto("Max", "Verstappen", 1, "NLD");
+        DriverDto lando = new DriverDto("Lando", "Norris", 4, "McLaren RACING");
+        DriverDto max = new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
 
         IDriverRepo.saveOrUpdateDriverForYear(lando, 2025);
         IDriverRepo.saveOrUpdateDriverForYear(max, 2025);
@@ -101,12 +101,12 @@ public class DriverRepoTest {
         assertThat(dto.driver_number()).isEqualTo(1);
         assertThat(dto.first_name()).isEqualTo("Max");
         assertThat(dto.last_name()).isEqualTo("Verstappen");
-        assertThat(dto.country_code()).isEqualTo("NLD");
+        assertThat(dto.team_name()).isEqualTo("Red Bull Racing");
     }
 
     @Test
     void saveDriver_throwsException_whenDriverNumberIsNegative(){
-        DriverDto driverDto = new DriverDto("Max", "Verstappen", -1, "NED");
+        DriverDto driverDto = new DriverDto("Max", "Verstappen", -1, "Red Bull Racing");
 
         assertThatThrownBy(() -> IDriverRepo.saveOrUpdateDriverForYear(driverDto, 2025))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -114,14 +114,14 @@ public class DriverRepoTest {
 
     @Test
     void saveDriver_throwsException_whenFirstnameIsNull(){
-        DriverDto driverDto = new DriverDto(null, "Verstappen", 1, "NED");
+        DriverDto driverDto = new DriverDto(null, "Verstappen", 1, "Red Bull Racing");
 
         assertThatThrownBy(() -> IDriverRepo.saveOrUpdateDriverForYear(driverDto, 2025))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void saveDriver_throwsException_whenCountryCodeIsNull(){
+    void saveDriver_throwsException_whenTeamNameIsNull(){
         DriverDto driverDto = new DriverDto("Max", "Verstappen", 1, null);
 
         assertThatThrownBy(() -> IDriverRepo.saveOrUpdateDriverForYear(driverDto, 2025))
@@ -131,7 +131,7 @@ public class DriverRepoTest {
     @Test
     void sameDriver_canHaveDifferentNumbersInDifferentYear() {
         DriverDto max2025 =
-                new DriverDto("Max", "Verstappen", 1, "NLD");
+                new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
 
         DriverDto max2026 =
                 new DriverDto("Max", "Verstappen", 3, "NLD");
@@ -149,10 +149,10 @@ public class DriverRepoTest {
     @Test
     void sameDriver_sameYear_updatesStartNumber(){
         DriverDto max1 =
-                new DriverDto("Max", "Verstappen", 33, "NLD");
+                new DriverDto("Max", "Verstappen", 33, "Red Bull Racing");
 
         DriverDto max2 =
-                new DriverDto("Max", "Verstappen", 1, "NLD");
+                new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
 
         IDriverRepo.saveOrUpdateDriverForYear(max1, 2025);
         IDriverRepo.saveOrUpdateDriverForYear(max2, 2025);
@@ -167,7 +167,7 @@ public class DriverRepoTest {
     @Test
     void deletingDriver_removesDriverNumbers() {
         DriverDto max =
-                new DriverDto("Max", "Verstappen", 1, "NLD");
+                new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
 
         IDriverRepo.saveOrUpdateDriverForYear(max, 2025);
 
@@ -182,7 +182,7 @@ public class DriverRepoTest {
     @Test
     void invalidYear_throwsException(){
         DriverDto max =
-                new DriverDto("Max", "Verstappen", 1, "NLD");
+                new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
 
         assertThatThrownBy(() ->
                 IDriverRepo.saveOrUpdateDriverForYear(max, 1900))

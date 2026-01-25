@@ -20,13 +20,13 @@ public class Formatter {
                 %s========== DRIVER ==========%s
                 Name         : %s %s
                 Number       : %d
-                Country Code : %s
+                Team         : %s
                 """.formatted(
                         BOLD, RESET,
                     driver.firstName(),
                     driver.lastName(),
                     driver.driverNumber(),
-                    driver.countryCode()
+                    driver.teamName()
             );
     }
 

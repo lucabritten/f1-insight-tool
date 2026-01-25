@@ -19,7 +19,7 @@ public class Mapper {
                 dto.first_name(),
                 dto.last_name(),
                 dto.driver_number(),
-                dto.country_code()
+                dto.team_name()
         );
     }
     public static Meeting toMeeting(MeetingDto dto){
