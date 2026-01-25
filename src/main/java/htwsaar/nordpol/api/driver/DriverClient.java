@@ -1,7 +1,6 @@
 package htwsaar.nordpol.api.driver;
 
 import htwsaar.nordpol.api.dto.DriverDto;
-import htwsaar.nordpol.api.dto.MeetingDto;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import com.fasterxml.jackson.databind.ObjectMapper;
