@@ -73,7 +73,7 @@ public class DriverServiceTest {
 
         assertThat(result.firstName()).isEqualTo("Max");
 
-        verify(IDriverRepo).saveOrUpdateDriverForYear(apiDto, 2025);
+        verify(IDriverRepo).saveOrUpdateDriverForYear(apiDto, 2025, 0);
     }
 
     @Test

@@ -68,7 +68,7 @@ public class DriverService implements IDriverService {
         Optional<DriverDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName, meetingKey);
         if(dtoFromApi.isPresent()){
             DriverDto driverDto = dtoFromApi.get();
-            IDriverRepo.saveOrUpdateDriverForYear(driverDto, year);
+            IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meetingKey);
             return Mapper.toDriver(driverDto);
         }
         throw new DriverNotFoundException(firstName, lastName, year);
@@ -86,7 +86,7 @@ public class DriverService implements IDriverService {
         Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumberAndMeetingKey(number, meetingKey);
         if(dtoFromApi.isPresent()) {
             DriverDto driverDto = dtoFromApi.get();
-            IDriverRepo.saveOrUpdateDriverForYear(driverDto, year);
+            IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meetingKey);
             return Mapper.toDriver(driverDto);
         }
         throw new DriverNotFoundException(number, year);

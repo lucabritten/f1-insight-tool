@@ -41,6 +41,7 @@ public class DriverRepoTest {
                 driver_id integer not null,
                 start_number integer not null,
                 year integer not null,
+                meeting_key integer,
                 foreign key (driver_id) references Drivers(driver_id) on delete cascade,
                 unique (driver_id, year)
             );
@@ -61,7 +62,7 @@ public class DriverRepoTest {
         DriverDto driverData =
                 new DriverDto("Lando", "Norris", 4, "McLaren RACING");
 
-        IDriverRepo.saveOrUpdateDriverForYear(driverData, 2025);
+        IDriverRepo.saveOrUpdateDriverForYear(driverData, 2025, 1111);
 
         Optional<DriverDto> stored =
                 IDriverRepo.getDriverByFullNameForYear("Lando", "Norris", 2025);
@@ -89,8 +90,8 @@ public class DriverRepoTest {
         DriverDto lando = new DriverDto("Lando", "Norris", 4, "McLaren RACING");
         DriverDto max = new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
 
-        IDriverRepo.saveOrUpdateDriverForYear(lando, 2025);
-        IDriverRepo.saveOrUpdateDriverForYear(max, 2025);
+        IDriverRepo.saveOrUpdateDriverForYear(lando, 2025, 1111);
+        IDriverRepo.saveOrUpdateDriverForYear(max, 2025, 1111);
 
         Optional<DriverDto> stored =
                 IDriverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2025);
@@ -108,7 +109,7 @@ public class DriverRepoTest {
     void saveDriver_throwsException_whenDriverNumberIsNegative(){
         DriverDto driverDto = new DriverDto("Max", "Verstappen", -1, "Red Bull Racing");
 
-        assertThatThrownBy(() -> IDriverRepo.saveOrUpdateDriverForYear(driverDto, 2025))
+        assertThatThrownBy(() -> IDriverRepo.saveOrUpdateDriverForYear(driverDto, 2025, 1111))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -116,7 +117,7 @@ public class DriverRepoTest {
     void saveDriver_throwsException_whenFirstnameIsNull(){
         DriverDto driverDto = new DriverDto(null, "Verstappen", 1, "Red Bull Racing");
 
-        assertThatThrownBy(() -> IDriverRepo.saveOrUpdateDriverForYear(driverDto, 2025))
+        assertThatThrownBy(() -> IDriverRepo.saveOrUpdateDriverForYear(driverDto, 2025, 1111))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -124,7 +125,7 @@ public class DriverRepoTest {
     void saveDriver_throwsException_whenTeamNameIsNull(){
         DriverDto driverDto = new DriverDto("Max", "Verstappen", 1, null);
 
-        assertThatThrownBy(() -> IDriverRepo.saveOrUpdateDriverForYear(driverDto, 2025))
+        assertThatThrownBy(() -> IDriverRepo.saveOrUpdateDriverForYear(driverDto, 2025, 1111))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -136,8 +137,8 @@ public class DriverRepoTest {
         DriverDto max2026 =
                 new DriverDto("Max", "Verstappen", 3, "NLD");
 
-        IDriverRepo.saveOrUpdateDriverForYear(max2025, 2025);
-        IDriverRepo.saveOrUpdateDriverForYear(max2026, 2026);
+        IDriverRepo.saveOrUpdateDriverForYear(max2025, 2025, 1111);
+        IDriverRepo.saveOrUpdateDriverForYear(max2026, 2026, 2222);
 
         assertThat(IDriverRepo
                 .getDriverByStartNumberForYear(1, 2025)).isPresent();
@@ -154,8 +155,8 @@ public class DriverRepoTest {
         DriverDto max2 =
                 new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
 
-        IDriverRepo.saveOrUpdateDriverForYear(max1, 2025);
-        IDriverRepo.saveOrUpdateDriverForYear(max2, 2025);
+        IDriverRepo.saveOrUpdateDriverForYear(max1, 2025, 1111);
+        IDriverRepo.saveOrUpdateDriverForYear(max2, 2025, 1112);
 
         Optional<DriverDto> stored =
                 IDriverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2025);
@@ -169,7 +170,7 @@ public class DriverRepoTest {
         DriverDto max =
                 new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
 
-        IDriverRepo.saveOrUpdateDriverForYear(max, 2025);
+        IDriverRepo.saveOrUpdateDriverForYear(max, 2025, 1111);
 
         create.deleteFrom(DRIVERS)
                 .where(DRIVERS.FIRST_NAME.eq("Max"))
@@ -185,7 +186,7 @@ public class DriverRepoTest {
                 new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
 
         assertThatThrownBy(() ->
-                IDriverRepo.saveOrUpdateDriverForYear(max, 1900))
+                IDriverRepo.saveOrUpdateDriverForYear(max, 1900, 1111))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

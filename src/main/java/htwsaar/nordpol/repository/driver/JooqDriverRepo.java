@@ -22,7 +22,7 @@ public class JooqDriverRepo implements IDriverRepo {
     }
 
     @Override
-    public void saveOrUpdateDriverForYear(DriverDto driverDto, int year) {
+    public void saveOrUpdateDriverForYear(DriverDto driverDto, int year, int meetingKey) {
         validateDriver(driverDto);
         validateYear(year);
         Integer driverId = create
@@ -58,13 +58,15 @@ public class JooqDriverRepo implements IDriverRepo {
                     DRIVER_NUMBERS,
                     DRIVER_NUMBERS.DRIVER_ID,
                     DRIVER_NUMBERS.YEAR,
-                    DRIVER_NUMBERS.START_NUMBER)
-                    .values(driverId, year, driverDto.driver_number())
+                    DRIVER_NUMBERS.START_NUMBER,
+                    DRIVER_NUMBERS.MEETING_KEY)
+                    .values(driverId, year, driverDto.driver_number(), meetingKey)
                     .execute();
 
         } else if (existing != driverDto.driver_number()) {
             create.update(DRIVER_NUMBERS)
                     .set(DRIVER_NUMBERS.START_NUMBER, driverDto.driver_number())
+                    .set(DRIVER_NUMBERS.MEETING_KEY, meetingKey)
                     .where(DRIVER_NUMBERS.DRIVER_ID.eq(driverId)
                             .and(DRIVER_NUMBERS.YEAR.eq(year)))
                     .execute();
