@@ -81,7 +81,7 @@ public class WeatherCommandTest {
         assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
         assertThat(errorStream.toString())
                 .contains("Missing required option")
-                .contains("--sessionName");
+                .contains("--session-name");
     }
 
     @Test
@@ -114,7 +114,7 @@ public class WeatherCommandTest {
                 .thenReturn(sampleWeatherContext);
 
         int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
-                .execute("--location", "Austin", "--year", "2024", "--sessionName", "Race");
+                .execute("--location", "Austin", "--year", "2024", "--session-name", "Race");
 
         assertThat(exitCode).isZero();
     }

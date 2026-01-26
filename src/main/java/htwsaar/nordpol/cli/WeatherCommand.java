@@ -33,7 +33,7 @@ public class WeatherCommand implements Callable<Integer> {
     private int year;
 
     @Option(
-            names = {"--sessionName", "-sn"},
+            names = {"--session-name", "-sn"},
             description = "Session name (e.g. FP1, PRACTICE1, Quali, Race,...)",
             required = true,
             converter = SessionNameConverter.class
