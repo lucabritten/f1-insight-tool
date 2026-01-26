@@ -29,14 +29,14 @@ public class LapCommand implements Callable<Integer> {
     private int year;
 
     @Option(
-            names = {"--sessionName", "-sn"},
+            names = {"--session-name", "-sn"},
             description = "Session name (e.g. FP1, PRACTICE1, Quali, Race,...)",
             required = true,
             converter = SessionNameConverter.class
     )
     private SessionName sessionName;
 
-    @Option(names = {"--driverNumber", "-d"},
+    @Option(names = {"--driver-number", "-d"},
             description = "The driver number (e.g., 44)",
             required = true)
     private int driverNumber;

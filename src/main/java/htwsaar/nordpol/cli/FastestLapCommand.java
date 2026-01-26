@@ -33,7 +33,7 @@ public class FastestLapCommand implements Callable<Integer> {
     private int year;
 
     @Option(
-            names = {"--sessionName", "-sn"},
+            names = {"--session-name", "-sn"},
             description = "Session name (e.g. FP1, PRACTICE1, Quali, Race,...)",
             required = true,
             converter = SessionNameConverter.class
@@ -41,7 +41,7 @@ public class FastestLapCommand implements Callable<Integer> {
     private SessionName sessionName;
 
     @Option(
-            names = {"--driverNumber", "-dn"},
+            names = {"--driver-number", "-dn"},
             description = "Driver number to filter fastest lap within the session"
     )
     private Integer driverNumber;
