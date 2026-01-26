@@ -16,7 +16,7 @@ import java.util.concurrent.Callable;
 )
 public class DriverCommand implements Callable<Integer> {
 
-    @Option(names = {"--firstName",
+    @Option(names = {"--first-name",
             "-fn"},
             description = "The drivers first name",
             required = true
@@ -24,7 +24,7 @@ public class DriverCommand implements Callable<Integer> {
     private String firstName;
 
     @Option(names = {
-            "--lastName",
+            "--last-name",
             "-ln"},
             description = "The drivers last name",
             required = true

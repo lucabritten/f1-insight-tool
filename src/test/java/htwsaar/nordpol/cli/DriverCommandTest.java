@@ -63,7 +63,7 @@ public class DriverCommandTest {
         assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
         assertThat(errorStream.toString())
                 .contains("Missing required option")
-                .contains("--lastName");
+                .contains("--last-name");
     }
 
     @Test
@@ -105,7 +105,7 @@ public class DriverCommandTest {
                 .thenReturn(new Driver("Max", "Verstappen", 1, "NED"));
 
         int exitCode = new CommandLine(new DriverCommand(mockDriverService))
-                .execute("--firstName", "Max", "--lastName", "Verstappen", "--year", "2024");
+                .execute("--first-name", "Max", "--last-name", "Verstappen", "--year", "2024");
 
         assertThat(exitCode).isZero();
     }
