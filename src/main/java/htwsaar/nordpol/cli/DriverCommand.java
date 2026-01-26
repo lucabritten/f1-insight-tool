@@ -8,6 +8,7 @@ import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.time.Year;
 import java.util.concurrent.Callable;
 
 @Command(name = "driver-info",
@@ -34,10 +35,9 @@ public class DriverCommand implements Callable<Integer> {
     @Option(names = {
             "--year",
             "-y"},
-            description = "The year the data is related to. This tool provides data from 2023 onwards.",
-            defaultValue = "2024"
+            description = "The year the data is related to. This tool provides data from 2023 onwards."
     )
-    private int year;
+    private int year = Year.now().getValue();
 
     private final DriverService driverService;
 

@@ -9,6 +9,8 @@ import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.sql.Time;
+import java.time.Year;
 import java.util.concurrent.Callable;
 
 @Command(
@@ -27,10 +29,9 @@ public class WeatherCommand implements Callable<Integer> {
 
     @Option(
             names = {"--year", "-y"},
-            description = "The season year",
-            defaultValue = "2024"
+            description = "The season year"
     )
-    private int year;
+    private int year = Year.now().getValue();
 
     @Option(
             names = {"--session-name", "-sn"},

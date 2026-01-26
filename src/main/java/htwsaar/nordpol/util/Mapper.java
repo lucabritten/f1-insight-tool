@@ -28,6 +28,7 @@ public class Mapper {
                 dto.country_code(),
                 dto.country_name(),
                 dto.location(),
+                dto.meeting_name(),
                 dto.year()
         );
     }

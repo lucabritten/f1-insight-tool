@@ -55,7 +55,7 @@ public class LapService implements ILapService {
         Driver driver = driverService.getDriverByNumberAndYear(driverNumber, year);
 
         List<Lap> laps = getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
-        return new LapsWithContext(meeting.location(),
+        return new LapsWithContext(meeting.meetingName(),
                 driver.firstName() + " " + driver.lastName(),
                 session.sessionName(),
                 laps
@@ -95,7 +95,7 @@ public class LapService implements ILapService {
 
         Driver driver = driverService.getDriverByNumberAndYear(fastestLap.driverNumber(), year);
 
-        return new LapsWithContext(meeting.location(),
+        return new LapsWithContext(meeting.meetingName(),
                 driver.firstName() + " " + driver.lastName(),
                 session.sessionName(),
                 List.of(fastestLap)
@@ -133,7 +133,7 @@ public class LapService implements ILapService {
 
         Driver driver = driverService.getDriverByNumberAndYear(driverNumber, year);
 
-        return new LapsWithContext(meeting.location(),
+        return new LapsWithContext(meeting.meetingName(),
                 driver.firstName() + " " + driver.lastName(),
                 session.sessionName(),
                 List.of(fastestLap)

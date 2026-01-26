@@ -12,6 +12,7 @@ import picocli.CommandLine;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.time.Year;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -212,5 +213,23 @@ public class WeatherCommandTest {
         assertThat(exitCode).isZero();
         assertThat(outputStream.toString()).contains("Austin");
         assertThat(outputStream.toString()).contains("Race");
+    }
+
+    @Test
+    void whenNoYearGiven_appliesDefaultYear() {
+        int currentYear = Year.now().getValue();
+
+        when(mockWeatherService.getWeatherByLocationYearAndSessionName(
+                "Austin",
+                currentYear,
+                SessionName.RACE
+        )).thenReturn(sampleWeatherContext);
+
+        int exitCode = new CommandLine(
+                new WeatherCommand(mockWeatherService)
+        ).execute("-l", "Austin", "-sn", "Race");
+
+        assertThat(exitCode).isZero();
+        assertThat(outputStream.toString()).contains("Austin");
     }
 }

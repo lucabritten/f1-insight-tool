@@ -8,6 +8,7 @@ import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.time.Year;
 import java.util.concurrent.Callable;
 
 @Command(name = "lap-info",
@@ -23,10 +24,9 @@ public class LapCommand implements Callable<Integer> {
     private String location;
 
     @Option(names = {"--year", "-y"},
-            description = "The season year (e.g., 2024)",
-            defaultValue = "2024"
+            description = "The season year (e.g., 2024)"
     )
-    private int year;
+    private int year = Year.now().getValue();
 
     @Option(
             names = {"--session-name", "-sn"},
