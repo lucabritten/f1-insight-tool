@@ -9,6 +9,7 @@ import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.util.Mapper;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -99,8 +100,8 @@ public class DriverService implements IDriverService {
     }
 
     private int getMeetingKeyForYear(int year) {
-        Meeting meeting = meetingService.getMeetingsByYear(year);
-        return meeting.meetingKey();
+        List<Meeting> meeting = meetingService.getMeetingsByYear(year);
+        return meeting.getFirst().meetingKey();
     }
 
 }

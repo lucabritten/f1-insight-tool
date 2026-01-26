@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,6 +57,11 @@ public class DriverServiceTest {
 
     @Test
     void getDriverByName_fetchesFromApiAndSavesDriver() {
+
+        Meeting meeting = new Meeting(1279,"AUS", "Australia", "Melbourne", 2026);
+        List<Meeting> meetingList = List.of(meeting);
+
+
         when(IDriverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2025))
                 .thenReturn(Optional.empty());
 
@@ -66,23 +72,27 @@ public class DriverServiceTest {
                 .thenReturn(Optional.of(apiDto));
 
         when(meetingService.getMeetingsByYear(anyInt()))
-                .thenReturn(new Meeting(0, null , null, null, 0));
+                .thenReturn(meetingList);
 
         Driver result =
                 driverService.getDriverByNameAndYear("Max", "Verstappen", 2025);
 
         assertThat(result.firstName()).isEqualTo("Max");
 
-        verify(IDriverRepo).saveOrUpdateDriverForYear(apiDto, 2025, 0);
+        verify(IDriverRepo).saveOrUpdateDriverForYear(apiDto, 2025, 1279);
     }
 
     @Test
     void getDriverByName_throwsException_whenDriverNotFoundAnywhere() {
+
+        Meeting meeting = new Meeting(1279,"AUS", "Australia", "Melbourne", 2026);
+        List<Meeting> meetingList = List.of(meeting);
+
         when(IDriverRepo.getDriverByFullNameForYear(anyString(), anyString(), anyInt()))
                 .thenReturn(Optional.empty());
 
         when(meetingService.getMeetingsByYear(anyInt()))
-                .thenReturn(new Meeting(0, null , null, null, 0));
+                .thenReturn(meetingList);
 
         when(driverClient.getDriverByName(anyString(), anyString(), anyInt()))
                 .thenReturn(Optional.empty());
