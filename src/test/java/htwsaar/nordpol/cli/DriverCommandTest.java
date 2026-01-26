@@ -10,6 +10,7 @@ import picocli.CommandLine;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.time.Year;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -42,7 +43,7 @@ public class DriverCommandTest {
 
     @Test
     void driverInfo_printsFormattedDriver(){
-        when(mockDriverService.getDriverByNameAndYear("Max", "Verstappen", 2024))
+        when(mockDriverService.getDriverByNameAndYear("Max", "Verstappen", Year.now().getValue()))
                 .thenReturn(new Driver("Max", "Verstappen", 1, "NED"));
 
         int exitCode = new CommandLine(
@@ -82,7 +83,7 @@ public class DriverCommandTest {
 
         int exitCode = new CommandLine(
                 new DriverCommand(mockDriverService)
-        ).execute("-fn", "Foo", "-ln", "Bar");
+        ).execute("-fn", "Foo", "-ln", "Bar", "-y", "2024");
 
         assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
         assertThat(errorStream.toString())

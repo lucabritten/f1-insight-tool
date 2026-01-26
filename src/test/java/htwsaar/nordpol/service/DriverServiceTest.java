@@ -61,7 +61,7 @@ public class DriverServiceTest {
         Meeting meeting = new Meeting(1279,"AUS", "Australia", "Melbourne", "Australia GP",2026);
         List<Meeting> meetingList = List.of(meeting);
 
-        when(IDriverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2025))
+        when(IDriverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2026))
                 .thenReturn(Optional.empty());
 
         DriverDto apiDto =
@@ -74,11 +74,11 @@ public class DriverServiceTest {
                 .thenReturn(meetingList);
 
         Driver result =
-                driverService.getDriverByNameAndYear("Max", "Verstappen", 2025);
+                driverService.getDriverByNameAndYear("Max", "Verstappen", 2026);
 
         assertThat(result.firstName()).isEqualTo("Max");
 
-        verify(IDriverRepo).saveOrUpdateDriverForYear(apiDto, 2025, 0);
+        verify(IDriverRepo).saveOrUpdateDriverForYear(apiDto, 2026, 1279);
     }
 
     @Test
