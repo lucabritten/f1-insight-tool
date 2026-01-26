@@ -65,13 +65,13 @@ cd f1-insight-tool
 ## Quick Start
 Run a driver info lookup (uses Maven Exec Plugin):
 ```bash
-mvn -q exec:java -Dexec.args="driver-info --firstName Max --lastName Verstappen --year 2024"
+mvn -q exec:java -Dexec.args="driver-info --first-name Max --last-name Verstappen --year 2024"
 ```
 
 Or build a shaded JAR and run it:
 ```bash
 mvn clean package
-java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar driver-info --firstName Max --lastName Verstappen --year 2024
+java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar driver-info --first-name Max --last-name Verstappen --year 2024
 ```
 
 ## Usage
@@ -87,13 +87,13 @@ java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar --help
 Prints driver information for a given season.
 
 Options:
-- `--firstName, -fn` (required): driver first name
-- `--lastName, -ln` (required): driver last name
+- `--first-name, -fn` (required): driver first name
+- `--last-name, -ln` (required): driver last name
 - `--year, -y` (optional, default: `2024`): season year (supported: 2023+)
 
 Examples:
 ```bash
-mvn -q exec:java -Dexec.args="driver-info --firstName Lewis --lastName Hamilton --year 2023"
+mvn -q exec:java -Dexec.args="driver-info --first-name Lewis --last-name Hamilton --year 2023"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar driver-info -fn Charles -ln Leclerc -y 2024
 ```
 
@@ -103,11 +103,11 @@ Prints averaged weather information for a given event location, year, and sessio
 Options:
 - `--location, -l` (required): event location (e.g., Austin)
 - `--year, -y` (optional, default: `2024`)
-- `--sessionName, -sn`(required): session name (e.g., `Race`, PRACTICE1)
+- `--session-name, -sn`(required): session name (e.g., `Race`, PRACTICE1)
 
 Examples:
 ```bash
-mvn -q exec:java -Dexec.args="weather-info --location Austin --year 2024 --sessionName Race"
+mvn -q exec:java -Dexec.args="weather-info --location Austin --year 2024 --session-name Race"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar weather-info -l Austin -y 2024 -sn Qualifying
 ```
 
@@ -117,12 +117,12 @@ Prints all laps a driver has completed in a specified session of a race-weekend.
 Options:
 - `--location, -l`(required): event location (e.g., Austin)
 - `--year, -y' (optional, default: `2024`)
-- `--sessionName, -sn` (required): session name (e.g., `Race`, PRACTICE1)
-- `--driverNumber, -dn` (required): driver number to filter by
+- `--session-name, -sn` (required): session name (e.g., `Race`, PRACTICE1)
+- `--driver-number, -dn` (required): driver number to filter by
 
 Examples:
 ```bash
-mvn -q exec:java -Dexec.args="lap-info --location Austin --year 2024 --sessionName Race --driverNumber 44"
+mvn -q exec:java -Dexec.args="lap-info --location Austin --year 2024 --session-name Race --driver-number 44"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar lap-info -l Austin -y 2024 -sn Race -dn 44
 ```
 
@@ -132,12 +132,12 @@ Prints the fastest lap for a given event location, year, and session. Optionally
 Options:
 - `--location, -l` (required): event location (e.g., Austin)
 - `--year, -y` (optional, default: `2024`)
-- `--sessionName, -sn`(required): session name (e.g., `Race`, PRACTICE1)
-- `--driverNumber, -dn` (optional): driver number to filter by
+- `--session-name, -sn`(required): session name (e.g., `Race`, PRACTICE1)
+- `--driver-number, -dn` (optional): driver number to filter by
 
 Examples:
 ```bash
-mvn -q exec:java -Dexec.args="fastest-lap --location Austin --year 2024 --sessionName Race"
+mvn -q exec:java -Dexec.args="fastest-lap --location Austin --year 2024 --session-name Race"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar fastest-lap -l Austin -y 2024 -sn Race -dn 44
 ```
 
