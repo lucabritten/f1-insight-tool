@@ -7,7 +7,7 @@ import picocli.CommandLine.Command;
  * 0 - success
  * 2 - Entity not found / invalid input / BUSINESS LOGIC ERROR
  */
-@Command(name = "F1Insight",
+@Command(name = "f1-insight",
         mixinStandardHelpOptions = true,
         subcommands = {
             DriverCommand.class,
