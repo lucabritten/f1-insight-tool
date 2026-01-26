@@ -111,6 +111,13 @@
         <groupId>org.jooq</groupId>
         <artifactId>jooq-codegen-maven</artifactId>
         <version>3.19.7</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-meta-extensions</artifactId>
+            <version>3.19.7</version>
+          </dependency>
+        </dependencies>
 
         <executions>
           <execution>
@@ -123,15 +130,20 @@
         </executions>
 
         <configuration>
-          <jdbc>
-            <driver>org.sqlite.JDBC</driver>
-            <url>jdbc:sqlite:${project.basedir}/f1data.db</url>
-          </jdbc>
-
           <generator>
             <database>
-              <name>org.jooq.meta.sqlite.SQLiteDatabase</name>
+              <name>org.jooq.meta.extensions.ddl.DDLDatabase</name>
               <includes>.*</includes>
+              <properties>
+                <property>
+                  <key>scripts</key>
+                  <value>${project.basedir}/src/main/resources/schema.sql</value>
+                </property>
+                <property>
+                  <key>dialect</key>
+                  <value>SQLITE</value>
+                </property>
+              </properties>
               <forcedTypes>
                 <forcedType>
                   <name>DOUBLE</name>
