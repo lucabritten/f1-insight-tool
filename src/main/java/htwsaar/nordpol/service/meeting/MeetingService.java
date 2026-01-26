@@ -8,6 +8,7 @@ import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.repository.meeting.IMeetingRepo;
 import htwsaar.nordpol.util.Mapper;
 
+import java.util.List;
 import java.util.Optional;
 
 public class MeetingService implements IMeetingService {
@@ -44,13 +45,13 @@ public class MeetingService implements IMeetingService {
         throw new MeetingNotFoundException(year, location);
     }
 
-    public Meeting getMeetingsByYear(int year){
+    public List<Meeting> getMeetingsByYear(int year){
 
         Optional<MeetingDto> dtoFromApi =
                 meetingClient.getMeetingsByYear(year);
 
         if (dtoFromApi.isPresent()) {
-            return Mapper.toMeeting(dtoFromApi.get());
+            return dtoFromApi.stream().map(Mapper::toMeeting).toList();
         }
         throw new MeetingNotFoundException(year, "");
     }
