@@ -1,10 +1,12 @@
 package htwsaar.nordpol.util;
 
+import htwsaar.nordpol.cli.view.FastestLapsWithContext;
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.domain.Weather;
+import htwsaar.nordpol.cli.view.FastestLapEntry;
 
 public class Formatter {
 
@@ -112,6 +114,36 @@ public class Formatter {
                 lap.durationSector1(),
                 lap.durationSector2(),
                 lap.durationSector3()
+        );
+    }
+    public static String formatFastestLaps(FastestLapsWithContext context) {
+
+        StringBuilder rows = new StringBuilder();
+        int rank = 1;
+
+        for(FastestLapEntry entry : context.entries()){
+            rows.append(String.format("%-4d. %-22s %-7d %-7d %-7.3f\n",
+                    rank++,
+                    entry.driverName(),
+                    entry.driverNumber(),
+                    entry.lapNumber(),
+                    entry.lapDuration()
+            ));
+        }
+        return """ 
+               %s========== FASTEST LAP ==========%s
+               Meeting  : %s
+               Session  : %s
+               Entries   : %d
+               
+               # Driver                 No.     Lap#    Lap(s)
+               %s
+               """.formatted(
+                       BOLD, context.entries().size(), RESET,
+                       context.location(),
+                       context.sessionName().displayName(),
+                       context.entries().size(),
+                       rows
         );
     }
 }
