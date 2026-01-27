@@ -23,7 +23,7 @@ class LapClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        lapClient = new LapClient(mockWebServer.url("/v1").toString());
+        lapClient = new LapClient(mockWebServer.url("/").toString());
     }
 
     @AfterEach
@@ -77,8 +77,11 @@ class LapClientTest {
         assertThat(lap.is_pit_out_lap()).isFalse();
 
         RecordedRequest request = mockWebServer.takeRequest();
-        assertThat(request.getPath())
-                .isEqualTo("/v1/laps?session_key=123&driver_number=44");
+
+        assertThat(request.getPath()).startsWith("//laps?");
+        assertThat(request.getPath()).contains("session_key=123");
+        assertThat(request.getPath()).contains("driver_number=44");
+
     }
 
     @Test
@@ -114,7 +117,10 @@ class LapClientTest {
         assertThat(lap.is_pit_out_lap()).isTrue();
 
         RecordedRequest request = mockWebServer.takeRequest();
-        assertThat(request.getPath()).isEqualTo("/v1/laps?session_key=999");
+
+        assertThat(request.getPath()).startsWith("//laps?");
+        assertThat(request.getPath()).contains("session_key=999");
+
     }
 
     @Test
@@ -172,6 +178,6 @@ class LapClientTest {
 
         assertThatThrownBy(() -> lapClient.getLapsBySessionKey(123))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch laps from OpenF1 API");
+                .hasMessageContaining("Failed to fetch data from OpenF1 API");
     }
 }

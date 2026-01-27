@@ -1,65 +1,38 @@
 package htwsaar.nordpol.api.lap;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.dto.LapDto;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 
-public class LapClient implements ILapClient{
+public class LapClient extends BaseClient implements ILapClient{
 
-    private final OkHttpClient okHttpClient;
-    private final ObjectMapper objectMapper;
-    private final String BASE_URL;
-
-    public LapClient(String url) {
-        this.okHttpClient = new OkHttpClient();
-        this.objectMapper = new ObjectMapper();
-        this.BASE_URL = url;
+    public LapClient(String baseUrl) {
+        super(baseUrl);
     }
     public LapClient(){
-        this("https://api.openf1.org/v1");
+        super();
     }
 
     @Override
     public List<LapDto> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
-        String url = BASE_URL + "/laps?"
-                + "session_key=" + sessionKey
-                + "&driver_number=" + driverNumber;
-        return fetch(url);
+        return fetchList(
+                "/laps",
+                Map.of(
+                        "session_key", sessionKey,
+                        "driver_number", driverNumber
+                ),
+                LapDto[].class
+        );
     }
 
     @Override
     public List<LapDto> getLapsBySessionKey(int sessionKey) {
-        String url = BASE_URL + "/laps?"
-                + "session_key=" + sessionKey;
-        return fetch(url);
-    }
-
-    private List<LapDto> fetch(String url) {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        try (Response response = okHttpClient.newCall(request).execute()) {
-            if(!response.isSuccessful()){
-                return List.of();
-            }
-
-            LapDto[] result =
-                    objectMapper.readValue(response.body().string(), LapDto[].class);
-
-            if(result.length == 0){
-                return List.of();
-            }
-
-            return List.of(result);
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to fetch laps from OpenF1 API: ", e);
-        }
+        return fetchList(
+                "/laps",
+                Map.of("session_key", sessionKey),
+                LapDto[].class
+        );
     }
 }
