@@ -52,7 +52,7 @@ CREATE TABLE "Laps" (
         REFERENCES "Sessions"(session_key)
 );
 
-CREATE TABLE "WEATHER" (
+CREATE TABLE "Weather" (
     session_key INTEGER NOT NULL,
     meeting_key INTEGER NOT NULL,
     avg_air_temperature DOUBLE NOT NULL,
