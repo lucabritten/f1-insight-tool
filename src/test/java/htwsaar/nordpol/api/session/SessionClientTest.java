@@ -22,7 +22,7 @@ public class SessionClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        sessionClient = new SessionClient(mockWebServer.url("/v1").toString());
+        sessionClient = new SessionClient(mockWebServer.url("/").toString());
     }
 
     @AfterEach
@@ -94,6 +94,6 @@ public class SessionClientTest {
         assertThatThrownBy(() ->
                 sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice"))
         .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch session from OpenF1 API");
+                .hasMessageContaining("Failed to fetch data from OpenF1 API");
     }
 }

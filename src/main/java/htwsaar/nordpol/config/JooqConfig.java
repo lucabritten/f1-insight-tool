@@ -7,11 +7,17 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JooqConfig {
@@ -29,9 +35,8 @@ public class JooqConfig {
     public static DSLContext createContext(){
         try{
             Path dbPath = Path.of("f1data.db");
-            boolean needsInit = Files.notExists(dbPath);
             Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
-            if (needsInit) {
+            if (schemaNeedsInitialization(connection)) {
                 initializeSchema(connection);
             }
             return DSL.using(connection);
@@ -40,12 +45,12 @@ public class JooqConfig {
         }
     }
 
-    private static void initializeSchema(Connection connection) throws Exception {
+    static void initializeSchema(Connection connection) throws Exception {
         try (Statement statement = connection.createStatement()) {
             statement.execute("PRAGMA foreign_keys=ON");
         }
 
-        String schemaSql = readResource();
+        String schemaSql = readSchemaSql();
         for (String ddl : schemaSql.split(";")) {
             String trimmed = ddl.trim();
             if (trimmed.isEmpty()) {
@@ -53,11 +58,35 @@ public class JooqConfig {
             }
             try (Statement statement = connection.createStatement()) {
                 statement.execute(trimmed);
+            } catch (SQLException e) {
+                if (!isAlreadyExistsError(e)) {
+                    throw e;
+                }
             }
         }
     }
 
-    private static String readResource() throws Exception {
+    static boolean schemaNeedsInitialization(Connection connection) throws Exception {
+        Set<String> expectedTables = extractTableNames(readSchemaSql());
+        if (expectedTables.isEmpty()) {
+            return false;
+        }
+        Set<String> existingTables = new HashSet<>();
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT name FROM sqlite_master WHERE type='table'")) {
+            while (resultSet.next()) {
+                existingTables.add(resultSet.getString(1).toLowerCase(Locale.ROOT));
+            }
+        }
+        for (String table : expectedTables) {
+            if (!existingTables.contains(table.toLowerCase(Locale.ROOT))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static String readSchemaSql() throws Exception {
         InputStream inputStream = JooqConfig.class.getClassLoader().getResourceAsStream("schema.sql");
         if (inputStream == null) {
             throw new IllegalStateException("Missing resource: " + "schema.sql");
@@ -67,5 +96,20 @@ public class JooqConfig {
                     .filter(line -> !line.trim().startsWith("--"))
                     .collect(Collectors.joining("\n"));
         }
+    }
+
+    private static Set<String> extractTableNames(String schemaSql) {
+        Set<String> tableNames = new HashSet<>();
+        Pattern pattern = Pattern.compile("(?i)create\\s+table\\s+\\\"?([A-Za-z0-9_]+)\\\"?");
+        Matcher matcher = pattern.matcher(schemaSql);
+        while (matcher.find()) {
+            tableNames.add(matcher.group(1));
+        }
+        return tableNames;
+    }
+
+    private static boolean isAlreadyExistsError(SQLException e) {
+        String message = e.getMessage();
+        return message != null && message.toLowerCase(Locale.ROOT).contains("already exists");
     }
 }

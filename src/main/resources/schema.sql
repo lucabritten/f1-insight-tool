@@ -52,7 +52,7 @@ CREATE TABLE "Laps" (
         REFERENCES "Sessions"(session_key)
 );
 
-CREATE TABLE "WEATHER" (
+CREATE TABLE "Weather" (
     session_key INTEGER NOT NULL,
     meeting_key INTEGER NOT NULL,
     avg_air_temperature DOUBLE NOT NULL,
@@ -67,3 +67,24 @@ CREATE TABLE "WEATHER" (
     CONSTRAINT "fk_WEATHER_pk_Meetings" FOREIGN KEY (meeting_key)
         REFERENCES "Meetings"(meeting_key)
 );
+
+CREATE TABLE session_results (
+                                 session_key        INTEGER NOT NULL,
+                                 driver_number      INTEGER NOT NULL,
+
+                                 position           INTEGER,
+                                 dnf                INTEGER NOT NULL,
+                                 dns                INTEGER NOT NULL,
+                                 dsq                INTEGER NOT NULL,
+
+                                 gap_to_leader_q1   TEXT,
+                                 gap_to_leader_q2   TEXT,
+                                 gap_to_leader_q3   TEXT,
+
+                                 duration_q1        REAL,
+                                 duration_q2        REAL,
+                                 duration_q3        REAL,
+
+                                 PRIMARY KEY (session_key, driver_number)
+);
+

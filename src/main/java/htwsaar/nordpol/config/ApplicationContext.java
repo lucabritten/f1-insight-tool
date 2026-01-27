@@ -4,7 +4,9 @@ import htwsaar.nordpol.api.driver.DriverClient;
 import htwsaar.nordpol.api.lap.LapClient;
 import htwsaar.nordpol.api.meeting.MeetingClient;
 import htwsaar.nordpol.api.session.SessionClient;
+import htwsaar.nordpol.api.sessionresult.SessionResultClient;
 import htwsaar.nordpol.api.weather.WeatherClient;
+import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.repository.driver.JooqDriverRepo;
 import htwsaar.nordpol.repository.lap.ILapRepo;
@@ -13,12 +15,14 @@ import htwsaar.nordpol.repository.meeting.IMeetingRepo;
 import htwsaar.nordpol.repository.meeting.JooqMeetingRepo;
 import htwsaar.nordpol.repository.session.ISessionRepo;
 import htwsaar.nordpol.repository.session.JooqSessionRepo;
+import htwsaar.nordpol.repository.sessionresult.JooqSessionResultRepo;
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
 import htwsaar.nordpol.repository.weather.JooqWeatherRepo;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.service.lap.LapService;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.service.session.SessionService;
+import htwsaar.nordpol.service.sessionResult.SessionResultService;
 import htwsaar.nordpol.service.weather.WeatherService;
 
 /**
@@ -30,7 +34,8 @@ import htwsaar.nordpol.service.weather.WeatherService;
  * <p>It centralizes object creation and keeps CLI commands free from
  * infrastructure and configuration logic.</p>
  */
-public class ApplicationContext {
+public class
+ApplicationContext {
 
     private ApplicationContext(){
 
@@ -71,5 +76,11 @@ public class ApplicationContext {
         ILapRepo lapRepo = new JooqLapRepo(JooqConfig.createContext());
         LapClient lapClient = new LapClient();
         return new LapService(lapRepo, lapClient, meetingService(), sessionService(), driverService());
+    }
+
+    public static SessionResultService sessionResultService() {
+        SessionResultClient client = new SessionResultClient();
+        JooqSessionResultRepo repo = new JooqSessionResultRepo(JooqConfig.createContext());
+        return new SessionResultService(meetingService(), sessionService(), client, repo);
     }
 }

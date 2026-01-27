@@ -2,9 +2,11 @@ package htwsaar.nordpol.util;
 
 import htwsaar.nordpol.cli.view.FastestLapsWithContext;
 import htwsaar.nordpol.cli.view.LapsWithContext;
+import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Lap;
+import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.cli.view.FastestLapEntry;
 
@@ -145,5 +147,95 @@ public class Formatter {
                context.entries().size(),
                rows
        );
+    }
+
+    public static String formatSessionResults(SessionResultWithContext context) {
+        boolean qualifying = isQualifying(context);
+
+        StringBuilder rows = new StringBuilder();
+        int rowIndex = 1;
+
+        for (SessionResult r : context.results()) {
+            String status = statusOf(r);
+            int position = r.position() > 0 ? r.position() : rowIndex++;
+
+            if (qualifying) {
+                rows.append(String.format(
+                        "%-4d %-6d %-8s %-8s %-8s %-8s%n",
+                        position,
+                        r.driverNumber(),
+                        formatTime(r.duration(), 0),
+                        formatTime(r.duration(), 1),
+                        formatTime(r.duration(), 2),
+                        qualifyingGap(r, status)
+                ));
+            } else {
+                rows.append(String.format(
+                        "%-4d %-6d %-8s%n",
+                        position,
+                        r.driverNumber(),
+                        raceGap(r, status)
+                ));
+            }
+        }
+
+        return """
+                %s%s
+                Meeting: %s
+                Session: %s
+                Results: %d
+                %s
+                %s
+                """.formatted(
+                BOLD, RESET,
+                context.meetingName(),
+                context.sessionName().displayName(),
+                context.results().size(),
+                qualifying
+                        ? "Pos  No     Q1(s)    Q2(s)    Q3(s)    Gap"
+                        : "Pos  No     Gap",
+                rows
+        );
+    }
+
+    private static boolean isQualifying(SessionResultWithContext context) {
+        return context.sessionName().displayName().toLowerCase().contains("qualifying");
+    }
+
+    private static String formatTime(java.util.List<Double> durations, int index) {
+        return durations.size() > index && durations.get(index) != null
+                ? durations.get(index).toString()
+                : "-";
+    }
+
+    private static String statusOf(SessionResult r) {
+        if (r.dsq()) return "DSQ";
+        if (r.dns()) return "DNS";
+        if (r.dnf()) return "DNF";
+        return null;
+    }
+
+    private static String qualifyingGap(SessionResult r, String status) {
+        if (status != null) return status;
+
+        if (r.gapToLeader().size() > 2 && r.gapToLeader().get(2) != null)
+            return "+" + r.gapToLeader().get(2);
+
+        if (r.gapToLeader().size() > 1 && r.gapToLeader().get(1) != null)
+            return "+" + r.gapToLeader().get(1);
+
+        if (r.gapToLeader().size() > 0 && r.gapToLeader().get(0) != null)
+            return "+" + r.gapToLeader().get(0);
+
+        return "-";
+    }
+
+    private static String raceGap(SessionResult r, String status) {
+        if (status != null) return status;
+
+        if (!r.gapToLeader().isEmpty() && r.gapToLeader().get(0) != null)
+            return "+" + r.gapToLeader().get(0);
+
+        return "-";
     }
 }

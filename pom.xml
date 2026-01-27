@@ -163,6 +163,19 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>init-db</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>htwsaar.nordpol.config.DatabaseInitializer</mainClass>
+              <classpathScope>compile</classpathScope>
+            </configuration>
+          </execution>
+        </executions>
         <configuration>
           <mainClass>htwsaar.nordpol.App</mainClass>
         </configuration>

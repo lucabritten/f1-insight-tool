@@ -22,7 +22,7 @@ public class MeetingClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        meetingClient = new MeetingClient(mockWebServer.url("/v1").toString());
+        meetingClient = new MeetingClient(mockWebServer.url("/").toString());
     }
 
     @AfterEach
@@ -109,6 +109,6 @@ public class MeetingClientTest {
         assertThatThrownBy(() ->
                 meetingClient.getMeetingByYearAndLocation(2024, "Austin")
         ).isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch meeting");
+                .hasMessageContaining("Failed to fetch data from OpenF1 API");
     }
 }
