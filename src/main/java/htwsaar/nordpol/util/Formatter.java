@@ -122,7 +122,7 @@ public class Formatter {
         int rank = 1;
 
         for(FastestLapEntry entry : context.entries()){
-            rows.append(String.format("%-4d. %-22s %-7d %-7d %-7.3f\n",
+            rows.append(String.format("%-4d. %-22s %-7d %-7d %-7.3f%n",
                     rank++,
                     entry.driverName(),
                     entry.driverNumber(),
@@ -130,20 +130,20 @@ public class Formatter {
                     entry.lapDuration()
             ));
         }
-        return """ 
-               %s========== FASTEST LAP ==========%s
-               Meeting  : %s
-               Session  : %s
-               Entries   : %d
-               
-               # Driver                 No.     Lap#    Lap(s)
-               %s
-               """.formatted(
-                       BOLD, context.entries().size(), RESET,
-                       context.location(),
-                       context.sessionName().displayName(),
-                       context.entries().size(),
-                       rows
-        );
+        return """
+       %s========== FASTEST LAPS ==========%s
+       Meeting  : %s
+       Session  : %s
+       Entries  : %d
+
+       # Driver                 No.     Lap#    Lap(s)
+       %s
+       """.formatted(
+               BOLD, RESET,
+               context.location(),
+               context.sessionName().displayName(),
+               context.entries().size(),
+               rows
+       );
     }
 }
