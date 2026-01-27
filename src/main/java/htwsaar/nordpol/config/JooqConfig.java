@@ -11,7 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class JooqConfig {
@@ -40,12 +42,12 @@ public class JooqConfig {
         }
     }
 
-    private static void initializeSchema(Connection connection) throws Exception {
+    static void initializeSchema(Connection connection) throws Exception {
         try (Statement statement = connection.createStatement()) {
             statement.execute("PRAGMA foreign_keys=ON");
         }
 
-        String schemaSql = readResource();
+        String schemaSql = readSchemaSql();
         for (String ddl : schemaSql.split(";")) {
             String trimmed = ddl.trim();
             if (trimmed.isEmpty()) {
@@ -53,11 +55,15 @@ public class JooqConfig {
             }
             try (Statement statement = connection.createStatement()) {
                 statement.execute(trimmed);
+            } catch (SQLException e) {
+                if (!isAlreadyExistsError(e)) {
+                    throw e;
+                }
             }
         }
     }
 
-    private static String readResource() throws Exception {
+    static String readSchemaSql() throws Exception {
         InputStream inputStream = JooqConfig.class.getClassLoader().getResourceAsStream("schema.sql");
         if (inputStream == null) {
             throw new IllegalStateException("Missing resource: " + "schema.sql");
@@ -67,5 +73,10 @@ public class JooqConfig {
                     .filter(line -> !line.trim().startsWith("--"))
                     .collect(Collectors.joining("\n"));
         }
+    }
+
+    private static boolean isAlreadyExistsError(SQLException e) {
+        String message = e.getMessage();
+        return message != null && message.toLowerCase(Locale.ROOT).contains("already exists");
     }
 }
