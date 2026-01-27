@@ -1,10 +1,6 @@
 package htwsaar.nordpol.util;
 
-import htwsaar.nordpol.api.dto.DriverDto;
-import htwsaar.nordpol.api.dto.LapDto;
-import htwsaar.nordpol.api.dto.MeetingDto;
-import htwsaar.nordpol.api.dto.SessionDto;
-import htwsaar.nordpol.api.dto.WeatherDto;
+import htwsaar.nordpol.api.dto.*;
 import htwsaar.nordpol.domain.*;
 
 public class Mapper {
@@ -66,6 +62,24 @@ public class Mapper {
                 dto.duration_sector_3(),
                 dto.lap_duration(),
                 dto.is_pit_out_lap()
+        );
+    }
+
+    public static SessionResult toSessionResult(SessionResultDto dto) {
+        // Normalize null lists from API/DB into empty lists to avoid NPEs downstream
+        var gapToLeader = dto.gap_to_leader() != null ? dto.gap_to_leader() : java.util.List.<String>of();
+        var duration = dto.duration() != null ? dto.duration() : java.util.List.<Double>of();
+
+        int position = dto.position() != null ? dto.position() : 0;
+
+        return new SessionResult(
+                dto.driver_number(),
+                position,
+                gapToLeader,
+                duration,
+                dto.dnf(),
+                dto.dsq(),
+                dto.dns()
         );
     }
 

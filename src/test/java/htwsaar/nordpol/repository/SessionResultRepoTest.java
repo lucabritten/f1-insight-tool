@@ -1,0 +1,120 @@
+
+package htwsaar.nordpol.repository;
+
+import htwsaar.nordpol.api.dto.SessionResultDto;
+import htwsaar.nordpol.repository.sessionresult.JooqSessionResultRepo;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class SessionResultRepoTest {
+
+    private DSLContext dsl;
+    private JooqSessionResultRepo repo;
+
+    @BeforeEach
+    void setup() throws Exception {
+        Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
+        dsl = DSL.using(connection, SQLDialect.SQLITE);
+
+        dsl.execute("""
+            CREATE TABLE session_results (
+                session_key        INTEGER NOT NULL,
+                driver_number      INTEGER NOT NULL,
+            
+                position           INTEGER,
+                dnf                INTEGER NOT NULL,
+                dns                INTEGER NOT NULL,
+                dsq                INTEGER NOT NULL,
+            
+                gap_to_leader_q1   TEXT,
+                gap_to_leader_q2   TEXT,
+                gap_to_leader_q3   TEXT,
+            
+                duration_q1        REAL,
+                duration_q2        REAL,
+                duration_q3        REAL,
+            
+                PRIMARY KEY (session_key, driver_number)
+            );
+        """);
+
+        repo = new JooqSessionResultRepo(dsl);
+    }
+
+    @Test
+    void saveAll_and_getSessionResultBySessionKey_roundtripWorks() {
+        // given
+        SessionResultDto dto = new SessionResultDto(
+                9640,
+                List.of("0.0","0.2", "0.3"),
+                16,
+                false,
+                false,
+                false,
+                List.of(93.5, 92.8, 92.6),
+                3
+        );
+
+        // when
+        repo.saveAll(List.of(dto));
+        List<SessionResultDto> results = repo.getSessionResultBySessionKey(9640);
+
+        // then
+        assertThat(results).hasSize(1);
+
+        SessionResultDto stored = results.get(0);
+        assertThat(stored.session_key()).isEqualTo(9640);
+        assertThat(stored.driver_number()).isEqualTo(16);
+        assertThat(stored.position()).isEqualTo(3);
+        assertThat(stored.dnf()).isFalse();
+        assertThat(stored.dns()).isFalse();
+        assertThat(stored.dsq()).isFalse();
+        assertThat(stored.duration()).containsExactly(93.5, 92.8, 92.6);
+        assertThat(stored.gap_to_leader()).containsExactly("0.0", "0.2", "0.3");
+    }
+
+    @Test
+    void getSessionResultBySessionKey_returnsEmptyList_whenNoResultsExist() {
+        // when
+        List<SessionResultDto> results = repo.getSessionResultBySessionKey(9999);
+
+        // then
+        assertThat(results).isEmpty();
+    }
+
+    @Test
+    void saveAll_handlesNullQualifyingValuesCorrectly() {
+        // given
+        SessionResultDto dto = new SessionResultDto(
+                9641,
+                List.of(),
+                44,
+                true,
+                false,
+                false,
+                List.of(94.2),
+                0
+        );
+
+        // when
+        repo.saveAll(List.of(dto));
+        List<SessionResultDto> results = repo.getSessionResultBySessionKey(9641);
+
+        // then
+        assertThat(results).hasSize(1);
+        SessionResultDto stored = results.get(0);
+
+        assertThat(stored.dnf()).isTrue();
+        assertThat(stored.gap_to_leader()).containsExactly(null, null, null);
+        assertThat(stored.duration()).containsExactly(94.2, null, null);
+    }
+}
