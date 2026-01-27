@@ -1,90 +1,42 @@
 package htwsaar.nordpol.api.driver;
 
+import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.dto.DriverDto;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
 
-/**
- * HTTP client for accessing the OpenF1 API.
- *
- * <p>This client is responsible only for fetching raw API data
- * and mapping it to DTOs. No business logic is applied here.</p>
- */
-public class DriverClient {
 
-    private final OkHttpClient okHttpClient;
-    private final ObjectMapper objectMapper;
-    private final String BASE_URL;
+public class DriverClient extends BaseClient {
 
-    public DriverClient(String url){
-        this.okHttpClient = new OkHttpClient.Builder()
-                .callTimeout(Duration.ofSeconds(10))
-                .connectTimeout(Duration.ofSeconds(5))
-                .readTimeout(Duration.ofSeconds(10))
-                .writeTimeout(Duration.ofSeconds(10))
-                .build();
-        this.objectMapper = new ObjectMapper();
-        this.BASE_URL = url;
+    public DriverClient(String baseUrl) {
+        super(baseUrl);
     }
 
-    public DriverClient(){
-        this("https://api.openf1.org/v1");
+    public DriverClient() {
+        super();
     }
 
-    /**
-     * Fetches a driver from the OpenF1 APi by name and year.
-     *
-     * @return an Optional containing the driver DTO if found
-     */
     public Optional<DriverDto> getDriverByName(String firstName, String lastName, int meetingKey) {
-
-        String url = BASE_URL + "/drivers?"
-                     + "first_name=" + firstName
-                     + "&last_name=" + lastName
-                     + "&meeting_key=" + meetingKey;
-
-        return getDriverDto(url);
+        return fetchSingle(
+                "/drivers",
+                Map.of(
+                        "first_name", firstName,
+                        "last_name", lastName,
+                        "meeting_key", meetingKey
+                ),
+                DriverDto[].class
+        );
     }
-
 
     public Optional<DriverDto> getDriverByNumberAndMeetingKey(int number, int meetingKey) {
-
-        String url = BASE_URL + "/drivers?"
-                    + "driver_number=" + number
-                    + "&meeting_key=" + meetingKey;
-
-        return getDriverDto(url);
+        return fetchSingle(
+                "/drivers",
+                Map.of(
+                        "driver_number", number,
+                        "meeting_key", meetingKey
+                ),
+                DriverDto[].class
+        );
     }
-
-    @NotNull
-    private Optional<DriverDto> getDriverDto(String url) {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        try(Response response = okHttpClient.newCall(request).execute()){
-
-            if(!response.isSuccessful())
-                return Optional.empty();
-
-            DriverDto[] result =
-                    objectMapper.readValue(response.body().string(), DriverDto[].class);
-
-            if(result.length == 0)
-                return Optional.empty();
-
-            return Optional.of(result[0]);
-
-        } catch (IOException e){
-            throw new RuntimeException("Failed to fetch driver from OpenF1 API", e);
-        }
-    }
-
 }

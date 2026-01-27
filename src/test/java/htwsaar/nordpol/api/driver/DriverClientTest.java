@@ -21,14 +21,14 @@ public class DriverClientTest {
     private MockWebServer mockWebServer;
 
 
-    @InjectMocks
+
     private DriverClient driverClient;
 
     @BeforeEach
     void setUp() throws IOException{
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        driverClient = new DriverClient(mockWebServer.url("/v1").toString());
+        driverClient = new DriverClient(mockWebServer.url("/").toString());
     }
 
     @AfterEach
@@ -105,10 +105,6 @@ public class DriverClientTest {
                 .setResponseCode(200)
         );
 
-        mockWebServer.enqueue(new MockResponse()
-                .setBody(invalidJson)
-                .setResponseCode(200)
-        );
 
         assertThatThrownBy(() ->
                 driverClient.getDriverByName("Lewis", "Hamilton", 2025)
@@ -141,7 +137,7 @@ public class DriverClientTest {
                 driverClient.getDriverByName("Lewis", "Hamilton", 1234)
 
         ).isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch driver from OpenF1 API");
+                .hasMessageContaining("Failed to fetch data from OpenF1 API");
     }
 
 
@@ -239,6 +235,6 @@ public class DriverClientTest {
         assertThatThrownBy(() ->
                 driverClient.getDriverByNumberAndMeetingKey(44, 2025)
         ).isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch driver from OpenF1 API");
+                .hasMessageContaining("Failed to fetch data from OpenF1 API");
     }
 }
