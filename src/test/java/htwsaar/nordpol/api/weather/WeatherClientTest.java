@@ -23,7 +23,7 @@ public class WeatherClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        weatherClient = new WeatherClient(mockWebServer.url("/v1").toString());
+        weatherClient = new WeatherClient(mockWebServer.url("/").toString());
     }
 
     @AfterEach
@@ -132,6 +132,6 @@ public class WeatherClientTest {
         assertThatThrownBy(() ->
                 weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1247, 9001)
         ).isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch weather");
+                .hasMessageContaining("Failed to fetch data from OpenF1 API");
     }
 }
