@@ -44,7 +44,7 @@ public class SessionServiceTest {
 
         assertThat(result.meetingKey()).isEqualTo(1256);
 
-        verify(sessionClient, never()).getSessionByMeetingKeyAndsessionName(1256, "Practice%201");
+        verify(sessionClient, never()).getSessionByMeetingKeyAndsessionName(1256, "Practice 1");
         verify(ISessionRepo).getSessionByMeetingKeyAndSessionName(1256, "Practice 1");
     }
 
@@ -56,7 +56,7 @@ public class SessionServiceTest {
         SessionDto apiDto =
                 new SessionDto(1256, 9999, "Practice 1", "Practice 1");
 
-        when(sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice%201"))
+        when(sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice 1"))
                 .thenReturn(Optional.of(apiDto));
 
         Session result =
@@ -72,7 +72,7 @@ public class SessionServiceTest {
         when(ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
                 .thenReturn(Optional.empty());
 
-        when(sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice%201"))
+        when(sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice 1"))
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
