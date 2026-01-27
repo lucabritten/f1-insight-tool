@@ -93,6 +93,57 @@ public class DriverService implements IDriverService {
         throw new DriverNotFoundException(number, year);
     }
 
+    public Driver getDriverByNumberAndMeetingKey(int number, int year, int meetingKey) {
+        validateInputYear(year);
+
+        Optional<DriverDto> dtoFromDB = IDriverRepo.getDriverByStartNumberForYear(number, year);
+        if (dtoFromDB.isPresent())
+            return Mapper.toDriver(dtoFromDB.get());
+
+        Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumberAndMeetingKey(number, meetingKey);
+        if (dtoFromApi.isPresent()) {
+            DriverDto driverDto = dtoFromApi.get();
+            IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meetingKey);
+            return Mapper.toDriver(driverDto);
+        }
+        throw new DriverNotFoundException(number, year);
+    }
+
+    public Driver getDriverByNumberWithFallback(int number, int year, int meetingKey) {
+        try {
+            return getDriverByNumberAndMeetingKey(number, year, meetingKey);
+        } catch (DriverNotFoundException ex) {
+            Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumber(number);
+            if (dtoFromApi.isPresent()) {
+                DriverDto driverDto = dtoFromApi.get();
+                IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meetingKey);
+                return Mapper.toDriver(driverDto);
+            }
+            List<Meeting> meetings = meetingService.getMeetingsByYear(year);
+            for (Meeting meeting : meetings) {
+                Optional<DriverDto> dtoFromOtherMeeting =
+                        driverClient.getDriverByNumberAndMeetingKey(number, meeting.meetingKey());
+                if (dtoFromOtherMeeting.isPresent()) {
+                    DriverDto driverDto = dtoFromOtherMeeting.get();
+                    IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meeting.meetingKey());
+                    return Mapper.toDriver(driverDto);
+                }
+            }
+            throw ex;
+        }
+    }
+
+    public void preloadDriversForYear(int year) {
+        validateInputYear(year);
+        List<Meeting> meetings = meetingService.getMeetingsByYear(year);
+        for (Meeting meeting : meetings) {
+            List<DriverDto> drivers = driverClient.getDriversByMeetingKey(meeting.meetingKey());
+            for (DriverDto driverDto : drivers) {
+                IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meeting.meetingKey());
+            }
+        }
+    }
+
     private void validateInputYear(int year) {
         if (year < MIN_YEAR) {
             throw new IllegalArgumentException("Only data from " + MIN_YEAR + " onwards is available.");

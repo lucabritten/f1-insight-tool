@@ -14,7 +14,8 @@ import picocli.CommandLine.Command;
             DriverCommand.class,
             WeatherCommand.class,
             FastestLapCommand.class,
-            LapCommand.class
+            LapCommand.class,
+            SessionReportCommand.class
         }
 )
 public class F1CLI {

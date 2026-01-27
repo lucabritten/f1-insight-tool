@@ -17,6 +17,7 @@ A command-line tool to explore Formula 1 data such as drivers, weather, sessions
   - [weather-info](#weather-info)
   - [lap-info](#lap-info)
   - [fastest-lap](#fastest-lap)
+  - [session-report](#session-report)
 - [Build & Run](#build--run)
 - [Configuration](#configuration)
 - [Data Sources](#data-sources)
@@ -38,6 +39,7 @@ It is built with a layered architecture and a clean separation between CLI, serv
 - Driver lookup by first and last name for a specific year
 - Weather aggregation by location, year and session name (e.g., Race, Qualifying)
 - Fastest lap lookup by location, year, session, with optional driver filter
+- PDF session reports with weather, results, and lap time comparisons
 - Local persistence via SQLite, with jOOQ for type-safe data access
 - Simple, consistent CLI UX with Picocli
 - Tested with JUnit 5 and AssertJ
@@ -139,6 +141,22 @@ Examples:
 ```bash
 mvn -q exec:java -Dexec.args="fastest-lap --location Austin --year 2024 --session-name Race"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar fastest-lap -l Austin -y 2024 -sn Race -dn 44
+```
+
+### session-report
+Generates a PDF report for a session including weather, results, and a lap time comparison chart.
+
+Options:
+- `--location, -l` (required): event location (e.g., Monza)
+- `--year, -y` (optional, default: `2024`)
+- `--session-name, -sn` (required): session name (e.g., `Race`, PRACTICE1)
+- `--top-drivers, -td` (optional): limit to the first N drivers in result order
+- `--output, -o` (optional): output path for the PDF (default: `reports/session-report-<location>-<year>-<session>.pdf`)
+
+Examples:
+```bash
+mvn -q exec:java -Dexec.args="session-report --location Monza --year 2024 --session-name Race"
+java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar session-report -l Monza -y 2024 -sn Race -td 5 -o reports/monza-race.pdf
 ```
 
 ## Build & Run

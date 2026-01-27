@@ -47,10 +47,10 @@ public class MeetingService implements IMeetingService {
 
     public List<Meeting> getMeetingsByYear(int year){
 
-        Optional<MeetingDto> dtoFromApi =
+        List<MeetingDto> dtoFromApi =
                 meetingClient.getMeetingsByYear(year);
 
-        if (dtoFromApi.isPresent()) {
+        if (!dtoFromApi.isEmpty()) {
             return dtoFromApi.stream().map(Mapper::toMeeting).toList();
         }
         throw new MeetingNotFoundException(year, "");
