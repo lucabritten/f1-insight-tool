@@ -25,11 +25,13 @@ public class SessionReportCommand implements Callable<Integer> {
             description = "The meeting location (e.g., \"Monza\")",
             required = true
     )
+
     private String location;
 
     @Option(names = {"--year", "-y"},
             description = "The season year (e.g., 2024)"
     )
+
     private int year = Year.now().getValue();
 
     @Option(
@@ -38,18 +40,21 @@ public class SessionReportCommand implements Callable<Integer> {
             required = true,
             converter = SessionNameConverter.class
     )
+
     private SessionName sessionName;
 
     @Option(
             names = {"--top-drivers", "-td"},
             description = "Limit the report to the first N drivers in result order"
     )
+
     private Integer topDrivers;
 
     @Option(
             names = {"--output", "-o"},
             description = "Output path for the generated PDF"
     )
+
     private String output;
 
     private final SessionReportService sessionReportService;
