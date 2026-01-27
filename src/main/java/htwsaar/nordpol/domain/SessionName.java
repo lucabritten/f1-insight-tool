@@ -1,34 +1,27 @@
 package htwsaar.nordpol.domain;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 public enum SessionName {
 
-    PRACTICE1("Practice 1", "Practice%201", "FP1"),
-    PRACTICE2("Practice 2","Practice%202", "FP2"),
-    PRACTICE3("Practice 3","Practice%20", "FP3"),
-    QUALIFYING("Qualifying","Qualifying", "Quali"),
-    SPRINT_SHOOTOUT("Sprint Qualifying","Sprint%20Shootout", "SprintQuali"),
+    PRACTICE1("Practice 1", "FP1"),
+    PRACTICE2("Practice 2", "FP2"),
+    PRACTICE3("Practice 3", "FP3"),
+    QUALIFYING("Qualifying", "Quali"),
+    SPRINT_SHOOTOUT("Sprint Shootout", "SprintQuali"),
     SPRINT("Sprint", "Sprint"),
-    RACE("Race", "Race", "GP");
+    RACE("Race", "GP");
 
-    private final String dbValue;        // what we store/send to DB/API
-    private final String[] aliases;        // accepted inputs
-    private final String apiValue;
+    private final String dbValue;
+    private final String[] aliases;
 
-    SessionName(String dbValue, String apiValue,  String... aliases) {
+    SessionName(String dbValue,  String... aliases) {
         this.dbValue = dbValue;
-        this.apiValue = apiValue;
         this.aliases = aliases;
     }
 
     public String dbValue() {
         return dbValue;
-    }
-
-    public String apiValue(){
-        return apiValue;
     }
 
     public static SessionName fromString(String value) {
