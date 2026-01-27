@@ -10,6 +10,7 @@ import picocli.CommandLine.Command;
 @Command(name = "f1-insight",
         mixinStandardHelpOptions = true,
         subcommands = {
+            FastestLapsCommand.class,
             DriverCommand.class,
             WeatherCommand.class,
             FastestLapCommand.class,
