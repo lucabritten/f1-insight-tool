@@ -6,6 +6,8 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.report.SessionReport;
 import htwsaar.nordpol.report.SessionReportRenderer;
 import htwsaar.nordpol.service.report.SessionReportService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -20,6 +22,8 @@ import java.util.concurrent.Callable;
         mixinStandardHelpOptions = true
 )
 public class SessionReportCommand implements Callable<Integer> {
+
+    private static final Logger logger = LoggerFactory.getLogger(SessionReportCommand.class);
 
     @Option(names = {"--location", "-l"},
             description = "The meeting location (e.g., \"Monza\")",
@@ -75,10 +79,10 @@ public class SessionReportCommand implements Callable<Integer> {
             SessionReport report = sessionReportService.buildReport(location, year, sessionName, topDrivers);
             Path outputPath = Paths.get(resolveOutputPath());
             renderer.render(report, outputPath);
-            System.out.println("Report written to: " + outputPath.toAbsolutePath());
+            logger.info("Report written to: {}", outputPath.toAbsolutePath());
             return 0;
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            logger.error(e.getMessage());
             return 2;
         }
     }
@@ -100,7 +104,7 @@ public class SessionReportCommand implements Callable<Integer> {
         }
         String slug = value.trim().toLowerCase();
         slug = slug.replaceAll("[^a-z0-9]+", "-");
-        slug = slug.replaceAll("(^-|-$)", "");
+        slug = slug.replaceAll("((^-)|(-$))", "");
         if (slug.isBlank()) {
             return "unknown";
         }
