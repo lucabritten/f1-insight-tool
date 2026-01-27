@@ -1,5 +1,4 @@
 package htwsaar.nordpol.api.lap;
-
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.dto.LapDto;
 import java.util.List;

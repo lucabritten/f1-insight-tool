@@ -1,5 +1,4 @@
 package htwsaar.nordpol.api.sessionresult;
-
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.dto.SessionResultDto;
 import java.util.List;
