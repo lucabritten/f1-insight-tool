@@ -35,7 +35,7 @@ public class SessionReportService {
                                 LapService lapService,
                                 WeatherService weatherService,
                                 DriverService driverService) {
-        if (meetingService == null) {
+        if (meetingService == null){
             throw new IllegalArgumentException("meetingService must not be null.");
         }
         if (sessionService == null) {
@@ -72,29 +72,12 @@ public class SessionReportService {
 
         driverService.preloadDriversForYear(year);
 
-        WeatherWithContext weather;
-        try {
-            weather = weatherService.getWeatherByLocationYearAndSessionName(location, year, sessionName);
-        } catch (RuntimeException ex) {
-            weather = new WeatherWithContext(
-                    meeting.meetingName(),
-                    meeting.countryName(),
-                    session.sessionName(),
-                    null
-            );
-        }
-        SessionResultWithContext resultsContext;
-        try {
-            resultsContext = sessionResultService.getResultByLocationYearAndSessionType(location, year, sessionName);
-        } catch (RuntimeException ex) {
-            resultsContext = new SessionResultWithContext(
-                    meeting.meetingName(),
-                    session.sessionName(),
-                    List.of()
-            );
-        }
+        WeatherWithContext weather = weatherService.getWeatherByLocationYearAndSessionName(location, year, sessionName);
+
+        SessionResultWithContext resultsContext = sessionResultService.getResultByLocationYearAndSessionType(location, year, sessionName);
 
         List<SessionResult> reportResults = filterTopDrivers(resultsContext.results(), topDrivers);
+
         SessionResultWithContext reportResultsContext = new SessionResultWithContext(
                 resultsContext.meetingName(),
                 resultsContext.sessionName(),

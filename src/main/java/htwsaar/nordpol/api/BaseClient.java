@@ -30,21 +30,29 @@ public abstract class BaseClient {
     }
 
     protected <T> List<T> fetchList(String path, Map<String, ?> queries, Class<T[]> responseType) {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         String url = buildUrl(path, queries);
 
+        System.out.println(url);
         Request request = new Request.Builder()
                 .url(url)
                 .build();
 
         try (Response response = okHttpClient.newCall(request).execute()) {
-            if(!response.isSuccessful()) {
+            String bodyString = response.body() != null ? response.body().string() : "";
+            if (!response.isSuccessful()) {
+                System.out.println("OpenF1 request failed: " + response.code() + " " + response.message()
+                        + " body=" + bodyString);
                 return List.of();
             }
 
-            return Arrays.asList(objectMapper.readValue(response.body().string(), responseType));
-        }
-        catch(IOException e) {
-            throw new RuntimeException("Failed to fetch data from OpenF1 API");
+            return Arrays.asList(objectMapper.readValue(bodyString, responseType));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to fetch data from OpenF1 API", e);
         }
     }
 

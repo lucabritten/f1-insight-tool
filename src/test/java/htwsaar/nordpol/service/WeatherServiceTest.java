@@ -98,7 +98,7 @@ public class WeatherServiceTest {
         );
 
         when(weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1111,2222))
-                .thenReturn(Optional.of(weatherDtos));
+                .thenReturn(weatherDtos);
 
         Weather result =
                 weatherService.getWeatherByMeetingAndSessionKey(1111,2222);

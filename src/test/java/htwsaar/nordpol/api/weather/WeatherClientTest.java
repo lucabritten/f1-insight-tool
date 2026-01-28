@@ -64,15 +64,14 @@ public class WeatherClientTest {
                 .setResponseCode(200)
         );
 
-        Optional<List<WeatherDto>> result =
+        List<WeatherDto> result =
                 weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1247, 9001);
 
-        assertThat(result).isPresent();
+        assertThat(result).isNotEmpty();
 
-        List<WeatherDto> weather = result.get();
-        assertThat(weather).hasSize(2);
+        assertThat(result).hasSize(2);
 
-        WeatherDto first = weather.getFirst();
+        WeatherDto first = result.getFirst();
         assertThat(first.meeting_key()).isEqualTo(1247);
         assertThat(first.session_key()).isEqualTo(9001);
         assertThat(first.air_temperature()).isEqualTo(27.5);
@@ -93,7 +92,7 @@ public class WeatherClientTest {
                 .setResponseCode(200)
         );
 
-        Optional<List<WeatherDto>> result =
+        List<WeatherDto> result =
                 weatherClient.getWeatherDataByMeetingKeyAndSessionKey(9999, 8888);
 
         assertThat(result).isEmpty();
@@ -119,7 +118,7 @@ public class WeatherClientTest {
                 .setResponseCode(500)
         );
 
-        Optional<List<WeatherDto>> result =
+        List<WeatherDto> result =
                 weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1247, 9001);
 
         assertThat(result).isEmpty();

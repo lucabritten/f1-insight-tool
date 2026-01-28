@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IWeatherClient {
-    Optional<List<WeatherDto>> getWeatherDataByMeetingKeyAndSessionKey(int meetingKey, int sessionKey);
+    List<WeatherDto> getWeatherDataByMeetingKeyAndSessionKey(int meetingKey, int sessionKey);
 }
