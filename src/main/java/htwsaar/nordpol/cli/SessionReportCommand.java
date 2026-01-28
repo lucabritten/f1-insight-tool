@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 )
 public class SessionReportCommand implements Callable<Integer> {
 
-    private static final Logger logger = LoggerFactory.getLogger(SessionReportCommand.class);
+    public static final Logger logger = LoggerFactory.getLogger(SessionReportCommand.class);
 
     @Option(names = {"--location", "-l"},
             description = "The meeting location (e.g., \"Monza\")",

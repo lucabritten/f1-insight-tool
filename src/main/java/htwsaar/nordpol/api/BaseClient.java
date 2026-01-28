@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static htwsaar.nordpol.cli.SessionReportCommand.logger;
+
 public abstract class BaseClient {
 
     protected final OkHttpClient okHttpClient = new OkHttpClient();
@@ -30,11 +32,13 @@ public abstract class BaseClient {
     }
 
     protected <T> List<T> fetchList(String path, Map<String, ?> queries, Class<T[]> responseType) {
-        try {
+        try{
             Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (InterruptedException ie) {
+            logger.error("InterruptedException: ", ie);
+            Thread.currentThread().interrupt();
         }
+
         String url = buildUrl(path, queries);
 
         System.out.println(url);
