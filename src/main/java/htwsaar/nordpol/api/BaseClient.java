@@ -1,25 +1,44 @@
 package htwsaar.nordpol.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
+
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static htwsaar.nordpol.cli.SessionReportCommand.logger;
-
 public abstract class BaseClient {
 
-    protected final OkHttpClient okHttpClient = new OkHttpClient();
+    protected final OkHttpClient okHttpClient;
     protected final ObjectMapper objectMapper = new ObjectMapper();
     protected final String baseUrl;
 
     protected BaseClient(String baseUrl){
         this.baseUrl = baseUrl;
+        this.okHttpClient = new OkHttpClient().newBuilder()
+                .callTimeout(Duration.ofSeconds(10))
+                .connectTimeout(Duration.ofSeconds(5))
+                .readTimeout(Duration.ofSeconds(10))
+                .writeTimeout(Duration.ofSeconds(10))
+                .addInterceptor(chain -> {
+                    Response response = chain.proceed(chain.request());
+
+                    // 429 is how the api indicates a rate limit error
+                    if (!response.isSuccessful() && response.code() == 429) {
+                        System.err.println("Cloudant: "+response.message());
+
+                        try {
+                            System.out.println("wait and retry...");
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignored) {}
+
+                        response = chain.proceed(chain.request());
+                    }
+                    return response;
+                })
+                .build();
     }
 
     protected BaseClient(){
@@ -32,12 +51,6 @@ public abstract class BaseClient {
     }
 
     protected <T> List<T> fetchList(String path, Map<String, ?> queries, Class<T[]> responseType) {
-        try{
-            Thread.sleep(350);
-        } catch (InterruptedException ie) {
-            logger.error("InterruptedException: ", ie);
-            Thread.currentThread().interrupt();
-        }
 
         String url = buildUrl(path, queries);
 
