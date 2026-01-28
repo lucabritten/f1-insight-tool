@@ -23,18 +23,22 @@ public abstract class BaseClient {
                 .readTimeout(Duration.ofSeconds(10))
                 .writeTimeout(Duration.ofSeconds(10))
                 .addInterceptor(chain -> {
-                    Response response = chain.proceed(chain.request());
+                    Request request = chain.request();
+                    Response response = chain.proceed(request);
 
                     // 429 is how the api indicates a rate limit error
                     if (!response.isSuccessful() && response.code() == 429) {
-                        System.err.println("Cloudant: "+response.message());
+                        System.err.println("Rate limit hit: " + response.message());
+                        response.close(); // Close the failed response
 
                         try {
-                            System.out.println("wait and retry...");
+                            System.out.println("Waiting 1 second before retry...");
                             Thread.sleep(1000);
-                        } catch (InterruptedException ignored) {}
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
 
-                        response = chain.proceed(chain.request());
+                        response = chain.proceed(request);
                     }
                     return response;
                 })
@@ -46,8 +50,8 @@ public abstract class BaseClient {
     }
 
     protected <T> Optional<T> fetchSingle(String path, Map<String, ?> queries, Class<T[]> responseType) {
-        return fetchList(path, queries, responseType).stream()
-                        .findFirst();
+        List<T> results = fetchList(path, queries, responseType);
+        return results.stream().findFirst();
     }
 
     protected <T> List<T> fetchList(String path, Map<String, ?> queries, Class<T[]> responseType) {
