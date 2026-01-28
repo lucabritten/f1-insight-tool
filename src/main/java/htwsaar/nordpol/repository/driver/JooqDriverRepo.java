@@ -112,7 +112,8 @@ public class JooqDriverRepo implements IDriverRepo {
     @Override
     public Optional<DriverDto> getDriverByStartNumberForYear(int startNumber, int year) {
         var record = create.select(
-                        DRIVERS.FIRST_NAME, DRIVERS.LAST_NAME,
+                        DRIVERS.FIRST_NAME,
+                        DRIVERS.LAST_NAME,
                         DRIVER_NUMBERS.START_NUMBER.as("driver_number"),
                         DRIVERS.TEAM_NAME)
                 .from(DRIVER_NUMBERS)
@@ -124,4 +125,22 @@ public class JooqDriverRepo implements IDriverRepo {
 
         return Optional.ofNullable(record);
     }
+
+    @Override
+    public boolean hasNamedDriverNumberForYear(int startNumber, int year) {
+        Integer count = create
+                .selectCount()
+                .from(DRIVER_NUMBERS)
+                .join(DRIVERS).on(DRIVERS.DRIVER_ID.eq(DRIVER_NUMBERS.DRIVER_ID))
+                .where(DRIVER_NUMBERS.YEAR.eq(year)
+                        .and(DRIVER_NUMBERS.START_NUMBER.eq(startNumber))
+                        .and(DRIVERS.FIRST_NAME.isNotNull())
+                        .and(DRIVERS.FIRST_NAME.ne(""))
+                        .and(DRIVERS.LAST_NAME.isNotNull())
+                        .and(DRIVERS.LAST_NAME.ne("")))
+                .fetchOneInto(Integer.class);
+
+        return count != null && count > 0;
+    }
+
 }

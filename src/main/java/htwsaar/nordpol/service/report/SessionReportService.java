@@ -70,13 +70,16 @@ public class SessionReportService {
         Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
         Session session = sessionService.getSessionByMeetingKeyAndSessionName(meeting.meetingKey(), sessionName);
 
-        driverService.preloadDriversForYear(year);
-
         WeatherWithContext weather = weatherService.getWeatherByLocationYearAndSessionName(location, year, sessionName);
 
         SessionResultWithContext resultsContext = sessionResultService.getResultByLocationYearAndSessionType(location, year, sessionName);
 
         List<SessionResult> reportResults = filterTopDrivers(resultsContext.results(), topDrivers);
+        driverService.preloadMissingDriversForMeeting(
+                year,
+                meeting.meetingKey(),
+                extractDriverNumbers(reportResults)
+        );
 
         SessionResultWithContext reportResultsContext = new SessionResultWithContext(
                 resultsContext.meetingName(),
@@ -125,5 +128,12 @@ public class SessionReportService {
         } catch (RuntimeException ex) {
             return List.of();
         }
+    }
+
+    private List<Integer> extractDriverNumbers(List<SessionResult> results) {
+        return results.stream()
+                .map(SessionResult::driverNumber)
+                .distinct()
+                .toList();
     }
 }

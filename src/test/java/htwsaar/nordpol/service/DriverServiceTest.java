@@ -70,7 +70,7 @@ public class DriverServiceTest {
         when(driverClient.getDriverByName(eq("Max"), eq("Verstappen"), anyInt()))
                 .thenReturn(Optional.of(apiDto));
 
-        when(meetingService.getMeetingsByYear(anyInt()))
+        when(meetingService.getMeetingsForSessionReport(anyInt()))
                 .thenReturn(meetingList);
 
         Driver result =
@@ -90,7 +90,7 @@ public class DriverServiceTest {
         when(IDriverRepo.getDriverByFullNameForYear(anyString(), anyString(), anyInt()))
                 .thenReturn(Optional.empty());
 
-        when(meetingService.getMeetingsByYear(anyInt()))
+        when(meetingService.getMeetingsForSessionReport(anyInt()))
                 .thenReturn(meetingList);
 
         when(driverClient.getDriverByName(anyString(), anyString(), anyInt()))

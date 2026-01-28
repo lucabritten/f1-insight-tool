@@ -83,7 +83,9 @@ public class JooqLapRepo implements ILapRepo {
                     .where(LAPS.SESSION_KEY.eq(sessionKey)
                             .and(LAPS.DRIVER_NUMBER.eq(driverNumber))
                     ).orderBy(LAPS.LAP_NUMBER)
-                    .fetchInto(LapDto.class).stream().toList();
+                    .fetchInto(LapDto.class)
+                    .stream()
+                    .toList();
     }
 
     @Override

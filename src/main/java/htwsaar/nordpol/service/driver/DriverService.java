@@ -119,7 +119,7 @@ public class DriverService implements IDriverService {
                 IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meetingKey);
                 return Mapper.toDriver(driverDto);
             }
-            List<Meeting> meetings = meetingService.getMeetingsByYear(year);
+            List<Meeting> meetings = meetingService.getMeetingsForSessionReport(year);
             for (Meeting meeting : meetings) {
                 Optional<DriverDto> dtoFromOtherMeeting =
                         driverClient.getDriverByNumberAndMeetingKey(number, meeting.meetingKey());
@@ -133,13 +133,14 @@ public class DriverService implements IDriverService {
         }
     }
 
-    public void preloadDriversForYear(int year) {
+    public void preloadMissingDriversForMeeting(int year, int meetingKey, List<Integer> driverNumbers) {
         validateInputYear(year);
-        List<Meeting> meetings = meetingService.getMeetingsByYear(year);
-        for (Meeting meeting : meetings) {
-            List<DriverDto> drivers = driverClient.getDriversByMeetingKey(meeting.meetingKey());
-            for (DriverDto driverDto : drivers) {
-                IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meeting.meetingKey());
+        for (Integer driverNumber : driverNumbers) {
+            if (driverNumber == null) {
+                continue;
+            }
+            if (!IDriverRepo.hasNamedDriverNumberForYear(driverNumber, year)) {
+                getDriverByNumberAndMeetingKey(driverNumber, year, meetingKey);
             }
         }
     }
@@ -151,7 +152,7 @@ public class DriverService implements IDriverService {
     }
 
     private int getMeetingKeyForYear(int year) {
-        List<Meeting> meeting = meetingService.getMeetingsByYear(year);
+        List<Meeting> meeting = meetingService.getMeetingsForSessionReport(year);
         return meeting.getFirst().meetingKey();
     }
 

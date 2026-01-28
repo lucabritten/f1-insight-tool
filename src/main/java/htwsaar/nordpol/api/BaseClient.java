@@ -33,7 +33,7 @@ public abstract class BaseClient {
 
     protected <T> List<T> fetchList(String path, Map<String, ?> queries, Class<T[]> responseType) {
         try{
-            Thread.sleep(500);
+            Thread.sleep(350);
         } catch (InterruptedException ie) {
             logger.error("InterruptedException: ", ie);
             Thread.currentThread().interrupt();
