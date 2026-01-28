@@ -16,8 +16,9 @@ public class WeatherClient extends BaseClient implements IWeatherClient{
     }
 
     @Override
-    public Optional<List<WeatherDto>> getWeatherDataByMeetingKeyAndSessionKey(int meetingKey, int sessionKey) {
-        List<WeatherDto> result = fetchList(
+    public List<WeatherDto> getWeatherDataByMeetingKeyAndSessionKey(int meetingKey, int sessionKey) {
+
+        return fetchList(
                 "/weather",
                 Map.of(
                         "meeting_key", meetingKey,
@@ -25,9 +26,5 @@ public class WeatherClient extends BaseClient implements IWeatherClient{
                 ),
                 WeatherDto[].class
         );
-
-        return result.isEmpty()
-                ? Optional.empty()
-                : Optional.of(result);
     }
 }

@@ -7,8 +7,6 @@ import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.service.lap.LapService;
 import htwsaar.nordpol.util.Formatter;
 import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 import java.util.concurrent.Callable;
 
 

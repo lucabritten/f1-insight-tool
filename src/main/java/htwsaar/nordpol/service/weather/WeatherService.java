@@ -57,16 +57,15 @@ public class WeatherService implements IWeatherService {
         }
 
         List<WeatherDto> dtosFromApi =
-                weatherClient.getWeatherDataByMeetingKeyAndSessionKey(meetingKey,sessionKey)
-                        .orElseThrow(() ->
-                                new WeatherNotFoundException(meetingKey, sessionKey)
-                        );
+                weatherClient.getWeatherDataByMeetingKeyAndSessionKey(meetingKey,sessionKey);
 
-        WeatherDto averagedWeather = calculateAverageData(dtosFromApi);
+        if(!dtosFromApi.isEmpty()) {
+            WeatherDto averagedWeather = calculateAverageData(dtosFromApi);
+            weatherRepo.save(averagedWeather);
+            return Mapper.toWeather(averagedWeather);
+        }
 
-        weatherRepo.save(averagedWeather);
-
-        return Mapper.toWeather(averagedWeather);
+        throw new WeatherNotFoundException(meetingKey, sessionKey);
     }
 
     private WeatherDto calculateAverageData(List<WeatherDto> dtoList){
