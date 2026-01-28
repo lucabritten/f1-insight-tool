@@ -4,7 +4,6 @@ import htwsaar.nordpol.api.dto.LapDto;
 import org.jooq.DSLContext;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.nordpol.jooq.tables.Laps.LAPS;
 
