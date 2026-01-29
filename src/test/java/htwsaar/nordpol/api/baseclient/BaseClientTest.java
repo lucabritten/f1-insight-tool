@@ -39,7 +39,7 @@ class BaseClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        baseClient = new TestBaseClient(mockWebServer.url("/").toString());
+        baseClient = new TestBaseClient(mockWebServer.url("/v1").toString());
     }
 
     @AfterEach
@@ -142,4 +142,37 @@ class BaseClientTest {
                 .hasMessageContaining("Failed to fetch data from OpenF1 API");
     }
 
+    @Test
+    void fetchList_retriesOnce_whenRateLimitedWith429() throws InterruptedException {
+        String json = """
+            [
+                { "value": "A" }
+            ]
+            """;
+
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(429)
+                .setBody("Rate limit")
+        );
+
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .addHeader("Content-Type", "application/json")
+                .setBody(json)
+        );
+
+        List<TestDto> result =
+                baseClient.fetchListTest("/test", null, TestDto[].class);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().value()).isEqualTo("A");
+
+        assertThat(mockWebServer.getRequestCount()).isEqualTo(2);
+
+        var firstRequest = mockWebServer.takeRequest();
+        var secondRequest = mockWebServer.takeRequest();
+
+        assertThat(firstRequest.getPath()).isEqualTo("/v1/test");
+        assertThat(secondRequest.getPath()).isEqualTo("/v1/test");
+    }
 }
