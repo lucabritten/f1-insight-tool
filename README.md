@@ -91,7 +91,7 @@ Prints driver information for a given season.
 Options:
 - `--first-name, -fn` (required): driver first name
 - `--last-name, -ln` (required): driver last name
-- `--year, -y` (optional, default: `2024`): season year (supported: 2023+)
+- `--year, -y` (optional, default: `current year`): season year (supported: 2023+)
 
 Examples:
 ```bash
@@ -104,7 +104,7 @@ Prints averaged weather information for a given event location, year, and sessio
 
 Options:
 - `--location, -l` (required): event location (e.g., Austin)
-- `--year, -y` (optional, default: `2024`)
+- `--year, -y` (optional, default: `current year`)
 - `--session-name, -sn`(required): session name (e.g., `Race`, PRACTICE1)
 
 Examples:
@@ -118,7 +118,7 @@ Prints all laps a driver has completed in a specified session of a race-weekend.
 
 Options:
 - `--location, -l`(required): event location (e.g., Austin)
-- `--year, -y' (optional, default: `2024`)
+- `--year, -y' (optional, default: `current year`)
 - `--session-name, -sn` (required): session name (e.g., `Race`, PRACTICE1)
 - `--driver-number, -dn` (required): driver number to filter by
 
@@ -133,10 +133,10 @@ Prints the fastest lap for a given event location, year, and session. Optionally
 
 Options:
 - `--location, -l` (required): event location (e.g., Austin)
-- `--year, -y` (optional, default: `2024`)
+  - `--year, -y` (optional, default: `current year`)
 - `--session-name, -sn`(required): session name (e.g., `Race`, PRACTICE1)
 - `--driver-number, -dn` (optional): driver number to filter by
-
+- `--top-laps, -tl` (optional): limit to the first N laps (default: 1),
 Examples:
 ```bash
 mvn -q exec:java -Dexec.args="fastest-lap --location Austin --year 2024 --session-name Race"
@@ -148,7 +148,7 @@ Generates a PDF report for a session including weather, results, and a lap time 
 
 Options:
 - `--location, -l` (required): event location (e.g., Monza)
-- `--year, -y` (optional, default: `2024`)
+- `--year, -y` (optional, default: `current year`)
 - `--session-name, -sn` (required): session name (e.g., `Race`, PRACTICE1)
 - `--top-drivers, -td` (optional): limit to the first N drivers in result order
 - `--output, -o` (optional): output path for the PDF (default: `reports/session-report-<location>-<year>-<session>.pdf`)
