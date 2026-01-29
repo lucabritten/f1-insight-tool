@@ -1,7 +1,7 @@
 package htwsaar.nordpol.cli;
 
 import htwsaar.nordpol.cli.converter.SessionNameConverter;
-import htwsaar.nordpol.cli.view.LapsWithContext;
+import htwsaar.nordpol.cli.view.FastestLapsWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.service.lap.LapService;
@@ -46,6 +46,13 @@ public class FastestLapCommand implements Callable<Integer> {
     )
     private Integer driverNumber;
 
+    @Option(
+            names = {"--top-laps", "-tl"},
+            description = "The number of fastest laps to show (default: 1)",
+            defaultValue = "1"
+    )
+    private int topLaps;
+
     private final LapService lapService;
 
     public FastestLapCommand() {
@@ -59,11 +66,11 @@ public class FastestLapCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
-            LapsWithContext fastestLap = driverNumber == null
-                    ? lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName)
-                    : lapService.getFastestLapByLocationYearSessionNameAndDriverNumber(location, year, sessionName,driverNumber);
+            FastestLapsWithContext fastestLaps = driverNumber == null
+                    ? lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName, topLaps)
+                    : lapService.getFastestLapByLocationYearSessionNameAndDriverNumber(location, year, sessionName,driverNumber, topLaps);
 
-            String output = Formatter.formatFastestLap(fastestLap);
+            String output = Formatter.formatFastestLaps(fastestLaps);
 
             System.out.println(output);
             return 0;
