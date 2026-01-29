@@ -3,7 +3,6 @@ package htwsaar.nordpol.service.lap;
 import htwsaar.nordpol.api.lap.ILapClient;
 import htwsaar.nordpol.api.dto.LapDto;
 import htwsaar.nordpol.cli.view.FastestLapsWithContext;
-import htwsaar.nordpol.cli.view.FastestLapEntry;
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.exception.LapNotFoundException;
@@ -161,9 +160,6 @@ public class LapService implements ILapService {
             return List.of();
         }
 
-        // NOTE: Stream#toList() returns an unmodifiable List (Java 16+).
-        // Using limit(count) avoids mutating the list (e.g. removeLast()), which can throw
-        // UnsupportedOperationException and make it look like the loop "stops".
         return laps.stream()
                 .filter(l -> l.lapDuration() > 0)
                 .filter(l -> !l.isPitOutLap())
@@ -171,55 +167,6 @@ public class LapService implements ILapService {
                 .limit(count)
                 .toList();
     }
-
-
-//    public FastestLapsWithContext getFastestLapsByLocationYearAndSessionName(
-//            String location,
-//            int year,
-//            SessionName sessionName,
-//            int topN
-//    ) {
-//        if (location == null || location.isBlank()) {
-//            throw new IllegalArgumentException("location must not be null or blank.");
-//        }
-//        if (sessionName == null) {
-//            throw new IllegalArgumentException("sessionName must not be null.");
-//        }
-//        if (topN <= 0) {
-//            throw new IllegalArgumentException("topN must be positive.");
-//        }
-//
-//        Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
-//        int meetingKey = meeting.meetingKey();
-//
-//        Session session = sessionService.getSessionByMeetingKeyAndSessionName(meetingKey, sessionName);
-//        int sessionKey = session.sessionKey();
-//
-//
-//        List<LapDto> fastestFromDb = lapRepo.getFastestLapsBySessionKey(sessionKey, topN);
-//        if (!fastestFromDb.isEmpty()) {
-//            List<Lap> laps = fastestFromDb.stream().map(Mapper::toLap).toList();
-//            List<FastestLapEntry> entries = toFastestLapEntries(laps, year);
-//            return new FastestLapsWithContext(meeting.meetingName(), session.sessionName(), entries);
-//        }
-//
-//
-//        List<LapDto> apiLaps = lapClient.getLapsBySessionKey(sessionKey);
-//        if (apiLaps.isEmpty()) {
-//            throw new LapNotFoundException(sessionKey, -1);
-//        }
-//
-//        lapRepo.saveAll(apiLaps);
-//
-//        List<Lap> laps = apiLaps.stream()
-//                .map(Mapper::toLap)
-//                .toList();
-//
-//        List<Lap> topLaps = filterTopNLaps(laps, topN);
-//        List<FastestLapEntry> entries = toFastestLapEntries(topLaps, year);
-//
-//        return new FastestLapsWithContext(meeting.meetingName(), session.sessionName(), entries);
-//    }
 
     private List<Lap> filterTopNLaps(List<Lap> laps, int topN) {
         if (laps == null || laps.isEmpty()) {
@@ -233,20 +180,4 @@ public class LapService implements ILapService {
                 .limit(topN)
                 .toList();
     }
-
-    private List<FastestLapEntry> toFastestLapEntries(List<Lap> laps, int year) {
-        return laps.stream()
-                .map(l -> {
-                    Driver driver = driverService.getDriverByNumberAndYear(l.driverNumber(), year);
-                    String driverName = driver.firstName() + " " + driver.lastName();
-                    return new FastestLapEntry(
-                            driverName,
-                            l.lapDuration(),
-                            l.lapNumber(),
-                            l.driverNumber()
-                    );
-                })
-                .toList();
-    }
-
 }
