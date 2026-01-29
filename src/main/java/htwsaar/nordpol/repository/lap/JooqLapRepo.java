@@ -4,7 +4,6 @@ import htwsaar.nordpol.api.dto.LapDto;
 import org.jooq.DSLContext;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.nordpol.jooq.tables.Laps.LAPS;
 
@@ -83,7 +82,9 @@ public class JooqLapRepo implements ILapRepo {
                     .where(LAPS.SESSION_KEY.eq(sessionKey)
                             .and(LAPS.DRIVER_NUMBER.eq(driverNumber))
                     ).orderBy(LAPS.LAP_NUMBER)
-                    .fetchInto(LapDto.class).stream().toList();
+                    .fetchInto(LapDto.class)
+                    .stream()
+                    .toList();
     }
 
     @Override

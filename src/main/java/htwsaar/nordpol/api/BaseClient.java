@@ -1,25 +1,48 @@
 package htwsaar.nordpol.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
+
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static htwsaar.nordpol.cli.SessionReportCommand.logger;
-
 public abstract class BaseClient {
 
-    protected final OkHttpClient okHttpClient = new OkHttpClient();
+    protected final OkHttpClient okHttpClient;
     protected final ObjectMapper objectMapper = new ObjectMapper();
     protected final String baseUrl;
 
     protected BaseClient(String baseUrl){
         this.baseUrl = baseUrl;
+        this.okHttpClient = new OkHttpClient().newBuilder()
+                .callTimeout(Duration.ofSeconds(10))
+                .connectTimeout(Duration.ofSeconds(5))
+                .readTimeout(Duration.ofSeconds(10))
+                .writeTimeout(Duration.ofSeconds(10))
+                .addInterceptor(chain -> {
+                    Request request = chain.request();
+                    Response response = chain.proceed(request);
+
+                    // 429 is how the api indicates a rate limit error
+                    if (!response.isSuccessful() && response.code() == 429) {
+                        System.err.println("Rate limit hit: " + response.message());
+                        response.close(); // Close the failed response
+
+                        try {
+                            System.out.println("Waiting 1 second before retry...");
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+
+                        response = chain.proceed(request);
+                    }
+                    return response;
+                })
+                .build();
     }
 
     protected BaseClient(){
@@ -27,17 +50,11 @@ public abstract class BaseClient {
     }
 
     protected <T> Optional<T> fetchSingle(String path, Map<String, ?> queries, Class<T[]> responseType) {
-        return fetchList(path, queries, responseType).stream()
-                        .findFirst();
+        List<T> results = fetchList(path, queries, responseType);
+        return results.stream().findFirst();
     }
 
     protected <T> List<T> fetchList(String path, Map<String, ?> queries, Class<T[]> responseType) {
-        try{
-            Thread.sleep(500);
-        } catch (InterruptedException ie) {
-            logger.error("InterruptedException: ", ie);
-            Thread.currentThread().interrupt();
-        }
 
         String url = buildUrl(path, queries);
 

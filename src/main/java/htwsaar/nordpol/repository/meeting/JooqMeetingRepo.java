@@ -3,6 +3,7 @@ package htwsaar.nordpol.repository.meeting;
 import htwsaar.nordpol.api.dto.MeetingDto;
 import org.jooq.DSLContext;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.nordpol.jooq.tables.Meetings.MEETINGS;
@@ -34,8 +35,22 @@ public class JooqMeetingRepo implements IMeetingRepo {
                         dto.location(),
                         dto.meeting_name(),
                         dto.year())
+                .onConflict(MEETINGS.MEETING_KEY)
+                .doUpdate()
+                .set(MEETINGS.COUNTRY_NAME, dto.country_name())
+                .set(MEETINGS.COUNTRY_CODE, dto.country_code())
+                .set(MEETINGS.LOCATION, dto.location())
+                .set(MEETINGS.MEETING_NAME, dto.meeting_name())
+                .set(MEETINGS.YEAR, dto.year())
                 .execute();
 
+    }
+
+    @Override
+    public void saveList(List<MeetingDto> meetingList){
+        for (MeetingDto meetingDto : meetingList){
+            save(meetingDto);
+        }
     }
 
     private void validateMeeting(MeetingDto dto){
@@ -58,12 +73,34 @@ public class JooqMeetingRepo implements IMeetingRepo {
 
     @Override
     public Optional<MeetingDto> getMeetingByYearAndLocation(int year, String location) {
-        var record = create.select(MEETINGS.COUNTRY_CODE, MEETINGS.COUNTRY_NAME, MEETINGS.LOCATION, MEETINGS.MEETING_KEY, MEETINGS.MEETING_NAME, MEETINGS.YEAR)
+        var record = create.select(
+                        MEETINGS.COUNTRY_CODE,
+                        MEETINGS.COUNTRY_NAME,
+                        MEETINGS.LOCATION,
+                        MEETINGS.MEETING_KEY,
+                        MEETINGS.MEETING_NAME,
+                        MEETINGS.YEAR)
                 .from(MEETINGS)
                 .where(MEETINGS.YEAR.eq(year)
                         .and(MEETINGS.LOCATION.eq(location)))
                 .fetchOneInto(MeetingDto.class);
 
         return Optional.ofNullable(record);
+    }
+
+    @Override
+    public List<MeetingDto> getMeetingsByYear(int year){
+        return create.select(
+                        MEETINGS.COUNTRY_CODE,
+                        MEETINGS.COUNTRY_NAME,
+                        MEETINGS.LOCATION,
+                        MEETINGS.MEETING_KEY,
+                        MEETINGS.MEETING_NAME,
+                        MEETINGS.YEAR)
+                .from(MEETINGS)
+                .where(MEETINGS.YEAR.eq(year))
+                .fetchInto(MeetingDto.class)
+                .stream()
+                .toList();
     }
 }

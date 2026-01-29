@@ -45,12 +45,21 @@ public class MeetingService implements IMeetingService {
         throw new MeetingNotFoundException(year, location);
     }
 
-    public List<Meeting> getMeetingsByYear(int year){
+    public List<Meeting> getMeetingsForSessionReport(int year){
+        List<MeetingDto> dtoFromDB = meetingRepo.getMeetingsByYear(year);
+        System.out.println(dtoFromDB.size());
+        if (dtoFromDB.size() > 10) {
+            return dtoFromDB
+                    .stream()
+                    .map(Mapper::toMeeting)
+                    .toList();
+        }
 
         List<MeetingDto> dtoFromApi =
                 meetingClient.getMeetingsByYear(year);
 
         if (!dtoFromApi.isEmpty()) {
+            meetingRepo.saveList(dtoFromApi);
             return dtoFromApi.stream().map(Mapper::toMeeting).toList();
         }
         throw new MeetingNotFoundException(year, "");
