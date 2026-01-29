@@ -2,7 +2,7 @@ package htwsaar.nordpol.service;
 
 import htwsaar.nordpol.api.dto.LapDto;
 import htwsaar.nordpol.api.lap.ILapClient;
-import htwsaar.nordpol.cli.view.LapsWithContext;
+import htwsaar.nordpol.cli.view.FastestLapsWithContext;
 import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.exception.LapNotFoundException;
 import htwsaar.nordpol.repository.lap.ILapRepo;
@@ -120,13 +120,13 @@ public class LapServiceTest {
 
         when(driverService.getDriverByNumberAndYear(44, year)).thenReturn(new Driver("Lewis", "Hamilton", 44, "Mercedes"));
 
-        LapsWithContext result = lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName);
+        FastestLapsWithContext result = lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName, 1);
 
         assertThat(result.meetingName()).isEqualTo(meetingName);
         assertThat(result.sessionName().displayName()).isEqualTo(sessionName.displayName());
-        assertThat(result.driverName()).isEqualTo("Lewis Hamilton");
-        assertThat(result.laps()).hasSize(1);
-        Lap lap = result.laps().getFirst();
+        assertThat(result.drivers().getFirst().lastName()).isEqualTo("Hamilton");
+        assertThat(result.fastestLaps()).hasSize(1);
+        Lap lap = result.fastestLaps().getFirst();
         assertThat(lap.sessionKey()).isEqualTo(200);
         assertThat(lap.driverNumber()).isEqualTo(44);
         assertThat(lap.lapNumber()).isEqualTo(7);
@@ -158,13 +158,13 @@ public class LapServiceTest {
 
         when(driverService.getDriverByNumberAndYear(1, year)).thenReturn(new Driver("Max", "Verstappen", 1, "Red Bull"));
 
-        LapsWithContext result = lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName);
+        FastestLapsWithContext result = lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName, 1);
 
         assertThat(result.meetingName()).isEqualTo(meetingName);
         assertThat(result.sessionName().displayName()).isEqualTo(sessionName.displayName());
-        assertThat(result.driverName()).isEqualTo("Max Verstappen");
-        assertThat(result.laps()).hasSize(1);
-        Lap lap = result.laps().getFirst();
+        assertThat(result.drivers().getFirst().lastName()).isEqualTo("Verstappen");
+        assertThat(result.fastestLaps()).hasSize(1);
+        Lap lap = result.fastestLaps().getFirst();
         assertThat(lap.driverNumber()).isEqualTo(1);
         assertThat(lap.lapDuration()).isEqualTo(80.0);
 
@@ -186,7 +186,7 @@ public class LapServiceTest {
         when(lapRepo.getFastestLapsBySessionKey(200, 1)).thenReturn(List.of());
         when(lapClient.getLapsBySessionKey(200)).thenReturn(List.of());
 
-        assertThatThrownBy(() -> lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName))
+        assertThatThrownBy(() -> lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName, 1))
                 .isInstanceOf(LapNotFoundException.class);
     }
 
@@ -210,11 +210,11 @@ public class LapServiceTest {
 
         when(driverService.getDriverByNumberAndYear(driverNumber, year)).thenReturn(new Driver("Charles", "Leclerc", driverNumber, "Ferrari"));
 
-        LapsWithContext result = lapService.getFastestLapByLocationYearSessionNameAndDriverNumber(location, year, sessionName, driverNumber);
+        FastestLapsWithContext result = lapService.getFastestLapByLocationYearSessionNameAndDriverNumber(location, year, sessionName, driverNumber, 1);
 
-        assertThat(result.driverName()).isEqualTo("Charles Leclerc");
-        assertThat(result.laps()).hasSize(1);
-        Lap lap = result.laps().getFirst();
+        assertThat(result.drivers().getFirst().lastName()).isEqualTo("Leclerc");
+        assertThat(result.fastestLaps()).hasSize(1);
+        Lap lap = result.fastestLaps().getFirst();
         assertThat(lap.lapNumber()).isEqualTo(12);
         assertThat(lap.lapDuration()).isEqualTo(88.0);
 
@@ -243,10 +243,10 @@ public class LapServiceTest {
 
         when(driverService.getDriverByNumberAndYear(driverNumber, year)).thenReturn(new Driver("Carlos", "Sainz", driverNumber, "Ferrari"));
 
-        LapsWithContext result = lapService.getFastestLapByLocationYearSessionNameAndDriverNumber(location, year, sessionName, driverNumber);
+        FastestLapsWithContext result = lapService.getFastestLapByLocationYearSessionNameAndDriverNumber(location, year, sessionName, driverNumber, 1);
 
-        assertThat(result.laps()).hasSize(1);
-        assertThat(result.laps().getFirst().lapNumber()).isEqualTo(6);
+        assertThat(result.fastestLaps()).hasSize(1);
+        assertThat(result.fastestLaps().getFirst().lapNumber()).isEqualTo(6);
         verify(lapRepo).saveAll(List.of(invalid, valid));
         verify(lapClient).getLapsBySessionKeyAndDriverNumber(600, driverNumber);
     }
@@ -267,7 +267,7 @@ public class LapServiceTest {
         when(lapRepo.getLapsBySessionKeyAndDriverNumber(800, driverNumber)).thenReturn(List.of());
         when(lapClient.getLapsBySessionKeyAndDriverNumber(800, driverNumber)).thenReturn(List.of());
 
-        assertThatThrownBy(() -> lapService.getFastestLapByLocationYearSessionNameAndDriverNumber(location, year, sessionName, driverNumber))
+        assertThatThrownBy(() -> lapService.getFastestLapByLocationYearSessionNameAndDriverNumber(location, year, sessionName, driverNumber, 1))
                 .isInstanceOf(LapNotFoundException.class);
     }
 }

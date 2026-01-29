@@ -1,6 +1,5 @@
 package htwsaar.nordpol.util;
 
-import htwsaar.nordpol.cli.view.FastestLapsWithContext;
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.cli.view.WeatherWithContext;
@@ -8,7 +7,7 @@ import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.domain.Weather;
-import htwsaar.nordpol.cli.view.FastestLapEntry;
+import htwsaar.nordpol.cli.view.FastestLapsWithContext;
 
 public class Formatter {
 
@@ -119,34 +118,48 @@ public class Formatter {
         );
     }
     public static String formatFastestLaps(FastestLapsWithContext context) {
-
         StringBuilder rows = new StringBuilder();
-        int rank = 1;
 
-        for(FastestLapEntry entry : context.entries()){
-            rows.append(String.format("%-4d. %-22s %-7d %-7d %-7.3f%n",
-                    rank++,
-                    entry.driverName(),
-                    entry.driverNumber(),
-                    entry.lapNumber(),
-                    entry.lapDuration()
+        int driversSize = context.drivers() == null ? 0 : context.drivers().size();
+        int lapsSize = context.fastestLaps() == null ? 0 : context.fastestLaps().size();
+        int count = Math.min(driversSize, lapsSize);
+
+        for (int i = 0; i < count; i++) {
+            Driver driver = context.drivers().get(i);
+            Lap lap = context.fastestLaps().get(i);
+
+            String driverName = (driver.firstName() + " " + driver.lastName()).trim();
+
+            rows.append(String.format(
+                    "%-4d %-22s %-7d %-7d %-7.3f%n",
+                    i + 1,
+                    driverName,
+                    driver.driverNumber(),
+                    lap.lapNumber(),
+                    lap.lapDuration()
             ));
         }
+
+        String mismatchNote = (driversSize != lapsSize)
+                ? String.format("(warning: drivers=%d, laps=%d)", driversSize, lapsSize)
+                : "";
+
         return """
        %s========== FASTEST LAPS ==========%s
        Meeting  : %s
        Session  : %s
-       Entries  : %d
+       Entries  : %d %s
 
-       # Driver                 No.     Lap#    Lap(s)
+       #    Driver                 No.     Lap#    Lap(s)
        %s
        """.formatted(
-               BOLD, RESET,
-               context.location(),
-               context.sessionName().displayName(),
-               context.entries().size(),
-               rows
-       );
+                BOLD, RESET,
+                context.meetingName(),
+                context.sessionName().displayName(),
+                count,
+                mismatchNote.isEmpty() ? "" : (" " + mismatchNote),
+                rows
+        );
     }
 
     public static String formatSessionResults(SessionResultWithContext context) {
@@ -234,7 +247,7 @@ public class Formatter {
         if (status != null) return status;
 
         if (!r.gapToLeader().isEmpty() && r.gapToLeader().get(0) != null)
-            return "+" + r.gapToLeader().get(0);
+            return "+" + r.gapToLeader().getFirst();
 
         return "-";
     }

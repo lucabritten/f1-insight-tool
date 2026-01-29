@@ -13,6 +13,7 @@ import htwsaar.nordpol.service.session.SessionService;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.util.Mapper;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -86,28 +87,32 @@ public class LapService implements ILapService {
     }
 
     @Override
-    public LapsWithContext getFastestLapByLocationYearAndSessionName(String location, int year, SessionName sessionName) {
+    public FastestLapsWithContext getFastestLapByLocationYearAndSessionName(String location, int year, SessionName sessionName, int count) {
         Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
         int meetingKey = meeting.meetingKey();
 
         Session session = sessionService.getSessionByMeetingKeyAndSessionName(meetingKey, sessionName);
         int sessionKey = session.sessionKey();
 
-        Lap fastestLap = getFastestLapBySessionKey(sessionKey);
+        List<Lap> fastestLaps = getFastestLapsBySessionKey(sessionKey, count);
 
-        Driver driver = driverService.getDriverByNumberAndYear(fastestLap.driverNumber(), year);
+        List<Driver> drivers = new ArrayList<>();
 
-        return new LapsWithContext(meeting.meetingName(),
-                driver.firstName() + " " + driver.lastName(),
+        fastestLaps.forEach((lap) -> drivers.add(driverService.getDriverByNumberAndYear(lap.driverNumber(), year)));
+
+        return new FastestLapsWithContext(meeting.meetingName(),
                 session.sessionName(),
-                List.of(fastestLap)
+                drivers,
+                fastestLaps
         );
     }
 
-    private Lap getFastestLapBySessionKey(int sessionKey) {
-        List<LapDto> fastestFromDb = lapRepo.getFastestLapsBySessionKey(sessionKey, 1);
+    private List<Lap> getFastestLapsBySessionKey(int sessionKey, int count) {
+        List<LapDto> fastestFromDb = lapRepo.getFastestLapsBySessionKey(sessionKey, count);
         if (!fastestFromDb.isEmpty()) {
-            return Mapper.toLap(fastestFromDb.getFirst());
+            return fastestFromDb.stream()
+                    .map(Mapper::toLap)
+                    .toList();
         }
 
         List<LapDto> apiLaps = lapClient.getLapsBySessionKey(sessionKey);
@@ -120,90 +125,101 @@ public class LapService implements ILapService {
                 .map(Mapper::toLap)
                 .toList();
 
-        return filterFastestLap(laps);
+        return filterFastestLaps(laps, count);
     }
 
+    //Übergangslösung mit der driver list
     @Override
-    public LapsWithContext getFastestLapByLocationYearSessionNameAndDriverNumber(String location, int year, SessionName sessionName, int driverNumber){
+    public FastestLapsWithContext getFastestLapByLocationYearSessionNameAndDriverNumber(String location, int year, SessionName sessionName, int driverNumber, int count){
         Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
         int meetingKey = meeting.meetingKey();
 
         Session session = sessionService.getSessionByMeetingKeyAndSessionName(meetingKey, sessionName);
         int sessionKey = session.sessionKey();
 
-        Lap fastestLap = getFastestLapBySessionKeyAndDriverNumber(sessionKey, driverNumber);
+        List<Lap> fastestLaps = getFastestLapBySessionKeyAndDriverNumber(sessionKey, driverNumber, count);
 
         Driver driver = driverService.getDriverByNumberAndYear(driverNumber, year);
 
-        return new LapsWithContext(meeting.meetingName(),
-                driver.firstName() + " " + driver.lastName(),
+        List<Driver> drivers = new ArrayList<>();
+        fastestLaps.forEach(lap -> drivers.add(driver));
+
+        return new FastestLapsWithContext(meeting.meetingName(),
                 session.sessionName(),
-                List.of(fastestLap)
+                drivers,
+                fastestLaps
         );
     }
 
-    private Lap getFastestLapBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
+    private List<Lap> getFastestLapBySessionKeyAndDriverNumber(int sessionKey, int driverNumber, int count) {
         List<Lap> laps = getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
-        return filterFastestLap(laps);
+        return filterFastestLaps(laps, count);
     }
 
-    private Lap filterFastestLap(List<Lap> laps) {
-        int sessionKey = laps.getFirst().sessionKey();
+    private List<Lap> filterFastestLaps(List<Lap> laps, int count) {
+        if (laps == null || laps.isEmpty() || count <= 0) {
+            return List.of();
+        }
+
+        // NOTE: Stream#toList() returns an unmodifiable List (Java 16+).
+        // Using limit(count) avoids mutating the list (e.g. removeLast()), which can throw
+        // UnsupportedOperationException and make it look like the loop "stops".
         return laps.stream()
                 .filter(l -> l.lapDuration() > 0)
                 .filter(l -> !l.isPitOutLap())
-                .min(Comparator.comparingDouble(Lap::lapDuration))
-                .orElseThrow(() -> new LapNotFoundException(sessionKey));
-    }
-
-
-    public FastestLapsWithContext getFastestLapsByLocationYearAndSessionName(
-            String location,
-            int year,
-            SessionName sessionName,
-            int topN
-    ) {
-        if (location == null || location.isBlank()) {
-            throw new IllegalArgumentException("location must not be null or blank.");
-        }
-        if (sessionName == null) {
-            throw new IllegalArgumentException("sessionName must not be null.");
-        }
-        if (topN <= 0) {
-            throw new IllegalArgumentException("topN must be positive.");
-        }
-
-        Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
-        int meetingKey = meeting.meetingKey();
-
-        Session session = sessionService.getSessionByMeetingKeyAndSessionName(meetingKey, sessionName);
-        int sessionKey = session.sessionKey();
-
-
-        List<LapDto> fastestFromDb = lapRepo.getFastestLapsBySessionKey(sessionKey, topN);
-        if (!fastestFromDb.isEmpty()) {
-            List<Lap> laps = fastestFromDb.stream().map(Mapper::toLap).toList();
-            List<FastestLapEntry> entries = toFastestLapEntries(laps, year);
-            return new FastestLapsWithContext(meeting.meetingName(), session.sessionName(), entries);
-        }
-
-
-        List<LapDto> apiLaps = lapClient.getLapsBySessionKey(sessionKey);
-        if (apiLaps.isEmpty()) {
-            throw new LapNotFoundException(sessionKey, -1);
-        }
-
-        lapRepo.saveAll(apiLaps);
-
-        List<Lap> laps = apiLaps.stream()
-                .map(Mapper::toLap)
+                .sorted(Comparator.comparingDouble(Lap::lapDuration))
+                .limit(count)
                 .toList();
-
-        List<Lap> topLaps = filterTopNLaps(laps, topN);
-        List<FastestLapEntry> entries = toFastestLapEntries(topLaps, year);
-
-        return new FastestLapsWithContext(meeting.meetingName(), session.sessionName(), entries);
     }
+
+
+//    public FastestLapsWithContext getFastestLapsByLocationYearAndSessionName(
+//            String location,
+//            int year,
+//            SessionName sessionName,
+//            int topN
+//    ) {
+//        if (location == null || location.isBlank()) {
+//            throw new IllegalArgumentException("location must not be null or blank.");
+//        }
+//        if (sessionName == null) {
+//            throw new IllegalArgumentException("sessionName must not be null.");
+//        }
+//        if (topN <= 0) {
+//            throw new IllegalArgumentException("topN must be positive.");
+//        }
+//
+//        Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
+//        int meetingKey = meeting.meetingKey();
+//
+//        Session session = sessionService.getSessionByMeetingKeyAndSessionName(meetingKey, sessionName);
+//        int sessionKey = session.sessionKey();
+//
+//
+//        List<LapDto> fastestFromDb = lapRepo.getFastestLapsBySessionKey(sessionKey, topN);
+//        if (!fastestFromDb.isEmpty()) {
+//            List<Lap> laps = fastestFromDb.stream().map(Mapper::toLap).toList();
+//            List<FastestLapEntry> entries = toFastestLapEntries(laps, year);
+//            return new FastestLapsWithContext(meeting.meetingName(), session.sessionName(), entries);
+//        }
+//
+//
+//        List<LapDto> apiLaps = lapClient.getLapsBySessionKey(sessionKey);
+//        if (apiLaps.isEmpty()) {
+//            throw new LapNotFoundException(sessionKey, -1);
+//        }
+//
+//        lapRepo.saveAll(apiLaps);
+//
+//        List<Lap> laps = apiLaps.stream()
+//                .map(Mapper::toLap)
+//                .toList();
+//
+//        List<Lap> topLaps = filterTopNLaps(laps, topN);
+//        List<FastestLapEntry> entries = toFastestLapEntries(topLaps, year);
+//
+//        return new FastestLapsWithContext(meeting.meetingName(), session.sessionName(), entries);
+//    }
 
     private List<Lap> filterTopNLaps(List<Lap> laps, int topN) {
         if (laps == null || laps.isEmpty()) {
