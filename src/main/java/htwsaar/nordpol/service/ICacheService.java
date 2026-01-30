@@ -1,5 +1,7 @@
 package htwsaar.nordpol.service;
 
+import htwsaar.nordpol.api.dto.MeetingDto;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;

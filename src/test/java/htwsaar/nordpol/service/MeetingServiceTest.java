@@ -3,13 +3,14 @@ package htwsaar.nordpol.service;
 
 import htwsaar.nordpol.api.dto.MeetingDto;
 import htwsaar.nordpol.api.meeting.MeetingClient;
+import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.repository.meeting.IMeetingRepo;
 import htwsaar.nordpol.service.meeting.MeetingService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -23,20 +24,26 @@ import static org.mockito.Mockito.*;
 public class MeetingServiceTest {
 
     @Mock
-    IMeetingRepo IMeetingRepo;
+    IMeetingRepo meetingRepo;
 
     @Mock
     MeetingClient meetingClient;
 
-    @InjectMocks
+    ICacheService cacheService = ApplicationContext.cacheService();
+
     MeetingService meetingService;
+
+    @BeforeEach
+    void setup() {
+        meetingService = new MeetingService(meetingRepo, meetingClient, cacheService);
+    }
 
     @Test
     void getMeetingByYearAndLocation_returnsMeetingFromDatabase(){
         MeetingDto meetingDto =
                 new MeetingDto("JPN", "Japan", "Suzuka", 1256, "Japanese Grand Prix", 2025);
 
-        when(IMeetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
+        when(meetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
                 .thenReturn(Optional.of(meetingDto));
 
         Meeting result =
@@ -45,12 +52,12 @@ public class MeetingServiceTest {
         assertThat(result.year()).isEqualTo(2025);
 
         verify(meetingClient, never()).getMeetingByYearAndLocation(2025, "Suzuka");
-        verify(IMeetingRepo).getMeetingByYearAndLocation(2025, "Suzuka");
+        verify(meetingRepo).getMeetingByYearAndLocation(2025, "Suzuka");
     }
 
     @Test
     void getMeetingByYearAndLocation_fetchesFromApiAndSavesSession(){
-        when(IMeetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
+        when(meetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
                 .thenReturn(Optional.empty());
 
         MeetingDto apiDto =
@@ -65,12 +72,12 @@ public class MeetingServiceTest {
         assertThat(result.year()).isEqualTo(2025);
         assertThat(result.location()).isEqualTo("Suzuka");
 
-        verify(IMeetingRepo).save(apiDto);
+        verify(meetingRepo).save(apiDto);
     }
 
     @Test
     void getMeetingByYearAndLocation_throwsException_IfMeetingNotFound(){
-        when(IMeetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
+        when(meetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
                 .thenReturn(Optional.empty());
 
         when(meetingClient.getMeetingByYearAndLocation(2025, "Suzuka"))
