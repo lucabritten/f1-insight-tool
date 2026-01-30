@@ -1,10 +1,7 @@
-package htwsaar.nordpol.report;
+package htwsaar.nordpol.domain;
 
 import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.cli.view.WeatherWithContext;
-import htwsaar.nordpol.domain.Driver;
-import htwsaar.nordpol.domain.Lap;
-import htwsaar.nordpol.domain.SessionName;
 
 import java.util.List;
 import java.util.Map;

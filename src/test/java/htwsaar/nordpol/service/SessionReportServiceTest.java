@@ -1,15 +1,5 @@
 package htwsaar.nordpol.service;
 
-import htwsaar.nordpol.cli.view.SessionResultWithContext;
-import htwsaar.nordpol.cli.view.WeatherWithContext;
-import htwsaar.nordpol.domain.Driver;
-import htwsaar.nordpol.domain.Lap;
-import htwsaar.nordpol.domain.Meeting;
-import htwsaar.nordpol.domain.Session;
-import htwsaar.nordpol.domain.SessionName;
-import htwsaar.nordpol.domain.SessionResult;
-import htwsaar.nordpol.domain.Weather;
-import htwsaar.nordpol.report.SessionReport;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.service.lap.LapService;
 import htwsaar.nordpol.service.meeting.MeetingService;
@@ -17,17 +7,12 @@ import htwsaar.nordpol.service.report.SessionReportService;
 import htwsaar.nordpol.service.session.SessionService;
 import htwsaar.nordpol.service.sessionResult.SessionResultService;
 import htwsaar.nordpol.service.weather.WeatherService;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SessionReportServiceTest {

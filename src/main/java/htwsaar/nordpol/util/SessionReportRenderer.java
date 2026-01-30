@@ -1,12 +1,8 @@
-package htwsaar.nordpol.report;
+package htwsaar.nordpol.util;
 
 import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.cli.view.WeatherWithContext;
-import htwsaar.nordpol.domain.Driver;
-import htwsaar.nordpol.domain.Lap;
-import htwsaar.nordpol.domain.SessionName;
-import htwsaar.nordpol.domain.SessionResult;
-import htwsaar.nordpol.domain.Weather;
+import htwsaar.nordpol.domain.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
