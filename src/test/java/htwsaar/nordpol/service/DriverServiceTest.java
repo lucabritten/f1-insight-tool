@@ -50,6 +50,12 @@ public class DriverServiceTest {
         DriverDto dbDto =
                 new DriverDto("Lewis", "Hamilton", 44, "GBR");
 
+        Meeting meeting = new Meeting(1279, "AUS", "Australia",
+                "Melbourne", "Australia GP", 2025);
+
+        when(meetingService.getMeetingsForSessionReport(2025))
+                .thenReturn(List.of(meeting));
+
         when(driverRepo.getDriverByFullNameForYear("Lewis", "Hamilton", 2025))
                 .thenReturn(Optional.of(dbDto));
 

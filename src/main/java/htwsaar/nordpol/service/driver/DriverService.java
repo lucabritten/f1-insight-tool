@@ -67,6 +67,7 @@ public class DriverService implements IDriverService {
      * @throws DriverNotFoundException if the driver cannot be found
      * @throws IllegalArgumentException if year is not provided by the api
      */
+    @Override
     public Driver getDriverByNameAndYear(String firstName, String lastName, int year) {
         validateInputYear(year);
 
@@ -81,6 +82,7 @@ public class DriverService implements IDriverService {
         return Mapper.toDriver(dto);
     }
 
+    @Override
     public Driver getDriverByNumberAndYear(int number, int year){
         validateInputYear(year);
         int meetingKey = getMeetingKeyForYear(year);
@@ -94,6 +96,7 @@ public class DriverService implements IDriverService {
         return Mapper.toDriver(dto);
     }
 
+    @Override
     public Driver getDriverByNumberAndMeetingKey(int number, int year, int meetingKey) {
         validateInputYear(year);
 
@@ -106,6 +109,7 @@ public class DriverService implements IDriverService {
         return Mapper.toDriver(dto);
     }
 
+    @Override
     public Driver getDriverByNumberWithFallback(int number, int year, int meetingKey) {
         try {
             return getDriverByNumberAndMeetingKey(number, year, meetingKey);
@@ -130,6 +134,7 @@ public class DriverService implements IDriverService {
         }
     }
 
+    @Override
     public void preloadMissingDriversForMeeting(int year, int meetingKey, List<Integer> driverNumbers) {
         validateInputYear(year);
         for (Integer driverNumber : driverNumbers) {

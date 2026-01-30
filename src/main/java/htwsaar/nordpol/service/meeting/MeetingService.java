@@ -38,6 +38,7 @@ public class MeetingService implements IMeetingService {
         this.cacheService = cacheService;
     }
 
+    @Override
     public Meeting getMeetingByYearAndLocation(int year, String location){
 
         MeetingDto dto = cacheService.getOrFetchOptional(
@@ -49,6 +50,7 @@ public class MeetingService implements IMeetingService {
         return Mapper.toMeeting(dto);
     }
 
+    @Override
     public List<Meeting> getMeetingsForSessionReport(int year){
 
         List<MeetingDto> dtoList = cacheService.getOrFetchList(

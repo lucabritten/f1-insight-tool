@@ -47,6 +47,7 @@ public class LapService implements ILapService {
             throw new IllegalArgumentException("DriverService cannot be null");
     }
 
+    @Override
     public LapsWithContext getLapsByLocationYearSessionNameAndDriverNumber(String location, int year, SessionName sessionName, int driverNumber){
         Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
         int meetingKey = meeting.meetingKey();

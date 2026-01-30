@@ -30,6 +30,7 @@ public class SessionService implements ISessionService {
         this.cacheService = cacheService;
     }
 
+    @Override
     public Session getSessionByMeetingKeyAndSessionName(int meetingKey, SessionName sessionName){
         SessionDto dto = cacheService.getOrFetchOptional(
                 ()-> sessionRepo.getSessionByMeetingKeyAndSessionName(meetingKey, sessionName.dbValue()),

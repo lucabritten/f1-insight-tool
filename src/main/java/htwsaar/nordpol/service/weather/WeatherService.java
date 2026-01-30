@@ -39,6 +39,7 @@ public class WeatherService implements IWeatherService {
         this.meetingService = meetingService;
     }
 
+    @Override
     public WeatherWithContext getWeatherByLocationYearAndSessionName(String location, int year, SessionName sessionName) {
         Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
         int meetingKey = meeting.meetingKey();
@@ -50,6 +51,7 @@ public class WeatherService implements IWeatherService {
         return new WeatherWithContext(meeting.meetingName(), meeting.countryName(), session.sessionName(), weather);
     }
 
+    @Override
     public Weather getWeatherByMeetingAndSessionKey(int meetingKey, int sessionKey) {
         Optional<WeatherDto> dtoFromDB = weatherRepo.getWeatherDataByMeetingKeyAndSessionKey(meetingKey, sessionKey);
         if(dtoFromDB.isPresent()) {
