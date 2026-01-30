@@ -7,10 +7,10 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.SessionNotFoundException;
 import htwsaar.nordpol.repository.session.ISessionRepo;
 import htwsaar.nordpol.service.session.SessionService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -29,15 +29,21 @@ public class SessionServiceTest {
     @Mock
     SessionClient sessionClient;
 
-    @InjectMocks
+    ICacheService cacheService = new CacheService();
+
     SessionService sessionService;
+
+    @BeforeEach
+    void setup() {
+        sessionService = new SessionService(sessionRepo, sessionClient, cacheService);
+    }
 
     @Test
     void getSessionByMeetingKeyAndSessionName_returnsSessionFromDatabase() {
         SessionDto sessionDto =
                 new SessionDto(1256, 9999, "Practice 1", "Practice 1");
 
-        when(sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
+        when(sessionRepo.getSessionByMeetingKeyAndSessionName(1256, SessionName.PRACTICE1.dbValue()))
                 .thenReturn(Optional.of(sessionDto));
 
         Session result =
