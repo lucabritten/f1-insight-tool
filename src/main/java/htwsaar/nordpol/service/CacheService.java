@@ -28,19 +28,13 @@ public class CacheService implements ICacheService{
                                            Supplier<Optional<T>> apiLookup,
                                            Consumer<T> save,
                                            Supplier<? extends RuntimeException> notFound) {
-        Optional<T> fromDb = dbLookup.get();
 
-        if(fromDb.isPresent())
-            return fromDb.get();
-
-        Optional<T> fromApi = apiLookup.get();
-
-        if(fromApi.isPresent()) {
-            T dto = fromApi.get();
-            save.accept(dto);
-            return dto;
-        }
-        throw notFound.get();
+        return dbLookup.get()
+                .or(() -> apiLookup.get().map(value -> {
+                    save.accept(value);
+                    return value;
+                }))
+                .orElseThrow(notFound);
     }
 
     @Override
