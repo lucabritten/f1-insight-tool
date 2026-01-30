@@ -18,6 +18,8 @@ import htwsaar.nordpol.repository.session.JooqSessionRepo;
 import htwsaar.nordpol.repository.sessionresult.JooqSessionResultRepo;
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
 import htwsaar.nordpol.repository.weather.JooqWeatherRepo;
+import htwsaar.nordpol.service.CacheService;
+import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.service.lap.LapService;
 import htwsaar.nordpol.service.meeting.MeetingService;
@@ -49,6 +51,11 @@ ApplicationContext {
      *
      * @return a fully initialized DriverService
      */
+
+    public static ICacheService cacheService() {
+        return new CacheService();
+    }
+
     public static DriverService driverService() {
         IDriverRepo IDriverRepo = new JooqDriverRepo(JooqConfig.createContext());
         DriverClient driverClient = new DriverClient();
@@ -64,7 +71,7 @@ ApplicationContext {
     public static SessionService sessionService() {
         ISessionRepo ISessionRepo = new JooqSessionRepo(JooqConfig.createContext());
         SessionClient sessionClient = new SessionClient();
-        return new SessionService(ISessionRepo, sessionClient);
+        return new SessionService(ISessionRepo, sessionClient, cacheService());
     }
 
     public static WeatherService weatherService() {
