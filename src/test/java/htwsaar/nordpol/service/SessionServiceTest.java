@@ -9,6 +9,7 @@ import htwsaar.nordpol.repository.session.ISessionRepo;
 import htwsaar.nordpol.service.session.SessionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.*;
 public class SessionServiceTest {
 
     @Mock
-    ISessionRepo ISessionRepo;
+    ISessionRepo sessionRepo;
 
     @Mock
     SessionClient sessionClient;
@@ -36,7 +37,7 @@ public class SessionServiceTest {
         SessionDto sessionDto =
                 new SessionDto(1256, 9999, "Practice 1", "Practice 1");
 
-        when(ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
+        when(sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
                 .thenReturn(Optional.of(sessionDto));
 
         Session result =
@@ -45,12 +46,12 @@ public class SessionServiceTest {
         assertThat(result.meetingKey()).isEqualTo(1256);
 
         verify(sessionClient, never()).getSessionByMeetingKeyAndsessionName(1256, "Practice 1");
-        verify(ISessionRepo).getSessionByMeetingKeyAndSessionName(1256, "Practice 1");
+        verify(sessionRepo).getSessionByMeetingKeyAndSessionName(1256, "Practice 1");
     }
 
     @Test
     void getSessionByMeetingKeyAndSessionName_fetchesFromApiAndSavesSession(){
-        when(ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
+        when(sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
                 .thenReturn(Optional.empty());
 
         SessionDto apiDto =
@@ -64,12 +65,24 @@ public class SessionServiceTest {
 
         assertThat(result.meetingKey()).isEqualTo(1256);
 
-        verify(ISessionRepo).save(apiDto);
+        verify(sessionRepo, times(1)).save(apiDto);
+    }
+
+    @Test
+    void getSessionByMeetingKeyAndSessionName_doesNotSave_whenFoundInDatabase() {
+        SessionDto sessionDto = new SessionDto(1234, 4321, "Practice 1", "Practice");
+
+        when(sessionRepo.getSessionByMeetingKeyAndSessionName(1234,"Practice 1"))
+                .thenReturn(Optional.of(sessionDto));
+
+        sessionService.getSessionByMeetingKeyAndSessionName(1234,SessionName.PRACTICE1);
+
+        verify(sessionRepo, never()).save(any());
     }
 
     @Test
     void getSessionByMeetingKeyAndSessionName_throwsException_ifSessionIsNotFound() {
-        when(ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
+        when(sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
                 .thenReturn(Optional.empty());
 
         when(sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice 1"))
@@ -81,5 +94,17 @@ public class SessionServiceTest {
                 .hasMessageContaining("Session not found");
     }
 
+    @Test
+    void databaseIsQueriedBeforeApi() {
+        when(sessionRepo.getSessionByMeetingKeyAndSessionName(anyInt(), anyString()))
+                .thenReturn(Optional.empty());
+        when(sessionClient.getSessionByMeetingKeyAndsessionName(anyInt(), anyString()))
+                .thenReturn(Optional.of(new SessionDto(1234,4321,"Race", "Race")));
 
+        sessionService.getSessionByMeetingKeyAndSessionName(1234, SessionName.RACE);
+
+        InOrder inOrder = inOrder(sessionRepo, sessionClient);
+        inOrder.verify(sessionRepo).getSessionByMeetingKeyAndSessionName(anyInt(), anyString());
+        inOrder.verify(sessionClient).getSessionByMeetingKeyAndsessionName(anyInt(), anyString());
+    }
 }
