@@ -1,12 +1,12 @@
 package htwsaar.nordpol.service;
 
 import htwsaar.nordpol.api.dto.SessionResultDto;
-import htwsaar.nordpol.api.sessionresult.SessionResultClient;
+import htwsaar.nordpol.api.sessionresult.ISessionResultClient;
 import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;
-import htwsaar.nordpol.repository.sessionresult.JooqSessionResultRepo;
+import htwsaar.nordpol.repository.sessionresult.ISessionResultRepo;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.service.sessionResult.SessionResultService;
@@ -31,10 +31,10 @@ class SessionResultServiceTest {
     private ISessionService sessionService;
 
     @Mock
-    private SessionResultClient sessionResultClient;
+    private ISessionResultClient sessionResultClient;
 
     @Mock
-    private JooqSessionResultRepo sessionResultRepo;
+    private ISessionResultRepo sessionResultRepo;
 
     @InjectMocks
     private SessionResultService sessionResultService;

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 
-public class DriverClient extends BaseClient {
+public class DriverClient extends BaseClient implements IDriverClient {
 
     public DriverClient(String baseUrl) {
         super(baseUrl);
@@ -16,6 +16,7 @@ public class DriverClient extends BaseClient {
         super();
     }
 
+    @Override
     public Optional<DriverDto> getDriverByName(String firstName, String lastName, int meetingKey) {
         return fetchSingle(
                 "/drivers",
@@ -28,6 +29,7 @@ public class DriverClient extends BaseClient {
         );
     }
 
+    @Override
     public Optional<DriverDto> getDriverByNumberAndMeetingKey(int number, int meetingKey) {
         return fetchSingle(
                 "/drivers",
@@ -39,6 +41,7 @@ public class DriverClient extends BaseClient {
         );
     }
 
+    @Override
     public Optional<DriverDto> getDriverByNumber(int number) {
         return fetchSingle(
                 "/drivers",
@@ -47,6 +50,7 @@ public class DriverClient extends BaseClient {
         );
     }
 
+    @Override
     public List<DriverDto> getDriversByMeetingKey(int meetingKey) {
         return fetchList(
                 "/drivers",

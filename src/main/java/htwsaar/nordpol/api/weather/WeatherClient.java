@@ -3,7 +3,6 @@ import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.dto.WeatherDto;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class WeatherClient extends BaseClient implements IWeatherClient{
 

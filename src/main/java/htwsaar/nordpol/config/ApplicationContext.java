@@ -1,12 +1,13 @@
 package htwsaar.nordpol.config;
 
 import htwsaar.nordpol.api.driver.DriverClient;
+import htwsaar.nordpol.api.driver.IDriverClient;
 import htwsaar.nordpol.api.lap.LapClient;
 import htwsaar.nordpol.api.meeting.MeetingClient;
 import htwsaar.nordpol.api.session.SessionClient;
+import htwsaar.nordpol.api.sessionresult.ISessionResultClient;
 import htwsaar.nordpol.api.sessionresult.SessionResultClient;
 import htwsaar.nordpol.api.weather.WeatherClient;
-import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.repository.driver.JooqDriverRepo;
 import htwsaar.nordpol.repository.lap.ILapRepo;
@@ -15,6 +16,7 @@ import htwsaar.nordpol.repository.meeting.IMeetingRepo;
 import htwsaar.nordpol.repository.meeting.JooqMeetingRepo;
 import htwsaar.nordpol.repository.session.ISessionRepo;
 import htwsaar.nordpol.repository.session.JooqSessionRepo;
+import htwsaar.nordpol.repository.sessionresult.ISessionResultRepo;
 import htwsaar.nordpol.repository.sessionresult.JooqSessionResultRepo;
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
 import htwsaar.nordpol.repository.weather.JooqWeatherRepo;
@@ -58,7 +60,7 @@ ApplicationContext {
 
     public static DriverService driverService() {
         IDriverRepo IDriverRepo = new JooqDriverRepo(JooqConfig.createContext());
-        DriverClient driverClient = new DriverClient();
+        IDriverClient driverClient = new DriverClient();
         return new DriverService(IDriverRepo, driverClient, meetingService(), cacheService());
     }
 
@@ -87,8 +89,8 @@ ApplicationContext {
     }
 
     public static SessionResultService sessionResultService() {
-        SessionResultClient client = new SessionResultClient();
-        JooqSessionResultRepo repo = new JooqSessionResultRepo(JooqConfig.createContext());
+        ISessionResultClient client = new SessionResultClient();
+        ISessionResultRepo repo = new JooqSessionResultRepo(JooqConfig.createContext());
         return new SessionResultService(meetingService(), sessionService(), client, repo);
     }
 

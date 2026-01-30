@@ -1,19 +1,15 @@
 package htwsaar.nordpol.service.meeting;
 
 
-import htwsaar.nordpol.api.dto.SessionDto;
 import htwsaar.nordpol.api.meeting.IMeetingClient;
 import htwsaar.nordpol.api.dto.MeetingDto;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.exception.MeetingNotFoundException;
-import htwsaar.nordpol.exception.SessionNotFoundException;
 import htwsaar.nordpol.repository.meeting.IMeetingRepo;
 import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.util.Mapper;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class MeetingService implements IMeetingService {
 

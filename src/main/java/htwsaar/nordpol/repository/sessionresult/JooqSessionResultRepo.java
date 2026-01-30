@@ -2,14 +2,13 @@ package htwsaar.nordpol.repository.sessionresult;
 
 import htwsaar.nordpol.api.dto.SessionResultDto;
 import org.jooq.DSLContext;
-import org.jooq.Null;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 import static com.nordpol.jooq.tables.SessionResults.*;
 
-public class JooqSessionResultRepo {
+public class JooqSessionResultRepo implements ISessionResultRepo {
 
     private DSLContext create;
 
@@ -17,6 +16,7 @@ public class JooqSessionResultRepo {
         this.create = create;
     }
 
+    @Override
     public List<SessionResultDto> getSessionResultBySessionKey(int sessionKey) {
         return create.select(
                 SESSION_RESULTS.SESSION_KEY,
@@ -54,6 +54,7 @@ public class JooqSessionResultRepo {
             ));
     }
 
+    @Override
     public void saveAll(List<SessionResultDto> dtoList) {
         dtoList.forEach(dto ->
             create.insertInto(SESSION_RESULTS,
