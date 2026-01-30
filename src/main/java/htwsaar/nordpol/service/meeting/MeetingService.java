@@ -28,6 +28,7 @@ public class MeetingService implements IMeetingService {
         this.meetingClient = meetingClient;
     }
 
+    @Override
     public Meeting getMeetingByYearAndLocation(int year, String location){
         Optional<MeetingDto> dtoFromDB = meetingRepo.getMeetingByYearAndLocation(year, location);
         if (dtoFromDB.isPresent()) {
@@ -45,6 +46,7 @@ public class MeetingService implements IMeetingService {
         throw new MeetingNotFoundException(year, location);
     }
 
+    @Override
     public List<Meeting> getMeetingsForSessionReport(int year){
         List<MeetingDto> dtoFromDB = meetingRepo.getMeetingsByYear(year);
         System.out.println(dtoFromDB.size());

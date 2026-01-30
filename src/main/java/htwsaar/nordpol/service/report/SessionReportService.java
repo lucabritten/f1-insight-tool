@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SessionReportService {
+public class SessionReportService implements ISessionReportService {
 
     private final MeetingService meetingService;
     private final SessionService sessionService;
@@ -62,6 +62,7 @@ public class SessionReportService {
         this.driverService = driverService;
     }
 
+    @Override
     public SessionReport buildReport(String location, int year, SessionName sessionName, Integer topDrivers) {
         if (topDrivers != null && topDrivers <= 0) {
             throw new IllegalArgumentException("topDrivers must be greater than zero.");

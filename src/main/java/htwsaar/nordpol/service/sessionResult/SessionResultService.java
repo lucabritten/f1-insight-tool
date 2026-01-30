@@ -15,7 +15,7 @@ import htwsaar.nordpol.util.Mapper;
 import java.util.Comparator;
 import java.util.List;
 
-public class SessionResultService {
+public class SessionResultService implements ISessionResultService {
 
     private IMeetingService meetingService;
     private ISessionService sessionService;
@@ -30,6 +30,7 @@ public class SessionResultService {
         this.sessionResultRepo = sessionResultRepo;
     }
 
+    @Override
     public SessionResultWithContext getResultByLocationYearAndSessionType(String location, int year, SessionName sessionName){
         Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
         int meetingKey = meeting.meetingKey();
