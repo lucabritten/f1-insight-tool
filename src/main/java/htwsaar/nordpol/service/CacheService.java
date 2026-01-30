@@ -21,8 +21,9 @@ import java.util.function.Supplier;
  *     independent of concrete repositories and API clients.
  * </p>
  */
-public class CacheService {
+public class CacheService implements ICacheService{
 
+    @Override
     public <T> T getOrFetchOptional(Supplier<Optional<T>> dbLookup,
                                            Supplier<Optional<T>> apiLookup,
                                            Consumer<T> save,
@@ -43,6 +44,7 @@ public class CacheService {
         throw notFound.get();
     }
 
+    @Override
     public <T> List<T> getOrFetchList(Supplier<List<T>> dbLookup,
                                              Supplier<List<T>> apiLookup,
                                              Consumer<List<T>> save,
