@@ -39,7 +39,6 @@ public class CacheService implements ICacheService{
             T dto = fromApi.get();
             save.accept(dto);
             return dto;
-
         }
         throw notFound.get();
     }

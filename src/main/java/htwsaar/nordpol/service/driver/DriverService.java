@@ -2,10 +2,13 @@ package htwsaar.nordpol.service.driver;
 
 import htwsaar.nordpol.api.dto.DriverDto;
 import htwsaar.nordpol.api.driver.DriverClient;
+import htwsaar.nordpol.api.dto.SessionDto;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.exception.DriverNotFoundException;
+import htwsaar.nordpol.exception.SessionNotFoundException;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
+import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.util.Mapper;
 
@@ -28,12 +31,15 @@ public class DriverService implements IDriverService {
 
     private static final int MIN_YEAR = 2023;
 
-    private final IDriverRepo IDriverRepo;
+    private final IDriverRepo driverRepo;
     private final DriverClient driverClient;
     private final MeetingService meetingService;
+    private final ICacheService cacheService;
 
-    public DriverService(IDriverRepo IDriverRepo, DriverClient driverClient, MeetingService meetingService) {
-        if (IDriverRepo == null) {
+
+    public DriverService(IDriverRepo driverRepo, DriverClient driverClient, MeetingService meetingService, ICacheService cacheService) {
+
+        if (driverRepo == null) {
             throw new IllegalArgumentException("driverRepo must not be null.");
         }
         if (driverClient == null) {
@@ -42,10 +48,14 @@ public class DriverService implements IDriverService {
         if (meetingService == null) {
             throw new IllegalArgumentException("meetingService must not be null.");
         }
+        if(cacheService == null) {
+            throw new IllegalArgumentException("cacheService must not be null");
+        }
 
-        this.IDriverRepo = IDriverRepo;
+        this.driverRepo = driverRepo;
         this.driverClient = driverClient;
         this.meetingService = meetingService;
+        this.cacheService = cacheService;
     }
 
     /**
@@ -60,53 +70,40 @@ public class DriverService implements IDriverService {
     public Driver getDriverByNameAndYear(String firstName, String lastName, int year) {
         validateInputYear(year);
 
-        Optional<DriverDto> dtoFromDB = IDriverRepo.getDriverByFullNameForYear(firstName, lastName, year);
-        if (dtoFromDB.isPresent())
-            return Mapper.toDriver(dtoFromDB.get());
-
         int meetingKey = getMeetingKeyForYear(year);
 
-        Optional<DriverDto> dtoFromApi = driverClient.getDriverByName(firstName, lastName, meetingKey);
-        if(dtoFromApi.isPresent()){
-            DriverDto driverDto = dtoFromApi.get();
-            IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meetingKey);
-            return Mapper.toDriver(driverDto);
-        }
-        throw new DriverNotFoundException(firstName, lastName, year);
+        DriverDto dto = cacheService.getOrFetchOptional(
+                ()-> driverRepo.getDriverByFullNameForYear(firstName, lastName, year),
+                () -> driverClient.getDriverByName(firstName, lastName, meetingKey),
+                apiDto -> driverRepo.saveOrUpdateDriverForYear(apiDto, year, meetingKey),
+                () -> new DriverNotFoundException(firstName, lastName, year)
+        );
+        return Mapper.toDriver(dto);
     }
 
     public Driver getDriverByNumberAndYear(int number, int year){
         validateInputYear(year);
-
-        Optional<DriverDto> dtoFromDB = IDriverRepo.getDriverByStartNumberForYear(number, year);
-        if(dtoFromDB.isPresent())
-            return Mapper.toDriver(dtoFromDB.get());
-
         int meetingKey = getMeetingKeyForYear(year);
 
-        Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumberAndMeetingKey(number, meetingKey);
-        if(dtoFromApi.isPresent()) {
-            DriverDto driverDto = dtoFromApi.get();
-            IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meetingKey);
-            return Mapper.toDriver(driverDto);
-        }
-        throw new DriverNotFoundException(number, year);
+        DriverDto dto = cacheService.getOrFetchOptional(
+                ()-> driverRepo.getDriverByStartNumberForYear(number, year),
+                () -> driverClient.getDriverByNumberAndMeetingKey(number, meetingKey),
+                apiDto -> driverRepo.saveOrUpdateDriverForYear(apiDto, year, meetingKey),
+                () -> new DriverNotFoundException(number, year)
+        );
+        return Mapper.toDriver(dto);
     }
 
     public Driver getDriverByNumberAndMeetingKey(int number, int year, int meetingKey) {
         validateInputYear(year);
 
-        Optional<DriverDto> dtoFromDB = IDriverRepo.getDriverByStartNumberForYear(number, year);
-        if (dtoFromDB.isPresent())
-            return Mapper.toDriver(dtoFromDB.get());
-
-        Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumberAndMeetingKey(number, meetingKey);
-        if (dtoFromApi.isPresent()) {
-            DriverDto driverDto = dtoFromApi.get();
-            IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meetingKey);
-            return Mapper.toDriver(driverDto);
-        }
-        throw new DriverNotFoundException(number, year);
+        DriverDto dto = cacheService.getOrFetchOptional(
+                ()-> driverRepo.getDriverByStartNumberForYear(number, year),
+                () -> driverClient.getDriverByNumberAndMeetingKey(number, meetingKey),
+                apiDto -> driverRepo.saveOrUpdateDriverForYear(apiDto, year, meetingKey),
+                () -> new DriverNotFoundException(number, year)
+        );
+        return Mapper.toDriver(dto);
     }
 
     public Driver getDriverByNumberWithFallback(int number, int year, int meetingKey) {
@@ -116,7 +113,7 @@ public class DriverService implements IDriverService {
             Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumber(number);
             if (dtoFromApi.isPresent()) {
                 DriverDto driverDto = dtoFromApi.get();
-                IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meetingKey);
+                driverRepo.saveOrUpdateDriverForYear(driverDto, year, meetingKey);
                 return Mapper.toDriver(driverDto);
             }
             List<Meeting> meetings = meetingService.getMeetingsForSessionReport(year);
@@ -125,7 +122,7 @@ public class DriverService implements IDriverService {
                         driverClient.getDriverByNumberAndMeetingKey(number, meeting.meetingKey());
                 if (dtoFromOtherMeeting.isPresent()) {
                     DriverDto driverDto = dtoFromOtherMeeting.get();
-                    IDriverRepo.saveOrUpdateDriverForYear(driverDto, year, meeting.meetingKey());
+                    driverRepo.saveOrUpdateDriverForYear(driverDto, year, meeting.meetingKey());
                     return Mapper.toDriver(driverDto);
                 }
             }
@@ -139,7 +136,7 @@ public class DriverService implements IDriverService {
             if (driverNumber == null) {
                 continue;
             }
-            if (!IDriverRepo.hasNamedDriverNumberForYear(driverNumber, year)) {
+            if (!driverRepo.hasNamedDriverNumberForYear(driverNumber, year)) {
                 getDriverByNumberAndMeetingKey(driverNumber, year, meetingKey);
             }
         }
