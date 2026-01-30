@@ -65,7 +65,7 @@ ApplicationContext {
     public static MeetingService meetingService() {
         IMeetingRepo IMeetingRepo = new JooqMeetingRepo(JooqConfig.createContext());
         MeetingClient meetingClient = new MeetingClient();
-        return new MeetingService(IMeetingRepo, meetingClient);
+        return new MeetingService(IMeetingRepo, meetingClient, cacheService());
     }
 
     public static SessionService sessionService() {
