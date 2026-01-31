@@ -4,7 +4,7 @@ import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.config.ApplicationContext;
 
-import htwsaar.nordpol.util.Formatter;
+import htwsaar.nordpol.util.formatting.CliFormatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -53,7 +53,7 @@ public class DriverCommand implements Callable<Integer> {
     public Integer call() {
         try {
             Driver driver = driverService.getDriverByNameAndYear(firstName, lastName, year);
-            String output = Formatter.formatDriver(driver);
+            String output = CliFormatter.formatDriver(driver);
             System.out.println(output);
             return 0;
         } catch (Exception e) {

@@ -5,11 +5,10 @@ import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.service.weather.WeatherService;
-import htwsaar.nordpol.util.Formatter;
+import htwsaar.nordpol.util.formatting.CliFormatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.sql.Time;
 import java.time.Year;
 import java.util.concurrent.Callable;
 
@@ -61,7 +60,7 @@ public class WeatherCommand implements Callable<Integer> {
                             sessionName
                     );
 
-            String output = Formatter.formatWeather(weatherWithContext);
+            String output = CliFormatter.formatWeather(weatherWithContext);
             System.out.println(output);
             return 0;
         } catch (Exception e) {

@@ -5,7 +5,7 @@ import htwsaar.nordpol.cli.view.FastestLapsWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.service.lap.LapService;
-import htwsaar.nordpol.util.Formatter;
+import htwsaar.nordpol.util.formatting.CliFormatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -70,7 +70,7 @@ public class FastestLapCommand implements Callable<Integer> {
                     ? lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName, topLaps)
                     : lapService.getFastestLapByLocationYearSessionNameAndDriverNumber(location, year, sessionName,driverNumber, topLaps);
 
-            String output = Formatter.formatFastestLaps(fastestLaps);
+            String output = CliFormatter.formatFastestLaps(fastestLaps);
 
             System.out.println(output);
             return 0;

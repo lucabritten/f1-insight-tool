@@ -3,13 +3,14 @@ package htwsaar.nordpol.util;
 import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionResult;
+import htwsaar.nordpol.util.formatting.CliFormatter;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FormatterTest {
+class CliFormatterTest {
 
     @Test
     void formatSessionResults_formatsQualifyingWithQ1Q2Q3AndGap() {
@@ -39,7 +40,7 @@ class FormatterTest {
                 List.of(r1, r2)
         );
 
-        String output = Formatter.formatSessionResults(context);
+        String output = CliFormatter.formatSessionResults(context);
 
         assertThat(output).contains("Q1(s)");
         assertThat(output).contains("Q2(s)");
@@ -66,7 +67,7 @@ class FormatterTest {
                 List.of(r1)
         );
 
-        String output = Formatter.formatSessionResults(context);
+        String output = CliFormatter.formatSessionResults(context);
 
         assertThat(output).contains("Gap");
         assertThat(output).doesNotContain("Q1(s)");
@@ -101,7 +102,7 @@ class FormatterTest {
                 List.of(r1, r2)
         );
 
-        String output = Formatter.formatSessionResults(context);
+        String output = CliFormatter.formatSessionResults(context);
 
         assertThat(output).contains("6");
         assertThat(output).contains("DNF");
@@ -125,7 +126,7 @@ class FormatterTest {
                 List.of(r1)
         );
 
-        String output = Formatter.formatSessionResults(context);
+        String output = CliFormatter.formatSessionResults(context);
 
         assertThat(output).contains("+0.0");
     }

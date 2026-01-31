@@ -4,7 +4,7 @@ import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.service.lap.LapService;
-import htwsaar.nordpol.util.Formatter;
+import htwsaar.nordpol.util.formatting.CliFormatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -56,7 +56,7 @@ public class LapCommand implements Callable<Integer> {
     public Integer call() {
         try {
             LapsWithContext lap = lapService.getLapsByLocationYearSessionNameAndDriverNumber(location, year, sessionName, driverNumber);
-            String output = Formatter.formatLaps(lap);
+            String output = CliFormatter.formatLaps(lap);
             System.out.println(output);
             return 0;
         } catch (Exception e) {

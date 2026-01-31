@@ -43,9 +43,10 @@ public class SessionResultService implements ISessionResultService {
                 .sorted(
                         Comparator
                                 // Push DSQ/DNS/DNF to the bottom
-                                .comparing((SessionResult r) -> (r.dnf() || r.dns() || r.dsq()) ? 1 : 0)
+                                .comparing((SessionResult r) -> r.position() > 0 ? r.position() : Integer.MAX_VALUE)
+                                .thenComparingInt(r -> (r.dnf() || r.dns() || r.dsq()) ? 1 : 0)
                                 // Then by position; treat 0 (unknown) as last
-                                .thenComparingInt(r -> r.position() > 0 ? r.position() : Integer.MAX_VALUE)
+
                                 // Stable final tiebreaker: driver number
                                 .thenComparingInt(SessionResult::driverNumber)
                 )
