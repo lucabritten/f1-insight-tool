@@ -6,7 +6,7 @@ public enum OpenF1Endpoint {
     MEETINGS("/meetings"),
     SESSIONS("/sessions"),
     SESSION_RESULTS("/session_result"),
-    WEATHER("/weater"),
+    WEATHER("/weather"),
     TEST("/test");
 
     private final String path;
