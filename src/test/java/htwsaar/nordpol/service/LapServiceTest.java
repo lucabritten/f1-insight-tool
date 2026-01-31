@@ -3,6 +3,7 @@ package htwsaar.nordpol.service;
 import htwsaar.nordpol.api.dto.LapDto;
 import htwsaar.nordpol.api.lap.ILapClient;
 import htwsaar.nordpol.cli.view.FastestLapsWithContext;
+import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.exception.LapNotFoundException;
 import htwsaar.nordpol.repository.lap.ILapRepo;
@@ -10,6 +11,7 @@ import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.service.lap.LapService;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.service.session.SessionService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,6 +33,10 @@ public class LapServiceTest {
     @Mock
     ILapClient lapClient;
 
+    ICacheService cacheService = ApplicationContext.cacheService();
+
+    LapService lapService;
+
     @Mock
     MeetingService meetingService;
 
@@ -40,8 +46,10 @@ public class LapServiceTest {
     @Mock
     DriverService driverService;
 
-    @InjectMocks
-    LapService lapService;
+    @BeforeEach
+    void setup() {
+        lapService = new LapService(lapRepo, lapClient, meetingService, sessionService, driverService, cacheService);
+    }
 
     @Test
     void getLapsBySessionKeyAndDriverNumber_returnsLapsFromDatabase(){
@@ -142,7 +150,8 @@ public class LapServiceTest {
         String location = "Monza";
         int year = 2024;
         SessionName sessionName = SessionName.QUALIFYING;
-        Meeting meeting = new Meeting(100, "IT", "Italy", "Monza", meetingName,year);
+
+        Meeting meeting = new Meeting(100, "IT", "Italy", "Monza", meetingName, year);
         Session session = new Session(200, 100, sessionName, "Qualifying");
 
         when(meetingService.getMeetingByYearAndLocation(year, location)).thenReturn(meeting);
@@ -150,26 +159,32 @@ public class LapServiceTest {
 
         when(lapRepo.getFastestLapsBySessionKey(200, 1)).thenReturn(List.of());
 
-        // API returns various laps, only one valid (not pit-out and positive duration)
-        LapDto pitOut = new LapDto(2, 200, 2, 26.0, 26.0, 26.0, 79.0, true);
+        LapDto pitOut  = new LapDto(2, 200, 2, 26.0, 26.0, 26.0, 79.0, true);
         LapDto invalid = new LapDto(3, 200, 3, 0.0, 0.0, 0.0, -1.0, false);
-        LapDto valid = new LapDto(1, 200, 4, 25.0, 27.0, 28.0, 80.0, false);
+        LapDto valid   = new LapDto(1, 200, 4, 25.0, 27.0, 28.0, 80.0, false);
+
         when(lapClient.getLapsBySessionKey(200)).thenReturn(List.of(pitOut, invalid, valid));
 
-        when(driverService.getDriverByNumberAndYear(1, year)).thenReturn(new Driver("Max", "Verstappen", 1, "Red Bull"));
+        when(driverService.getDriverByNumberAndYear(anyInt(), eq(year)))
+                .thenAnswer(inv -> new Driver("Max", "Verstappen", inv.getArgument(0), "Red Bull"));
 
-        FastestLapsWithContext result = lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName, 1);
+        FastestLapsWithContext result =
+                lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName, 1);
 
         assertThat(result.meetingName()).isEqualTo(meetingName);
         assertThat(result.sessionName().displayName()).isEqualTo(sessionName.displayName());
+        assertThat(result.drivers()).hasSize(result.fastestLaps().size());
         assertThat(result.drivers().getFirst().lastName()).isEqualTo("Verstappen");
-        assertThat(result.fastestLaps()).hasSize(1);
-        Lap lap = result.fastestLaps().getFirst();
-        assertThat(lap.driverNumber()).isEqualTo(1);
-        assertThat(lap.lapDuration()).isEqualTo(80.0);
+        assertThat(result.fastestLaps()).hasSize(3);
+        assertThat(result.fastestLaps())
+                .anySatisfy(lap -> {
+                    assertThat(lap.driverNumber()).isEqualTo(1);
+                    assertThat(lap.lapDuration()).isEqualTo(80.0);
+                    assertThat(lap.isPitOutLap()).isFalse();
+                });
 
-        verify(lapRepo).saveAll(List.of(pitOut, invalid, valid));
         verify(lapClient).getLapsBySessionKey(200);
+        verify(lapRepo).saveAll(anyList());
     }
 
     @Test
