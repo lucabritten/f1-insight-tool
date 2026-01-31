@@ -1,12 +1,15 @@
 package htwsaar.nordpol.service.lap;
 
+import htwsaar.nordpol.api.dto.MeetingDto;
 import htwsaar.nordpol.api.lap.ILapClient;
 import htwsaar.nordpol.api.dto.LapDto;
 import htwsaar.nordpol.cli.view.FastestLapsWithContext;
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.exception.LapNotFoundException;
+import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.repository.lap.ILapRepo;
+import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.service.session.SessionService;
 import htwsaar.nordpol.service.driver.DriverService;
@@ -24,17 +27,19 @@ public class LapService implements ILapService {
     private final MeetingService meetingService;
     private final SessionService sessionService;
     private final DriverService driverService;
+    private final ICacheService cacheService;
 
-    public LapService(ILapRepo lapRepo, ILapClient lapsClient, MeetingService meetingService, SessionService sessionService, DriverService driverService) {
-        validateLapConstructor(lapRepo, lapsClient, meetingService, sessionService, driverService);
+    public LapService(ILapRepo lapRepo, ILapClient lapsClient, MeetingService meetingService, SessionService sessionService, DriverService driverService, ICacheService cacheService) {
+        validateLapConstructor(lapRepo, lapsClient, meetingService, sessionService, driverService, cacheService);
         this.lapRepo = lapRepo;
         this.lapClient = lapsClient;
         this.meetingService = meetingService;
         this.sessionService = sessionService;
         this.driverService = driverService;
+        this.cacheService = cacheService;
     }
 
-    private void validateLapConstructor(ILapRepo lapRepo, ILapClient lapsClient, MeetingService meetingService, SessionService sessionService, DriverService driverService){
+    private void validateLapConstructor(ILapRepo lapRepo, ILapClient lapsClient, MeetingService meetingService, SessionService sessionService, DriverService driverService, ICacheService cacheService){
         if (lapsClient == null)
             throw new IllegalArgumentException("LapsClient cannot be null.");
         if (lapRepo == null)
@@ -45,6 +50,9 @@ public class LapService implements ILapService {
             throw new IllegalArgumentException("SessionService cannot be null.");
         if(driverService == null)
             throw new IllegalArgumentException("DriverService cannot be null");
+        if(cacheService == null) {
+            throw new IllegalArgumentException("CacheService must not be null");
+        }
     }
 
     @Override
@@ -67,23 +75,17 @@ public class LapService implements ILapService {
 
     @Override
     public List<Lap> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
-        List<LapDto> dtoFromDB = lapRepo.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
-        if (!dtoFromDB.isEmpty()) {
-            return dtoFromDB.stream()
-                    .map(Mapper::toLap)
-                    .toList();
-        }
 
-        List<LapDto> dtoFromApi =
-                lapClient.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
-
-        if (!dtoFromApi.isEmpty()) {
-            lapRepo.saveAll(dtoFromApi);
-            return dtoFromApi.stream()
-                    .map(Mapper::toLap)
-                    .toList();
-        }
-        throw new LapNotFoundException(sessionKey, driverNumber);
+        List<LapDto> dtoList = cacheService.getOrFetchList(
+                () -> lapRepo.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber),
+                () -> lapClient.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber),
+                lapRepo::saveAll,
+                () -> new LapNotFoundException(sessionKey, driverNumber)
+        );
+        return dtoList
+                .stream()
+                .map(Mapper::toLap)
+                .toList();
     }
 
     @Override
@@ -108,24 +110,17 @@ public class LapService implements ILapService {
     }
 
     private List<Lap> getFastestLapsBySessionKey(int sessionKey, int count) {
-        List<LapDto> fastestFromDb = lapRepo.getFastestLapsBySessionKey(sessionKey, count);
-        if (!fastestFromDb.isEmpty()) {
-            return fastestFromDb.stream()
-                    .map(Mapper::toLap)
-                    .toList();
-        }
 
-        List<LapDto> apiLaps = lapClient.getLapsBySessionKey(sessionKey);
-        if (apiLaps.isEmpty()) {
-            throw new LapNotFoundException(sessionKey, -1);
-        }
-
-        lapRepo.saveAll(apiLaps);
-        List<Lap> laps = apiLaps.stream()
+        List<LapDto> dtoList = cacheService.getOrFetchList(
+                () -> lapRepo.getFastestLapsBySessionKey(sessionKey, count),
+                () -> lapClient.getLapsBySessionKey(sessionKey),
+                lapRepo::saveAll,
+                () -> new LapNotFoundException(sessionKey)
+        );
+        return dtoList
+                .stream()
                 .map(Mapper::toLap)
                 .toList();
-
-        return filterFastestLaps(laps, count);
     }
 
     //Übergangslösung mit der driver list

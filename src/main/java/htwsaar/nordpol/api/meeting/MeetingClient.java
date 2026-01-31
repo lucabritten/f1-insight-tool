@@ -1,5 +1,6 @@
 package htwsaar.nordpol.api.meeting;
 import htwsaar.nordpol.api.BaseClient;
+import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.dto.MeetingDto;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +19,7 @@ public class MeetingClient extends BaseClient implements IMeetingClient {
     @Override
     public Optional<MeetingDto> getMeetingByYearAndLocation(int year, String location) {
         return fetchSingle(
-                "/meetings",
+                OpenF1Endpoint.MEETINGS,
                 Map.of(
                         "year", year,
                         "location", location
@@ -30,7 +31,7 @@ public class MeetingClient extends BaseClient implements IMeetingClient {
     @Override
     public List<MeetingDto> getMeetingsByYear (int year) {
         return fetchList(
-                "/meetings",
+                OpenF1Endpoint.MEETINGS,
                 Map.of("year", year),
                 MeetingDto[].class
         );

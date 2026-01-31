@@ -1,13 +1,13 @@
 package htwsaar.nordpol.service.sessionResult;
 
 import htwsaar.nordpol.api.dto.SessionResultDto;
-import htwsaar.nordpol.api.sessionresult.SessionResultClient;
+import htwsaar.nordpol.api.sessionresult.ISessionResultClient;
 import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionResult;
-import htwsaar.nordpol.repository.sessionresult.JooqSessionResultRepo;
+import htwsaar.nordpol.repository.sessionresult.ISessionResultRepo;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.util.Mapper;
@@ -20,10 +20,10 @@ public class SessionResultService implements ISessionResultService {
     private IMeetingService meetingService;
     private ISessionService sessionService;
 
-    private SessionResultClient sessionResultClient;
-    private JooqSessionResultRepo sessionResultRepo;
+    private ISessionResultClient sessionResultClient;
+    private ISessionResultRepo sessionResultRepo;
 
-    public SessionResultService(IMeetingService meetingService, ISessionService sessionService, SessionResultClient sessionResultClient, JooqSessionResultRepo sessionResultRepo) {
+    public SessionResultService(IMeetingService meetingService, ISessionService sessionService, ISessionResultClient sessionResultClient, ISessionResultRepo sessionResultRepo) {
         this.meetingService = meetingService;
         this.sessionService = sessionService;
         this.sessionResultClient = sessionResultClient;

@@ -1,5 +1,6 @@
 package htwsaar.nordpol.api.baseclient;
 import htwsaar.nordpol.api.BaseClient;
+import htwsaar.nordpol.api.OpenF1Endpoint;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
@@ -24,12 +25,12 @@ class BaseClientTest {
             super(baseUrl);
         }
 
-        <T> List<T> fetchListTest(String path, Map<String, ?> queries, Class<T[]> responseType) {
-            return super.fetchList(path, queries, responseType);
+        <T> List<T> fetchListTest(OpenF1Endpoint endpoint, Map<String, ?> queryParameter, Class<T[]> responseType) {
+            return super.fetchList(endpoint, queryParameter, responseType);
         }
 
-        <T> Optional<T> fetchSingleTest(String path, Map<String, ?> queries, Class<T[]> responseType) {
-            return super.fetchSingle(path, queries, responseType);
+        <T> Optional<T> fetchSingleTest(OpenF1Endpoint endpoint, Map<String, ?> queryParameter, Class<T[]> responseType) {
+            return super.fetchSingle(endpoint, queryParameter, responseType);
         }
     }
 
@@ -63,7 +64,7 @@ class BaseClientTest {
         );
 
         List<TestDto> result =
-                baseClient.fetchListTest("/test", Map.of("key", "value"), TestDto[].class);
+                baseClient.fetchListTest(OpenF1Endpoint.TEST, Map.of("key", "value"), TestDto[].class);
 
         assertThat(result).isNotNull();
         assertThat(result).isNotEmpty();
@@ -87,7 +88,7 @@ class BaseClientTest {
         );
 
         Optional<TestDto> result =
-                baseClient.fetchSingleTest("/test", null, TestDto[].class);
+                baseClient.fetchSingleTest(OpenF1Endpoint.TEST, null, TestDto[].class);
 
         assertThat(result).isPresent();
         assertThat(result.get().value()).isEqualTo("A");
@@ -102,7 +103,7 @@ class BaseClientTest {
         );
 
         Optional<TestDto> result =
-                baseClient.fetchSingleTest("/test", null, TestDto[].class);
+                baseClient.fetchSingleTest(OpenF1Endpoint.TEST, null, TestDto[].class);
 
         assertThat(result).isEmpty();
     }
@@ -114,7 +115,7 @@ class BaseClientTest {
         );
 
         List<TestDto> result =
-                baseClient.fetchListTest("/test", null, TestDto[].class);
+                baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class);
 
         assertThat(result).isEmpty();
     }
@@ -127,7 +128,7 @@ class BaseClientTest {
         );
 
         assertThatThrownBy(() ->
-                baseClient.fetchListTest("/test", null, TestDto[].class)
+                baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class)
         ).isInstanceOf(RuntimeException.class);
     }
 
@@ -136,7 +137,7 @@ class BaseClientTest {
         mockWebServer.shutdown();
 
         assertThatThrownBy(() ->
-                baseClient.fetchListTest("/test", null, TestDto[].class)
+                baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class)
         )
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Failed to fetch data from OpenF1 API");
@@ -162,7 +163,7 @@ class BaseClientTest {
         );
 
         List<TestDto> result =
-                baseClient.fetchListTest("/test", null, TestDto[].class);
+                baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().value()).isEqualTo("A");

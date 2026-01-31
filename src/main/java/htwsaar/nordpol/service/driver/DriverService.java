@@ -1,12 +1,10 @@
 package htwsaar.nordpol.service.driver;
 
 import htwsaar.nordpol.api.dto.DriverDto;
-import htwsaar.nordpol.api.driver.DriverClient;
-import htwsaar.nordpol.api.dto.SessionDto;
+import htwsaar.nordpol.api.driver.IDriverClient;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.exception.DriverNotFoundException;
-import htwsaar.nordpol.exception.SessionNotFoundException;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.meeting.MeetingService;
@@ -32,12 +30,12 @@ public class DriverService implements IDriverService {
     private static final int MIN_YEAR = 2023;
 
     private final IDriverRepo driverRepo;
-    private final DriverClient driverClient;
+    private final IDriverClient driverClient;
     private final MeetingService meetingService;
     private final ICacheService cacheService;
 
 
-    public DriverService(IDriverRepo driverRepo, DriverClient driverClient, MeetingService meetingService, ICacheService cacheService) {
+    public DriverService(IDriverRepo driverRepo, IDriverClient driverClient, MeetingService meetingService, ICacheService cacheService) {
 
         if (driverRepo == null) {
             throw new IllegalArgumentException("driverRepo must not be null.");
