@@ -55,6 +55,8 @@ class SessionReportServiceTest {
 
     private SessionReportService sessionReportService;
 
+    ICacheService cacheService = new CacheService();
+
     private Meeting defaultMeeting;
     private Session defaultSession;
     private Weather defaultWeather;
@@ -68,7 +70,8 @@ class SessionReportServiceTest {
                 sessionResultService,
                 lapService,
                 weatherService,
-                driverService
+                driverService,
+                cacheService
         );
 
         defaultMeeting = new Meeting(MEETING_KEY, COUNTRY_CODE, COUNTRY_NAME, LOCATION, MEETING_NAME, YEAR);

@@ -11,6 +11,8 @@ import htwsaar.nordpol.util.Mapper;
 
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 public class MeetingService implements IMeetingService {
 
 

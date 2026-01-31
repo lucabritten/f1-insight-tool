@@ -9,6 +9,7 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.exception.WeatherNotFoundException;
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
+import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.service.session.SessionService;
 import htwsaar.nordpol.util.Mapper;
@@ -16,27 +17,28 @@ import htwsaar.nordpol.util.Mapper;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.requireNonNull;
+
 public class WeatherService implements IWeatherService {
 
     private final IWeatherClient weatherClient;
     private final IWeatherRepo weatherRepo;
     private final SessionService sessionService;
     private final MeetingService meetingService;
+    private final ICacheService cacheService;
 
-    public WeatherService(IWeatherClient client, IWeatherRepo repo, SessionService sessionService, MeetingService meetingService){
-        if(client == null)
-            throw new IllegalArgumentException("WeatherClient must not be null.");
-        if(repo == null)
-            throw new IllegalArgumentException("WeatherRepo must not be null.");
-        if(sessionService == null)
-            throw new IllegalArgumentException("SessionService must not be null.");
-        if(meetingService == null)
-            throw new IllegalArgumentException("MeetingService must not be null,");
+    public WeatherService(IWeatherClient weatherClient, IWeatherRepo weatherRepo, SessionService sessionService, MeetingService meetingService, ICacheService cacheService){
+        requireNonNull(weatherClient, "weatherClient must not be null");
+        requireNonNull(weatherRepo, "weatherRepo must not be null.");
+        requireNonNull(sessionService, "sessionService must not be null.");
+        requireNonNull(meetingService, "meetingService must not be null");
+        requireNonNull(cacheService, "cacheService must not be null");
 
-        this.weatherClient = client;
-        this.weatherRepo = repo;
+        this.weatherClient = weatherClient;
+        this.weatherRepo = weatherRepo;
         this.sessionService = sessionService;
         this.meetingService = meetingService;
+        this.cacheService = cacheService;
     }
 
     @Override
