@@ -4,7 +4,7 @@ import htwsaar.nordpol.cli.converter.SessionNameConverter;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionReport;
-import htwsaar.nordpol.util.SessionReportRenderer;
+import htwsaar.nordpol.util.rendering.SessionReportRenderer;
 import htwsaar.nordpol.service.report.SessionReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
