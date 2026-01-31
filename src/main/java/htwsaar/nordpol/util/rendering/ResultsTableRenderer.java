@@ -22,8 +22,8 @@ import java.util.Map;
 public final class ResultsTableRenderer {
 
     private static final int TEXT_SIZE = 10;
-    private static final String QUALI_HEADER = "%-4s %-22s %-4s %-8s %-8s %-8s %-8s";
-    private static final String RACE_HEADER  = "%-4s %-22s %-4s %-8s";
+    private static final String QUALI_HEADER = "%-4s %-22s %-16s %-4s %-8s %-8s %-8s %-8s";
+    private static final String RACE_HEADER  = "%-4s %-22s %-16s %-4s %-8s";
 
     private final TimeFormatter timeFormatter;
     private final GapFormatter gapFormatter;
@@ -52,8 +52,8 @@ public final class ResultsTableRenderer {
 
         y = writeLine(contentStream, PDType1Font.COURIER_BOLD, TEXT_SIZE, x, y,
                 qualifying
-                        ? String.format(headerFormat, "Pos", "Driver", "No.", "Q1(s)", "Q2(s)", "Q3(s)", "Gap")
-                        : String.format(headerFormat, "Pos", "Driver", "No.", "Gap"));
+                        ? String.format(headerFormat, "Pos", "Driver", "Team","No.", "Q1(s)", "Q2(s)", "Q3(s)", "Gap")
+                        : String.format(headerFormat, "Pos", "Driver", "Team","No.", "Gap"));
 
         int rowIndex = 1;
         for (SessionResult result : resultsContext.results()) {
@@ -61,6 +61,7 @@ public final class ResultsTableRenderer {
             String driverName = driver == null
                     ? "Driver " + result.driverNumber()
                     : driver.firstName() + " " + driver.lastName();
+            String teamName = driver.teamName() == null ? "Unknown" : driver.teamName();
             int position = result.position() > 0 ? result.position() : rowIndex;
             rowIndex++;
 
@@ -69,6 +70,7 @@ public final class ResultsTableRenderer {
                         String.format(headerFormat,
                                 position,
                                 trim(driverName, 22),
+                                trim(teamName, 16),
                                 result.driverNumber(),
                                 timeFormatter.segment(result.duration(), 0),
                                 timeFormatter.segment(result.duration(), 1),
