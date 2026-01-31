@@ -3,7 +3,7 @@ import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.service.sessionResult.ISessionResultService;
 import htwsaar.nordpol.config.ApplicationContext;
-import htwsaar.nordpol.util.Formatter;
+import htwsaar.nordpol.util.formatting.CliFormatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import java.util.concurrent.Callable;
@@ -51,7 +51,7 @@ public class SessionResultCommand implements Callable<Integer> {
     public Integer call() {
         try {
             SessionResultWithContext result = sessionResultService.getResultByLocationYearAndSessionType(location, year, sessionName);
-            System.out.println(Formatter.formatSessionResults(result));
+            System.out.println(CliFormatter.formatSessionResults(result));
             return 0;
         } catch (Exception e) {
             System.err.println(e.getMessage());
