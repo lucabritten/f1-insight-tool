@@ -73,7 +73,7 @@ ApplicationContext {
     public static SessionService sessionService() {
         ISessionRepo ISessionRepo = new JooqSessionRepo(JooqConfig.createContext());
         SessionClient sessionClient = new SessionClient();
-        return new SessionService(ISessionRepo, sessionClient, cacheService());
+        return new SessionService(ISessionRepo, sessionClient, meetingService(), cacheService());
     }
 
     public static WeatherService weatherService() {

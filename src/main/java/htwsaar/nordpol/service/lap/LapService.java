@@ -1,13 +1,11 @@
 package htwsaar.nordpol.service.lap;
 
-import htwsaar.nordpol.api.dto.MeetingDto;
 import htwsaar.nordpol.api.lap.ILapClient;
 import htwsaar.nordpol.api.dto.LapDto;
 import htwsaar.nordpol.cli.view.FastestLapsWithContext;
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.exception.LapNotFoundException;
-import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.repository.lap.ILapRepo;
 import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.meeting.MeetingService;
@@ -18,6 +16,8 @@ import htwsaar.nordpol.util.Mapper;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import static java.util.Objects.requireNonNull;
 
 public class LapService implements ILapService {
 
@@ -40,19 +40,12 @@ public class LapService implements ILapService {
     }
 
     private void validateLapConstructor(ILapRepo lapRepo, ILapClient lapsClient, MeetingService meetingService, SessionService sessionService, DriverService driverService, ICacheService cacheService){
-        if (lapsClient == null)
-            throw new IllegalArgumentException("LapsClient cannot be null.");
-        if (lapRepo == null)
-            throw new IllegalArgumentException("LapsRepo cannot be null.");
-        if(meetingService == null)
-            throw new IllegalArgumentException("MeetingService cannot be null.");
-        if(sessionService == null)
-            throw new IllegalArgumentException("SessionService cannot be null.");
-        if(driverService == null)
-            throw new IllegalArgumentException("DriverService cannot be null");
-        if(cacheService == null) {
-            throw new IllegalArgumentException("CacheService must not be null");
-        }
+        requireNonNull(lapsClient, "lapClient");
+        requireNonNull(lapRepo, "lapRepo");
+        requireNonNull(meetingService, "meetingService");
+        requireNonNull(sessionService, "sessionService");
+        requireNonNull(driverService, "driverService");
+        requireNonNull(cacheService, "cacheService");
     }
 
     @Override

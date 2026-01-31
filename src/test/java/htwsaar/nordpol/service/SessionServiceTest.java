@@ -6,6 +6,7 @@ import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.SessionNotFoundException;
 import htwsaar.nordpol.repository.session.ISessionRepo;
+import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.session.SessionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,13 +30,16 @@ public class SessionServiceTest {
     @Mock
     SessionClient sessionClient;
 
+    @Mock
+    IMeetingService meetingService;
+
     ICacheService cacheService = new CacheService();
 
     SessionService sessionService;
 
     @BeforeEach
     void setup() {
-        sessionService = new SessionService(sessionRepo, sessionClient, cacheService);
+        sessionService = new SessionService(sessionRepo, sessionClient, meetingService, cacheService);
     }
 
     @Test

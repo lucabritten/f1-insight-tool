@@ -7,15 +7,20 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.SessionNotFoundException;
 import htwsaar.nordpol.repository.session.ISessionRepo;
 import htwsaar.nordpol.service.ICacheService;
+import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.util.Mapper;
+
+import static java.util.Objects.requireNonNull;
 
 public class SessionService implements ISessionService {
 
     private final ISessionRepo sessionRepo;
     private final ISessionClient sessionClient;
+
+    private final IMeetingService meetingService;
     private final ICacheService cacheService;
 
-    public SessionService(ISessionRepo sessionRepo, ISessionClient sessionClient, ICacheService cacheService) {
+    public SessionService(ISessionRepo sessionRepo, ISessionClient sessionClient, IMeetingService meetingService, ICacheService cacheService) {
         if (sessionRepo == null) {
             throw new IllegalArgumentException("sessionRepo must not be null.");
         }
@@ -23,10 +28,13 @@ public class SessionService implements ISessionService {
             throw new IllegalArgumentException("sessionClient must not be null.");
         }
         if(cacheService == null) {
-            throw new IllegalArgumentException("cacheServive must not be null");
+            throw new IllegalArgumentException("cacheService must not be null");
         }
+        requireNonNull(meetingService, "meetingService must not be null");
+
         this.sessionRepo = sessionRepo;
         this.sessionClient = sessionClient;
+        this.meetingService = meetingService;
         this.cacheService = cacheService;
     }
 
@@ -39,5 +47,11 @@ public class SessionService implements ISessionService {
                 () -> new SessionNotFoundException(meetingKey, sessionName.displayName())
         );
         return Mapper.toSession(dto);
+    }
+
+    @Override
+    public Session getSessionByLocationYearAndSessionType(String location, int year, SessionName sessionName) {
+        int meetingKey = meetingService.getMeetingByYearAndLocation(year, location).meetingKey();
+        return getSessionByMeetingKeyAndSessionName(meetingKey, sessionName);
     }
 }
