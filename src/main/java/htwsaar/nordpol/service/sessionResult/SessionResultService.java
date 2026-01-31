@@ -1,6 +1,5 @@
 package htwsaar.nordpol.service.sessionResult;
 
-import htwsaar.nordpol.api.dto.MeetingDto;
 import htwsaar.nordpol.api.dto.SessionResultDto;
 import htwsaar.nordpol.api.sessionresult.ISessionResultClient;
 import htwsaar.nordpol.cli.view.SessionResultWithContext;
@@ -36,7 +35,6 @@ public class SessionResultService implements ISessionResultService {
         requireNonNull(sessionResultClient, "sessionResultClient must not be null.");
         requireNonNull(sessionResultRepo, "sessionResultRepo must not be null");
         requireNonNull(cacheService, "cacheService must not be null");
-        requireNonNull(cacheService, "cacheService must not be null");
 
         this.meetingService = meetingService;
         this.sessionService = sessionService;
@@ -58,10 +56,9 @@ public class SessionResultService implements ISessionResultService {
                 .sorted(
                         Comparator
                                 // Push DSQ/DNS/DNF to the bottom
-                                .comparing((SessionResult r) -> r.position() > 0 ? r.position() : Integer.MAX_VALUE)
-                                .thenComparingInt(r -> (r.dnf() || r.dns() || r.dsq()) ? 1 : 0)
                                 // Then by position; treat 0 (unknown) as last
-
+                                .comparingInt((SessionResult r) -> (r.dnf() || r.dns() || r.dsq()) ? 1 : 0)
+                                .thenComparingInt(r -> r.position() > 0 ? r.position() : Integer.MAX_VALUE)
                                 // Stable final tiebreaker: driver number
                                 .thenComparingInt(SessionResult::driverNumber)
                 )
