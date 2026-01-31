@@ -13,8 +13,16 @@ import java.time.Year;
 import java.util.concurrent.Callable;
 
 @Command(
-        name = "fastest-lap",
-        description = "Print the fastest lap for a given location, year, and session",
+        name = "fastest-laps",
+        description = {
+                "Print the fastest lap times for a given location, year and session.",
+                "Optionally filter by driver and/or limit the number of results.",
+                "",
+                "Examples:",
+                "  fastest-laps -l Austin -y 2025 -s Qualifying",
+                "  fastest-laps -l Austin -s Race --limit 5",
+                "  fastest-laps -l Austin -s Race -d 81 --limit 3"
+        },
         mixinStandardHelpOptions = true
 )
 public class FastestLapCommand implements Callable<Integer> {
@@ -28,30 +36,30 @@ public class FastestLapCommand implements Callable<Integer> {
 
     @Option(
             names = {"--year", "-y"},
-            description = "The season year"
+            description = "The year the data is related too (default: current-year)"
     )
     private int year = Year.now().getValue();
 
     @Option(
-            names = {"--session-name", "-sn"},
-            description = "Session name (e.g. FP1, PRACTICE1, Quali, Race,...)",
+            names = {"--session", "-s"},
+            description = "Session name (e.g. FP1, PRACTICE1, Qualifying, Race)",
             required = true,
             converter = SessionNameConverter.class
     )
     private SessionName sessionName;
 
     @Option(
-            names = {"--driver-number", "-dn"},
-            description = "Driver number to filter fastest lap within the session"
+            names = {"--driver-number", "-d"},
+            description = "Optional: driver number to filter fastest laps for a specific driver"
     )
     private Integer driverNumber;
 
     @Option(
-            names = {"--top-laps", "-tl"},
-            description = "The number of fastest laps to show (default: 1)",
+            names = {"--limit", "-lim"},
+            description = "Maximum number of fastest laps to display, sorted by lap time (default: 1)",
             defaultValue = "1"
     )
-    private int topLaps;
+    private int limit;
 
     private final LapService lapService;
 
@@ -67,16 +75,20 @@ public class FastestLapCommand implements Callable<Integer> {
     public Integer call() {
         try {
             FastestLapsWithContext fastestLaps = driverNumber == null
-                    ? lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName, topLaps)
-                    : lapService.getFastestLapByLocationYearSessionNameAndDriverNumber(location, year, sessionName,driverNumber, topLaps);
+                    ? lapService.getFastestLapByLocationYearAndSessionName(location, year, sessionName, limit)
+                    : lapService.getFastestLapByLocationYearSessionNameAndDriverNumber(location, year, sessionName,driverNumber, limit);
 
             String output = CliFormatter.formatFastestLaps(fastestLaps);
 
             System.out.println(output);
             return 0;
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Invalid input: " + e.getMessage());
+            System.err.println("Use --help for usage information.");
             return 2;
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+            return 1;
         }
     }
 }

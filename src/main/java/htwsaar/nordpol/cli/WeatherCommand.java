@@ -13,8 +13,14 @@ import java.time.Year;
 import java.util.concurrent.Callable;
 
 @Command(
-        name = "weather-info",
-        description = "Print averaged weather information for a specific location, year and session type",
+        name = "weather",
+        description = {
+                "Print averaged weather information for a specific location, year and session type",
+                "",
+                "Examples:",
+                "weather -l Monza -y 2023 -s Race",
+                "weather --location Austin --year 2025 --session-name Qualifying"
+        },
         mixinStandardHelpOptions = true
 )
 public class WeatherCommand implements Callable<Integer> {
@@ -28,7 +34,7 @@ public class WeatherCommand implements Callable<Integer> {
 
     @Option(
             names = {"--year", "-y"},
-            description = "The season year"
+            description = "The year the data is related too (default: current-year)"
     )
     private int year = Year.now().getValue();
 
@@ -63,9 +69,13 @@ public class WeatherCommand implements Callable<Integer> {
             String output = CliFormatter.formatWeather(weatherWithContext);
             System.out.println(output);
             return 0;
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Invalid input: " + e.getMessage());
+            System.err.println("Use --help for usage information.");
             return 2;
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+            return 1;
         }
     }
 }

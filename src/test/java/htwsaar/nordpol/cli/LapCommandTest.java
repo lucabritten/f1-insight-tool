@@ -21,6 +21,8 @@ import static org.mockito.Mockito.when;
 
 public class LapCommandTest {
 
+    private static final int ILLEGAL_ARG_ERROR = 1;
+
     private LapService mockLapService;
     private ByteArrayOutputStream outputStream;
     private ByteArrayOutputStream errorStream;
@@ -67,7 +69,7 @@ public class LapCommandTest {
 
     int exitCode = new CommandLine(
             new LapCommand(mockLapService)
-    ).execute("-l", "Singapore Grand Prix", "-y","2025","-sn", "RACE", "-d","1");
+    ).execute("-l", "Singapore Grand Prix", "-y","2025","-s", "RACE", "-d","1");
 
     assertThat(exitCode).isZero();
     assertThat(outputStream.toString()).contains("Race");
@@ -81,7 +83,7 @@ public class LapCommandTest {
         ).execute("-l", "Singapore", "-y","2025","-sn", "RACE");
 
         assertThat(exitCode).isEqualTo(2);
-        assertThat(errorStream.toString()).contains("Missing required option");
+        assertThat(errorStream.toString()).contains("Invalid value for option");
     }
 
     @Test

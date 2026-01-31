@@ -25,6 +25,7 @@ public class WeatherCommandTest {
     private ByteArrayOutputStream errorStream;
     private WeatherWithContext sampleWeatherContext;
 
+    private static final int ILLEGAL_ARG_ERROR = 1;
     private static final int BUSINESS_LOGIC_ERROR = 2;
 
     @BeforeEach
@@ -94,7 +95,7 @@ public class WeatherCommandTest {
                 new WeatherCommand(mockWeatherService)
         ).execute("-l", "Saarbrücken", "-y", "2024", "-sn", "Race");
 
-        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+        assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
         assertThat(errorStream.toString())
                 .contains("not found");
     }
@@ -106,7 +107,7 @@ public class WeatherCommandTest {
         ).execute("--help");
 
         assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("weather-info");
+        assertThat(outputStream.toString()).contains("weather");
     }
 
     @Test

@@ -59,7 +59,7 @@ public class FastestLapCommandTest {
 
         int exitCode = new CommandLine(
                 new FastestLapCommand(mockLapService)
-        ).execute("-l", "Singapore Grand Prix", "-y","2025","-sn", "RACE","-dn", "1");
+        ).execute("-l", "Singapore Grand Prix", "-y","2025","-s", "RACE","-d", "1");
 
         assertThat(exitCode).isZero();
         assertThat(outputStream.toString()).contains("Race");
@@ -73,7 +73,7 @@ public class FastestLapCommandTest {
 
         int exitCode = new CommandLine(
                 new FastestLapCommand(mockLapService)
-        ).execute("-l", "Singapore", "-y", "2025", "-sn", "RACE");
+        ).execute("-l", "Singapore", "-y", "2025", "-s", "RACE");
 
         assertThat(exitCode).isZero();
         assertThat(outputStream.toString()).contains("Race");

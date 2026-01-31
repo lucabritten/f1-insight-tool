@@ -22,7 +22,8 @@ public class DriverCommandTest {
     private ByteArrayOutputStream outputStream;
     private ByteArrayOutputStream errorStream;
 
-    private static final int BUSINESS_LOGIC_ERROR = 2;
+    private static final int ILLEGAL_ARG_ERROR = 2;
+    private static final int BUSINESS_LOGIC_ERROR = 1;
 
     @BeforeEach
     void setup(){
@@ -61,7 +62,7 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute("-fn", "Max");
 
-        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+        assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
         assertThat(errorStream.toString())
                 .contains("Missing required option")
                 .contains("--last-name");
@@ -73,7 +74,7 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute();
 
-        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+        assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
     }
 
     @Test
@@ -97,7 +98,7 @@ public class DriverCommandTest {
         ).execute("--help");
 
         assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("driver-info");
+        assertThat(outputStream.toString()).contains("driver");
     }
 
     @Test
@@ -120,7 +121,7 @@ public class DriverCommandTest {
                 new DriverCommand(mockDriverService)
         ).execute("-fn", "Max", "-ln", "Verstappen", "-s", "1899");
 
-        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+        assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
         assertThat(errorStream.toString())
                 .contains("1899");
     }

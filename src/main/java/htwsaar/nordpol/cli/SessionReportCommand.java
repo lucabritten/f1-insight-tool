@@ -17,9 +17,16 @@ import java.time.Year;
 import java.util.concurrent.Callable;
 
 @Command(
-        name = "session-report",
-        description = "Generate a PDF report for a session with results, weather, and lap comparisons",
-        mixinStandardHelpOptions = true
+    name = "session-report",
+    description = {
+        "Generate a PDF report for a Formula 1 session including results, weather, and lap comparisons.",
+        "",
+        "Examples:",
+        "  session-report -l Monza -y 2024 -s Race",
+        "  session-report -l 'Las Vegas' -s Qualifying --limit 10",
+        "  session-report -l Austin -s Race -o reports/austin-race.pdf"
+    },
+    mixinStandardHelpOptions = true
 )
 public class SessionReportCommand implements Callable<Integer> {
 
@@ -33,32 +40,29 @@ public class SessionReportCommand implements Callable<Integer> {
     private String location;
 
     @Option(names = {"--year", "-y"},
-            description = "The season year (e.g., 2024)"
+            description = "Season year (default: current year)"
     )
 
     private int year = Year.now().getValue();
 
     @Option(
-            names = {"--session-name", "-sn"},
-            description = "Session name (e.g. FP1, PRACTICE1, Quali, Race,...)",
-            required = true,
-            converter = SessionNameConverter.class
+        names = {"--session", "-s"},
+        description = "Session name (e.g. FP1, PRACTICE1, Qualifying, Race)",
+        required = true,
+        converter = SessionNameConverter.class
     )
-
     private SessionName sessionName;
 
     @Option(
-            names = {"--top-drivers", "-td"},
-            description = "Limit the report to the first N drivers in result order"
+        names = {"--limit", "-lim"},
+        description = "Optional: Limit the report to the top N drivers in classification order"
     )
-
     private Integer topDrivers;
 
     @Option(
-            names = {"--output", "-o"},
-            description = "Output path for the generated PDF"
+        names = {"--output", "-o"},
+        description = "Output path for the generated PDF file"
     )
-
     private String output;
 
     private final SessionReportService sessionReportService;
@@ -81,9 +85,13 @@ public class SessionReportCommand implements Callable<Integer> {
             renderer.render(report, outputPath);
             logger.info("Report written to: {}", outputPath.toAbsolutePath());
             return 0;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Invalid input: " + e.getMessage());
+            System.err.println("Use --help for usage information.");
             return 2;
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+            return 1;
         }
     }
 

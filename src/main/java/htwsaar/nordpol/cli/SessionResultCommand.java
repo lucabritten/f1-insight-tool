@@ -1,4 +1,5 @@
 package htwsaar.nordpol.cli;
+import htwsaar.nordpol.cli.converter.SessionNameConverter;
 import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.service.sessionResult.ISessionResultService;
@@ -6,11 +7,19 @@ import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.util.formatting.CliFormatter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+
+import java.time.Year;
 import java.util.concurrent.Callable;
 
 @Command(
         name = "session-result",
-        description = "Print session results for a given location, year and session",
+        description = {
+                "Print session results for a given location, year and session",
+                "",
+                "Examples:",
+                "session-result -l Monza -y 2023 -s Race",
+                "session-result --location Austin --year 2025 --session Qualifying"
+        },
         mixinStandardHelpOptions = true
 )
 
@@ -18,24 +27,25 @@ public class SessionResultCommand implements Callable<Integer> {
 
     @Option(
             names = {"--location", "-l"},
-            description = "Race location",
+            description = "The location, where the session took place (e.g. Austin, Monza)",
             required = true
     )
     private String location;
 
 
     @Option(
-            names = {"session", "-s"},
-            description = "Session name",
-            required = true
+            names = {"--session", "-s"},
+            description = "Session name (e.g. FP1, PRACTICE1, Quali, Race,...)",
+            required = true,
+            converter = SessionNameConverter.class
     )
     private SessionName sessionName;
 
     @Option(
             names = {"--year", "-y"},
-            description = "Season year"
+            description = "The year the data is related too (default: current-year)"
     )
-    private int year;
+    private int year = Year.now().getValue();
 
     private final ISessionResultService sessionResultService;
 
@@ -53,9 +63,13 @@ public class SessionResultCommand implements Callable<Integer> {
             SessionResultWithContext result = sessionResultService.getResultByLocationYearAndSessionType(location, year, sessionName);
             System.out.println(CliFormatter.formatSessionResults(result));
             return 0;
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Invalid input: " + e.getMessage());
+            System.err.println("Use --help for usage information.");
             return 2;
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+            return 1;
         }
     }
 

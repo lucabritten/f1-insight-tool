@@ -15,7 +15,7 @@ import picocli.CommandLine.Command;
             FastestLapCommand.class,
             LapCommand.class,
             SessionReportCommand.class,
-                SessionResultCommand.class
+            SessionResultCommand.class
         }
 )
 public class F1CLI {
