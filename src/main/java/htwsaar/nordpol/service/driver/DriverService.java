@@ -13,6 +13,8 @@ import htwsaar.nordpol.util.Mapper;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Service layer for driver-related operations.
  *
@@ -36,19 +38,10 @@ public class DriverService implements IDriverService {
 
 
     public DriverService(IDriverRepo driverRepo, IDriverClient driverClient, MeetingService meetingService, ICacheService cacheService) {
-
-        if (driverRepo == null) {
-            throw new IllegalArgumentException("driverRepo must not be null.");
-        }
-        if (driverClient == null) {
-            throw new IllegalArgumentException("driverClient must not be null.");
-        }
-        if (meetingService == null) {
-            throw new IllegalArgumentException("meetingService must not be null.");
-        }
-        if(cacheService == null) {
-            throw new IllegalArgumentException("cacheService must not be null");
-        }
+        requireNonNull(driverRepo, "driverRepo must not be null.");
+        requireNonNull(driverClient, "driverClient must not be null.");
+        requireNonNull(meetingService, "meetingService must not be null");
+        requireNonNull(cacheService, "cacheService must not be null");
 
         this.driverRepo = driverRepo;
         this.driverClient = driverClient;

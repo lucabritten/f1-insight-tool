@@ -9,6 +9,7 @@ import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.domain.SessionReport;
+import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.service.lap.LapService;
 import htwsaar.nordpol.service.meeting.MeetingService;
@@ -20,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Objects.requireNonNull;
+
 public class SessionReportService implements ISessionReportService {
 
     private final MeetingService meetingService;
@@ -28,31 +31,23 @@ public class SessionReportService implements ISessionReportService {
     private final LapService lapService;
     private final WeatherService weatherService;
     private final DriverService driverService;
+    private final ICacheService cacheService;
 
     public SessionReportService(MeetingService meetingService,
                                 SessionService sessionService,
                                 SessionResultService sessionResultService,
                                 LapService lapService,
                                 WeatherService weatherService,
-                                DriverService driverService) {
-        if (meetingService == null){
-            throw new IllegalArgumentException("meetingService must not be null.");
-        }
-        if (sessionService == null) {
-            throw new IllegalArgumentException("sessionService must not be null.");
-        }
-        if (sessionResultService == null) {
-            throw new IllegalArgumentException("sessionResultService must not be null.");
-        }
-        if (lapService == null) {
-            throw new IllegalArgumentException("lapService must not be null.");
-        }
-        if (weatherService == null) {
-            throw new IllegalArgumentException("weatherService must not be null.");
-        }
-        if (driverService == null) {
-            throw new IllegalArgumentException("driverService must not be null.");
-        }
+                                DriverService driverService,
+                                ICacheService cacheService) {
+
+        requireNonNull(meetingService, "meetingService must not be null");
+        requireNonNull(sessionService, "sessionService must not be null.");
+        requireNonNull(sessionResultService, "sessionResultService must not be null.");
+        requireNonNull(lapService, "lapService must not be null");
+        requireNonNull(weatherService, "weatherService must not be null");
+        requireNonNull(driverService, "driverService must not be null");
+        requireNonNull(cacheService, "cacheService must not be null");
 
         this.meetingService = meetingService;
         this.sessionService = sessionService;
@@ -60,6 +55,7 @@ public class SessionReportService implements ISessionReportService {
         this.lapService = lapService;
         this.weatherService = weatherService;
         this.driverService = driverService;
+        this.cacheService = cacheService;
     }
 
     @Override

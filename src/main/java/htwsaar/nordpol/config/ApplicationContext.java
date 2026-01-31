@@ -79,7 +79,7 @@ ApplicationContext {
     public static WeatherService weatherService() {
         IWeatherRepo weatherRepo = new JooqWeatherRepo(JooqConfig.createContext());
         WeatherClient weatherClient = new WeatherClient();
-        return new WeatherService(weatherClient, weatherRepo, sessionService(),meetingService());
+        return new WeatherService(weatherClient, weatherRepo, sessionService(),meetingService(), cacheService());
     }
 
     public static LapService lapService() {
@@ -91,7 +91,7 @@ ApplicationContext {
     public static SessionResultService sessionResultService() {
         ISessionResultClient client = new SessionResultClient();
         ISessionResultRepo repo = new JooqSessionResultRepo(JooqConfig.createContext());
-        return new SessionResultService(meetingService(), sessionService(), client, repo);
+        return new SessionResultService(meetingService(), sessionService(), client, repo, cacheService());
     }
 
     public static SessionReportService sessionReportService() {
@@ -101,7 +101,8 @@ ApplicationContext {
                 sessionResultService(),
                 lapService(),
                 weatherService(),
-                driverService()
+                driverService(),
+                cacheService()
         );
     }
 }

@@ -21,16 +21,10 @@ public class SessionService implements ISessionService {
     private final ICacheService cacheService;
 
     public SessionService(ISessionRepo sessionRepo, ISessionClient sessionClient, IMeetingService meetingService, ICacheService cacheService) {
-        if (sessionRepo == null) {
-            throw new IllegalArgumentException("sessionRepo must not be null.");
-        }
-        if (sessionClient == null) {
-            throw new IllegalArgumentException("sessionClient must not be null.");
-        }
-        if(cacheService == null) {
-            throw new IllegalArgumentException("cacheService must not be null");
-        }
+        requireNonNull(sessionRepo, "sessionRepo must not be null.");
+        requireNonNull(sessionClient, "sessionClient must not be null.");
         requireNonNull(meetingService, "meetingService must not be null");
+        requireNonNull(cacheService, "cacheService must not be null");
 
         this.sessionRepo = sessionRepo;
         this.sessionClient = sessionClient;

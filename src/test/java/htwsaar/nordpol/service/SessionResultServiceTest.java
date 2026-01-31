@@ -10,6 +10,8 @@ import htwsaar.nordpol.repository.sessionresult.ISessionResultRepo;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.service.sessionResult.SessionResultService;
+import htwsaar.nordpol.service.weather.WeatherService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,8 +38,14 @@ class SessionResultServiceTest {
     @Mock
     private ISessionResultRepo sessionResultRepo;
 
-    @InjectMocks
     private SessionResultService sessionResultService;
+
+    ICacheService cacheService = new CacheService();
+
+    @BeforeEach
+    void setup() {
+        sessionResultService = new SessionResultService(meetingService, sessionService, sessionResultClient, sessionResultRepo, cacheService);
+    }
 
     @Test
     void getResultByLocationYearAndSessionType_returnsResultsFromDatabase() {
