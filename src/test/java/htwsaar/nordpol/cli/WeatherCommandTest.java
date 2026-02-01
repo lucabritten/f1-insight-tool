@@ -7,6 +7,8 @@ import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.service.weather.WeatherService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
@@ -37,15 +39,15 @@ public class WeatherCommandTest {
                 "United States",
                 SessionName.RACE,
                 new Weather(
-                1234,
-                4321,
-                20,
-                50,
-                true,
-                30,
-                10,
-                10
-                 )
+                        1234,
+                        4321,
+                        20,
+                        50,
+                        true,
+                        30,
+                        10,
+                        10
+                )
         );
 
         outputStream = new ByteArrayOutputStream();
@@ -61,176 +63,190 @@ public class WeatherCommandTest {
         System.setErr(System.err);
     }
 
-    @Test
-    void weatherInfo_printsFormattedWeather() {
-        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.RACE))
-                .thenReturn(sampleWeatherContext);
+    @Nested
+    @DisplayName("Success Scenarios")
+    class SuccessScenarios {
 
-        int exitCode = new CommandLine(
-                new WeatherCommand(mockWeatherService)
-        ).execute("-l", "Austin", "-y", "2024", "-sn", "Race");
+        @Test
+        void printsFormattedWeather() {
+            when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.RACE))
+                    .thenReturn(sampleWeatherContext);
 
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("WEATHER");
+            int exitCode = new CommandLine(
+                    new WeatherCommand(mockWeatherService)
+            ).execute("-l", "Austin", "-y", "2024", "-sn", "Race");
+
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString()).contains("WEATHER");
+        }
+
+        @Test
+        void shortAndLongOptions_work() {
+            when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.RACE))
+                    .thenReturn(sampleWeatherContext);
+
+            int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
+                    .execute("--location", "Austin", "--year", "2024", "--session-name", "Race");
+
+            assertThat(exitCode).isZero();
+        }
+
+        @Test
+        void helpOption_printsUsage() {
+            int exitCode = new CommandLine(
+                    new WeatherCommand(mockWeatherService)
+            ).execute("--help");
+
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString()).contains("weather");
+        }
+
+        @Test
+        void whenNoYearGiven_appliesDefaultYear() {
+            int currentYear = Year.now().getValue();
+
+            when(mockWeatherService.getWeatherByLocationYearAndSessionName(
+                    "Austin",
+                    currentYear,
+                    SessionName.RACE
+            )).thenReturn(sampleWeatherContext);
+
+            int exitCode = new CommandLine(
+                    new WeatherCommand(mockWeatherService)
+            ).execute("-l", "Austin", "-sn", "Race");
+
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString()).contains("Austin");
+        }
     }
 
-    @Test
-    void missingSessionName_causesError() {
-        int exitCode = new CommandLine(
-                new WeatherCommand(mockWeatherService)
-        ).execute("-l", "Austin", "-y", "2024");
+    @Nested
+    @DisplayName("Error Scenarios")
+    class ErrorScenarios {
 
-        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
-        assertThat(errorStream.toString())
-                .contains("Missing required option")
-                .contains("--session-name");
+        @Test
+        void missingSessionName_causesError() {
+            int exitCode = new CommandLine(
+                    new WeatherCommand(mockWeatherService)
+            ).execute("-l", "Austin", "-y", "2024");
+
+            assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+            assertThat(errorStream.toString())
+                    .contains("Missing required option")
+                    .contains("--session-name");
+        }
+
+        @Test
+        void unknownLocation_printsErrorMessage() {
+            when(mockWeatherService.getWeatherByLocationYearAndSessionName("Saarbrücken", 2024, SessionName.RACE))
+                    .thenThrow(new MeetingNotFoundException(2024, "Saarbrücken"));
+
+            int exitCode = new CommandLine(
+                    new WeatherCommand(mockWeatherService)
+            ).execute("-l", "Saarbrücken", "-y", "2024", "-sn", "Race");
+
+            assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
+            assertThat(errorStream.toString())
+                    .contains("not found");
+        }
+
+        @Test
+        void invalidSessionName_printsErrorMessage() {
+            int exitCode = new CommandLine(
+                    new WeatherCommand(mockWeatherService)
+            ).execute("-l", "Austin", "-y", "2024", "-sn", "Cruising");
+
+            assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+            assertThat(errorStream.toString())
+                    .contains("Unknown session name")
+                    .contains("Cruising");
+        }
     }
 
-    @Test
-    void unknownLocation_printsErrorMessage() {
-        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Saarbrücken", 2024, SessionName.RACE))
-                .thenThrow(new MeetingNotFoundException(2024, "Saarbrücken"));
+    @Nested
+    @DisplayName("Session Name Aliases")
+    class SessionNameAliases {
 
-        int exitCode = new CommandLine(
-                new WeatherCommand(mockWeatherService)
-        ).execute("-l", "Saarbrücken", "-y", "2024", "-sn", "Race");
+        @Test
+        void differentAliasesAreAcceptedForRace() {
+            when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.RACE))
+                    .thenReturn(sampleWeatherContext);
 
-        assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
-        assertThat(errorStream.toString())
-                .contains("not found");
-    }
+            int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
+                    .execute("-l", "Austin", "-y", "2024", "-sn", "GP");
 
-    @Test
-    void helpOption_printsUsage() {
-        int exitCode = new CommandLine(
-                new WeatherCommand(mockWeatherService)
-        ).execute("--help");
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString()).contains("Austin");
+            assertThat(outputStream.toString()).contains("Race");
+        }
 
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("weather");
-    }
+        @Test
+        void differentAliasesAreAcceptedForQualifying() {
+            WeatherWithContext sample = new WeatherWithContext(
+                    "Austin",
+                    "United States",
+                    SessionName.QUALIFYING,
+                    new Weather(
+                            1234,
+                            4321,
+                            20,
+                            50,
+                            true,
+                            30,
+                            10,
+                            10
+                    )
+            );
+            when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.QUALIFYING))
+                    .thenReturn(sample);
 
-    @Test
-    void shortAndLongOptions_work() {
-        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.RACE))
-                .thenReturn(sampleWeatherContext);
+            int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
+                    .execute("-l", "Austin", "-y", "2024", "-sn", "Quali");
 
-        int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
-                .execute("--location", "Austin", "--year", "2024", "--session-name", "Race");
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString()).contains("Austin");
+            assertThat(outputStream.toString()).contains("Qualifying");
+        }
 
-        assertThat(exitCode).isZero();
-    }
+        @Test
+        void differentAliasesAreAcceptedForPractice() {
+            WeatherWithContext sample = new WeatherWithContext(
+                    "Austin",
+                    "United States",
+                    SessionName.PRACTICE1,
+                    new Weather(
+                            1234,
+                            4321,
+                            20,
+                            50,
+                            true,
+                            30,
+                            10,
+                            10
+                    )
+            );
+            when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.PRACTICE1))
+                    .thenReturn(sample);
 
-    @Test
-    void invalidSessionName_printsErrorMessage() {
-        int exitCode = new CommandLine(
-                new WeatherCommand(mockWeatherService)
-        ).execute("-l", "Austin", "-y", "2024", "-sn", "Cruising");
+            int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
+                    .execute("-l", "Austin", "-y", "2024", "-sn", "FP1");
 
-        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
-        assertThat(errorStream.toString())
-                .contains("Unknown session name")
-                .contains("Cruising");
-    }
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString()).contains("Austin");
+            assertThat(outputStream.toString()).contains("Practice 1");
+        }
 
+        @Test
+        void ignoresLetterCase() {
+            when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.RACE))
+                    .thenReturn(sampleWeatherContext);
 
-    @Test
-    void fieldSessionName_differentAliasesAreAcceptedForRace() {
-        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.RACE))
-                .thenReturn(sampleWeatherContext);
+            int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
+                    .execute("-l", "Austin", "-y", "2024", "-sn", "rAcE");
 
-        int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
-                .execute("-l","Austin", "-y", "2024", "-sn", "GP");
-
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("Austin");
-        assertThat(outputStream.toString()).contains("Race");
-    }
-
-    @Test
-    void fieldSessionName_differentAliasesAreAcceptedForQualifying() {
-        WeatherWithContext sample = new WeatherWithContext(
-                "Austin",
-                "United States",
-                SessionName.QUALIFYING,
-                new Weather(
-                        1234,
-                        4321,
-                        20,
-                        50,
-                        true,
-                        30,
-                        10,
-                        10
-                )
-        );
-        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.QUALIFYING))
-                .thenReturn(sample);
-
-        int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
-                .execute("-l","Austin", "-y", "2024", "-sn", "Quali");
-
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("Austin");
-        assertThat(outputStream.toString()).contains("Qualifying");
-    }
-
-    @Test
-    void fieldSessionName_differentAliasesAreAcceptedForPractice() {
-        WeatherWithContext sample = new WeatherWithContext(
-                "Austin",
-                "United States",
-                SessionName.PRACTICE1,
-                new Weather(
-                        1234,
-                        4321,
-                        20,
-                        50,
-                        true,
-                        30,
-                        10,
-                        10
-                )
-        );
-        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.PRACTICE1))
-                .thenReturn(sample);
-
-        int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
-                .execute("-l","Austin", "-y", "2024", "-sn", "FP1");
-
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("Austin");
-        assertThat(outputStream.toString()).contains("Practice 1");
-    }
-
-    @Test
-    void fieldSessionName_ignoresLetterCase() {
-        when(mockWeatherService.getWeatherByLocationYearAndSessionName("Austin", 2024, SessionName.RACE))
-                .thenReturn(sampleWeatherContext);
-
-        int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
-                .execute("-l","Austin", "-y", "2024", "-sn", "rAcE");
-
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("Austin");
-        assertThat(outputStream.toString()).contains("Race");
-    }
-
-    @Test
-    void whenNoYearGiven_appliesDefaultYear() {
-        int currentYear = Year.now().getValue();
-
-        when(mockWeatherService.getWeatherByLocationYearAndSessionName(
-                "Austin",
-                currentYear,
-                SessionName.RACE
-        )).thenReturn(sampleWeatherContext);
-
-        int exitCode = new CommandLine(
-                new WeatherCommand(mockWeatherService)
-        ).execute("-l", "Austin", "-sn", "Race");
-
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("Austin");
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString()).contains("Austin");
+            assertThat(outputStream.toString()).contains("Race");
+        }
     }
 }

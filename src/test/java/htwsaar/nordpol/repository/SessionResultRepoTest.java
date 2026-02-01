@@ -7,6 +7,8 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -29,20 +31,20 @@ class SessionResultRepoTest {
             CREATE TABLE session_results (
                 session_key        INTEGER NOT NULL,
                 driver_number      INTEGER NOT NULL,
-            
+
                 position           INTEGER,
                 dnf                INTEGER NOT NULL,
                 dns                INTEGER NOT NULL,
                 dsq                INTEGER NOT NULL,
-            
+
                 gap_to_leader_q1   TEXT,
                 gap_to_leader_q2   TEXT,
                 gap_to_leader_q3   TEXT,
-            
+
                 duration_q1        REAL,
                 duration_q2        REAL,
                 duration_q3        REAL,
-            
+
                 PRIMARY KEY (session_key, driver_number)
             );
         """);
@@ -50,71 +52,73 @@ class SessionResultRepoTest {
         repo = new JooqSessionResultRepo(dsl);
     }
 
-    @Test
-    void saveAll_and_getSessionResultBySessionKey_roundtripWorks() {
-        // given
-        SessionResultDto dto = new SessionResultDto(
-                9640,
-                List.of("0.0","0.2", "0.3"),
-                16,
-                false,
-                false,
-                false,
-                List.of(93.5, 92.8, 92.6),
-                3
-        );
+    @Nested
+    @DisplayName("saveAll and getSessionResultBySessionKey")
+    class SaveAndGet {
 
-        // when
-        repo.saveAll(List.of(dto));
-        List<SessionResultDto> results = repo.getSessionResultBySessionKey(9640);
+        @Test
+        void roundtripWorks() {
+            SessionResultDto dto = new SessionResultDto(
+                    9640,
+                    List.of("0.0", "0.2", "0.3"),
+                    16,
+                    false,
+                    false,
+                    false,
+                    List.of(93.5, 92.8, 92.6),
+                    3
+            );
 
-        // then
-        assertThat(results).hasSize(1);
+            repo.saveAll(List.of(dto));
+            List<SessionResultDto> results = repo.getSessionResultBySessionKey(9640);
 
-        SessionResultDto stored = results.get(0);
-        assertThat(stored.session_key()).isEqualTo(9640);
-        assertThat(stored.driver_number()).isEqualTo(16);
-        assertThat(stored.position()).isEqualTo(3);
-        assertThat(stored.dnf()).isFalse();
-        assertThat(stored.dns()).isFalse();
-        assertThat(stored.dsq()).isFalse();
-        assertThat(stored.duration()).containsExactly(93.5, 92.8, 92.6);
-        assertThat(stored.gap_to_leader()).containsExactly("0.0", "0.2", "0.3");
+            assertThat(results).hasSize(1);
+
+            SessionResultDto stored = results.get(0);
+            assertThat(stored.session_key()).isEqualTo(9640);
+            assertThat(stored.driver_number()).isEqualTo(16);
+            assertThat(stored.position()).isEqualTo(3);
+            assertThat(stored.dnf()).isFalse();
+            assertThat(stored.dns()).isFalse();
+            assertThat(stored.dsq()).isFalse();
+            assertThat(stored.duration()).containsExactly(93.5, 92.8, 92.6);
+            assertThat(stored.gap_to_leader()).containsExactly("0.0", "0.2", "0.3");
+        }
+
+        @Test
+        void returnsEmptyList_whenNoResultsExist() {
+            List<SessionResultDto> results = repo.getSessionResultBySessionKey(9999);
+
+            assertThat(results).isEmpty();
+        }
     }
 
-    @Test
-    void getSessionResultBySessionKey_returnsEmptyList_whenNoResultsExist() {
-        // when
-        List<SessionResultDto> results = repo.getSessionResultBySessionKey(9999);
+    @Nested
+    @DisplayName("Null Handling")
+    class NullHandling {
 
-        // then
-        assertThat(results).isEmpty();
-    }
+        @Test
+        void handlesNullQualifyingValuesCorrectly() {
+            SessionResultDto dto = new SessionResultDto(
+                    9641,
+                    List.of(),
+                    44,
+                    true,
+                    false,
+                    false,
+                    List.of(94.2),
+                    0
+            );
 
-    @Test
-    void saveAll_handlesNullQualifyingValuesCorrectly() {
-        // given
-        SessionResultDto dto = new SessionResultDto(
-                9641,
-                List.of(),
-                44,
-                true,
-                false,
-                false,
-                List.of(94.2),
-                0
-        );
+            repo.saveAll(List.of(dto));
+            List<SessionResultDto> results = repo.getSessionResultBySessionKey(9641);
 
-        // when
-        repo.saveAll(List.of(dto));
-        List<SessionResultDto> results = repo.getSessionResultBySessionKey(9641);
+            assertThat(results).hasSize(1);
+            SessionResultDto stored = results.get(0);
 
-        // then
-        assertThat(results).hasSize(1);
-        SessionResultDto stored = results.get(0);
-
-        assertThat(stored.dnf()).isTrue();
-        assertThat(stored.gap_to_leader()).containsExactly(null, null, null);
-        assertThat(stored.duration()).containsExactly(94.2, null, null);
+            assertThat(stored.dnf()).isTrue();
+            assertThat(stored.gap_to_leader()).containsExactly(null, null, null);
+            assertThat(stored.duration()).containsExactly(94.2, null, null);
+        }
     }
 }

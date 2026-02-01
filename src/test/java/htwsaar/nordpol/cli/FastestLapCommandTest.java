@@ -6,6 +6,8 @@ import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.service.lap.LapService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
@@ -29,7 +31,7 @@ public class FastestLapCommandTest {
     private PrintStream originalErr;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         originalOut = System.out;
         originalErr = System.err;
 
@@ -47,65 +49,71 @@ public class FastestLapCommandTest {
     }
 
     @AfterEach
-    void tearDown(){
+    void tearDown() {
         System.setOut(System.out);
         System.setErr(System.err);
     }
 
-    @Test
-    public void lapInfo_printsFormattedLaps(){
-        when(mockLapService.getFastestLapByLocationYearSessionNameAndDriverNumber("Singapore Grand Prix",2025,RACE,1,1))
-                .thenReturn(sampleLapContext);
+    @Nested
+    @DisplayName("Success Scenarios")
+    class SuccessScenarios {
 
-        int exitCode = new CommandLine(
-                new FastestLapCommand(mockLapService)
-        ).execute("-l", "Singapore Grand Prix", "-y","2025","-s", "RACE","-d", "1");
+        @Test
+        public void printsFormattedLaps() {
+            when(mockLapService.getFastestLapByLocationYearSessionNameAndDriverNumber("Singapore Grand Prix", 2025, RACE, 1, 1))
+                    .thenReturn(sampleLapContext);
 
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("Race");
+            int exitCode = new CommandLine(
+                    new FastestLapCommand(mockLapService)
+            ).execute("-l", "Singapore Grand Prix", "-y", "2025", "-s", "RACE", "-d", "1");
 
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString()).contains("Race");
+        }
+
+        @Test
+        public void missingDriverNumber_usesSessionFastestLap() {
+            when(mockLapService.getFastestLapByLocationYearAndSessionName("Singapore", 2025, RACE, 1))
+                    .thenReturn(sampleLapContext);
+
+            int exitCode = new CommandLine(
+                    new FastestLapCommand(mockLapService)
+            ).execute("-l", "Singapore", "-y", "2025", "-s", "RACE");
+
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString()).contains("Race");
+        }
+
+        @Test
+        public void helpOption_printsUsage() {
+            int exitCode = new CommandLine(
+                    new FastestLapCommand(mockLapService)
+            ).execute("--help");
+
+            assertThat(exitCode).isZero();
+        }
     }
 
-    @Test
-    public void missingDriverNumber_usesSessionFastestLap(){
-        when(mockLapService.getFastestLapByLocationYearAndSessionName("Singapore", 2025, RACE, 1))
-                .thenReturn(sampleLapContext);
+    @Nested
+    @DisplayName("Error Scenarios")
+    class ErrorScenarios {
 
-        int exitCode = new CommandLine(
-                new FastestLapCommand(mockLapService)
-        ).execute("-l", "Singapore", "-y", "2025", "-s", "RACE");
+        @Test
+        public void noArguments_printsUsageError() {
+            int exitCode = new CommandLine(
+                    new FastestLapCommand(mockLapService)
+            ).execute();
+            assertThat(exitCode).isEqualTo(2);
+        }
 
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("Race");
+        @Test
+        public void missingSessionName_printsUsageError() {
+            int exitCode = new CommandLine(
+                    new FastestLapCommand(mockLapService)
+            ).execute("-l", "Singapore", "-y", "2025");
+
+            assertThat(exitCode).isEqualTo(2);
+            assertThat(errorStream.toString()).contains("Missing required option");
+        }
     }
-
-    @Test
-    public void helpOption_printsUsage(){
-        int exitCode = new CommandLine(
-                new FastestLapCommand(mockLapService)
-        ).execute("--help");
-
-        assertThat(exitCode).isZero();
-    }
-
-    @Test
-    public void noArguments_printsUsageError(){
-        int exitCode = new CommandLine(
-                new FastestLapCommand(mockLapService)
-        ).execute();
-        assertThat(exitCode).isEqualTo(2);
-    }
-
-    @Test
-    public void missingSessionName_printsUsageError(){
-        int exitCode = new CommandLine(
-                new FastestLapCommand(mockLapService)
-        ).execute("-l", "Singapore", "-y", "2025");
-
-        assertThat(exitCode).isEqualTo(2);
-        assertThat(errorStream.toString()).contains("Missing required option");
-    }
-
-
-
 }

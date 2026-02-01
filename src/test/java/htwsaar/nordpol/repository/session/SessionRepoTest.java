@@ -6,6 +6,8 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -55,94 +57,108 @@ public class SessionRepoTest {
 
     @AfterEach
     void tearDown() throws Exception {
-        if(connection != null) {
+        if (connection != null) {
             connection.close();
         }
     }
 
-    @Test
-    void saveSession_persistsSession() {
-        SessionDto sessionData =
-                new SessionDto(1256, 9999, "Practice 1", "Practice");
+    @Nested
+    @DisplayName("save")
+    class Save {
 
-        sessionRepo.save(sessionData);
+        @Test
+        void persistsSession() {
+            SessionDto sessionData =
+                    new SessionDto(1256, 9999, "Practice 1", "Practice");
 
-        Optional<SessionDto> stored =
-                sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1");
+            sessionRepo.save(sessionData);
 
-        assertThat(stored).isPresent();
+            Optional<SessionDto> stored =
+                    sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1");
 
-        SessionDto dto = stored.get();
+            assertThat(stored).isPresent();
 
-        assertThat(dto.meeting_key()).isEqualTo(1256);
-        assertThat(dto.session_key()).isEqualTo(9999);
-        assertThat(dto.session_name()).isEqualTo("Practice 1");
-        assertThat(dto.session_type()).isEqualTo("Practice");
+            SessionDto dto = stored.get();
+
+            assertThat(dto.meeting_key()).isEqualTo(1256);
+            assertThat(dto.session_key()).isEqualTo(9999);
+            assertThat(dto.session_name()).isEqualTo("Practice 1");
+            assertThat(dto.session_type()).isEqualTo("Practice");
+        }
     }
 
-    @Test
-    void getSessionByMeetingKeyAndsessionName_returnsEmptyWhenMissing() {
-        Optional<SessionDto> stored =
-                sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Race");
+    @Nested
+    @DisplayName("getSessionByMeetingKeyAndSessionName")
+    class GetSessionByMeetingKeyAndSessionName {
 
-        assertThat(stored).isEmpty();
+        @Test
+        void returnsEmptyWhenMissing() {
+            Optional<SessionDto> stored =
+                    sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Race");
+
+            assertThat(stored).isEmpty();
+        }
+
+        @Test
+        void returnsCorrectSession_forMultipleEntries() {
+            SessionDto practice =
+                    new SessionDto(1256, 9999, "Practice 1", "Practice");
+            SessionDto race =
+                    new SessionDto(1256, 10006, "Race", "Race");
+
+            sessionRepo.save(practice);
+            sessionRepo.save(race);
+
+            Optional<SessionDto> stored =
+                    sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Race");
+
+            assertThat(stored).isPresent();
+
+            SessionDto dto = stored.get();
+            assertThat(dto.session_key()).isEqualTo(10006);
+            assertThat(dto.session_name()).isEqualTo("Race");
+            assertThat(dto.session_type()).isEqualTo("Race");
+        }
     }
 
-    @Test
-    void getSessionByMeetingKeyAndsessionName_returnsCorrectSession_forMultipleEntries() {
-        SessionDto practice =
-                new SessionDto(1256, 9999, "Practice 1", "Practice");
-        SessionDto race =
-                new SessionDto(1256, 10006, "Race", "Race");
+    @Nested
+    @DisplayName("Validation")
+    class Validation {
 
-        sessionRepo.save(practice);
-        sessionRepo.save(race);
+        @Test
+        void throwsException_whenMeetingKeyIsNegative() {
+            SessionDto sessionDto =
+                    new SessionDto(-1, 9999, "Practice 1", "Practice");
 
-        Optional<SessionDto> stored =
-                sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Race");
+            assertThatThrownBy(() -> sessionRepo.save(sessionDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
 
-        assertThat(stored).isPresent();
+        @Test
+        void throwsException_whenSessionKeyIsNegative() {
+            SessionDto sessionDto =
+                    new SessionDto(1256, -1, "Practice 1", "Practice");
 
-        SessionDto dto = stored.get();
-        assertThat(dto.session_key()).isEqualTo(10006);
-        assertThat(dto.session_name()).isEqualTo("Race");
-        assertThat(dto.session_type()).isEqualTo("Race");
+            assertThatThrownBy(() -> sessionRepo.save(sessionDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void throwsException_whenSessionNameIsNull() {
+            SessionDto sessionDto =
+                    new SessionDto(1256, 9999, null, "Practice");
+
+            assertThatThrownBy(() -> sessionRepo.save(sessionDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void throwsException_whenSessionTypeIsNull() {
+            SessionDto sessionDto =
+                    new SessionDto(1256, 9999, "Practice 1", null);
+
+            assertThatThrownBy(() -> sessionRepo.save(sessionDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
-
-    @Test
-    void saveSession_throwsException_whenMeetingKeyIsNegative() {
-        SessionDto sessionDto =
-                new SessionDto(-1, 9999, "Practice 1", "Practice");
-
-        assertThatThrownBy(() -> sessionRepo.save(sessionDto))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void saveSession_throwsException_whenSessionKeyIsNegative() {
-        SessionDto sessionDto =
-                new SessionDto(1256, -1, "Practice 1", "Practice");
-
-        assertThatThrownBy(() -> sessionRepo.save(sessionDto))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void saveSession_throwsException_whenSessionNameIsNull() {
-        SessionDto sessionDto =
-                new SessionDto(1256, 9999, null, "Practice");
-
-        assertThatThrownBy(() -> sessionRepo.save(sessionDto))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void saveSession_throwsException_whensessionNameIsNull() {
-        SessionDto sessionDto =
-                new SessionDto(1256, 9999, "Practice 1", null);
-
-        assertThatThrownBy(() -> sessionRepo.save(sessionDto))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
 }

@@ -9,6 +9,8 @@ import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.repository.meeting.IMeetingRepo;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -29,64 +31,68 @@ public class MeetingServiceTest {
     @Mock
     MeetingClient meetingClient;
 
-    ICacheService cacheService = ApplicationContext.cacheService();
+    ICacheService cacheService;
 
     MeetingService meetingService;
 
     @BeforeEach
     void setup() {
+        cacheService = ApplicationContext.cacheService();
         meetingService = new MeetingService(meetingRepo, meetingClient, cacheService);
     }
 
-    @Test
-    void getMeetingByYearAndLocation_returnsMeetingFromDatabase(){
-        MeetingDto meetingDto =
-                new MeetingDto("JPN", "Japan", "Suzuka", 1256, "Japanese Grand Prix", 2025);
+    @Nested
+    @DisplayName("getMeetingByYearAndLocation")
+    class GetMeetingByYearAndLocation {
 
-        when(meetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
-                .thenReturn(Optional.of(meetingDto));
+        @Test
+        void returnsMeetingFromDatabase() {
+            MeetingDto meetingDto =
+                    new MeetingDto("JPN", "Japan", "Suzuka", 1256, "Japanese Grand Prix", 2025);
 
-        Meeting result =
-                meetingService.getMeetingByYearAndLocation(2025, "Suzuka");
+            when(meetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
+                    .thenReturn(Optional.of(meetingDto));
 
-        assertThat(result.year()).isEqualTo(2025);
+            Meeting result =
+                    meetingService.getMeetingByYearAndLocation(2025, "Suzuka");
 
-        verify(meetingClient, never()).getMeetingByYearAndLocation(2025, "Suzuka");
-        verify(meetingRepo).getMeetingByYearAndLocation(2025, "Suzuka");
+            assertThat(result.year()).isEqualTo(2025);
+
+            verify(meetingClient, never()).getMeetingByYearAndLocation(2025, "Suzuka");
+            verify(meetingRepo).getMeetingByYearAndLocation(2025, "Suzuka");
+        }
+
+        @Test
+        void fetchesFromApiAndSavesSession() {
+            when(meetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
+                    .thenReturn(Optional.empty());
+
+            MeetingDto apiDto =
+                    new MeetingDto("JPN", "Japan", "Suzuka", 1256, "Japanese Grand Prix", 2025);
+
+            when(meetingClient.getMeetingByYearAndLocation(2025, "Suzuka"))
+                    .thenReturn(Optional.of(apiDto));
+
+            Meeting result =
+                    meetingService.getMeetingByYearAndLocation(2025, "Suzuka");
+
+            assertThat(result.year()).isEqualTo(2025);
+            assertThat(result.location()).isEqualTo("Suzuka");
+
+            verify(meetingRepo).save(apiDto);
+        }
+
+        @Test
+        void throwsException_IfMeetingNotFound() {
+            when(meetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
+                    .thenReturn(Optional.empty());
+
+            when(meetingClient.getMeetingByYearAndLocation(2025, "Suzuka"))
+                    .thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> meetingService.getMeetingByYearAndLocation(2025, "Suzuka"))
+                    .isInstanceOf(MeetingNotFoundException.class)
+                    .hasMessageContaining("Meeting not found");
+        }
     }
-
-    @Test
-    void getMeetingByYearAndLocation_fetchesFromApiAndSavesSession(){
-        when(meetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
-                .thenReturn(Optional.empty());
-
-        MeetingDto apiDto =
-                new MeetingDto("JPN", "Japan", "Suzuka", 1256, "Japanese Grand Prix", 2025);
-
-        when(meetingClient.getMeetingByYearAndLocation(2025, "Suzuka"))
-                .thenReturn(Optional.of(apiDto));
-
-        Meeting result =
-                meetingService.getMeetingByYearAndLocation(2025, "Suzuka");
-
-        assertThat(result.year()).isEqualTo(2025);
-        assertThat(result.location()).isEqualTo("Suzuka");
-
-        verify(meetingRepo).save(apiDto);
-    }
-
-    @Test
-    void getMeetingByYearAndLocation_throwsException_IfMeetingNotFound(){
-        when(meetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
-                .thenReturn(Optional.empty());
-
-        when(meetingClient.getMeetingByYearAndLocation(2025, "Suzuka"))
-                .thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> meetingService.getMeetingByYearAndLocation(2025, "Suzuka"))
-                .isInstanceOf(MeetingNotFoundException.class)
-                .hasMessageContaining("Meeting not found");
-    }
-
-
 }

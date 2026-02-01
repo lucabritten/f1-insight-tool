@@ -6,6 +6,8 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.MockResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -18,13 +20,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class DriverClientTest {
 
     private MockWebServer mockWebServer;
-
-
-
     private DriverClient driverClient;
 
     @BeforeEach
-    void setUp() throws IOException{
+    void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
         driverClient = new DriverClient(mockWebServer.url("/").toString());
@@ -35,205 +34,204 @@ public class DriverClientTest {
         mockWebServer.close();
     }
 
-    @Test
-    void getDriverByFullName_returnsDriver(){
+    @Nested
+    @DisplayName("getDriverByName")
+    class GetDriverByName {
 
-        String json = """
-                [
-                    {
-                        "driver_number": 44,
-                        "first_name": "Lewis",
-                        "last_name": "Hamilton",
-                        "country_code": "GBR"
-                    }
-                ]
-                """;
+        @Test
+        void returnsDriver() {
+            String json = """
+                    [
+                        {
+                            "driver_number": 44,
+                            "first_name": "Lewis",
+                            "last_name": "Hamilton",
+                            "country_code": "GBR"
+                        }
+                    ]
+                    """;
 
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(json)
-                .setResponseCode(200)
-        );
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "application/json")
+                    .setBody(json)
+                    .setResponseCode(200)
+            );
 
+            Optional<DriverDto> optionalDriverDto = driverClient.getDriverByName("Lewis", "Hamilton", 2024);
 
-        Optional<DriverDto> optionalDriverDto = driverClient.getDriverByName("Lewis", "Hamilton", 2024);
+            assertThat(optionalDriverDto).isPresent();
 
-        assertThat(optionalDriverDto).isPresent();
+            DriverDto driverDto = optionalDriverDto.get();
 
-        DriverDto driverDto = optionalDriverDto.get();
+            assertThat(driverDto.driver_number()).isEqualTo(44);
+            assertThat(driverDto.first_name()).isEqualTo("Lewis");
+            assertThat(driverDto.last_name()).isEqualTo("Hamilton");
+        }
 
-        assertThat(driverDto.driver_number()).isEqualTo(44);
-        assertThat(driverDto.first_name()).isEqualTo("Lewis");
-        assertThat(driverDto.last_name()).isEqualTo("Hamilton");
+        @Test
+        void returnsEmptyOptional_whenApiReturnsEmptyArray() {
+            String json = "[]";
+
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "application/json")
+                    .setBody(json)
+                    .setResponseCode(200)
+            );
+
+            Optional<DriverDto> driverApiDto = driverClient.getDriverByName("Unknown", "Driver", 2025);
+
+            assertThat(driverApiDto).isEmpty();
+        }
+
+        @Test
+        void returnsEmptyOptional_whenApiReturns404() {
+            mockWebServer.enqueue(new MockResponse()
+                    .setResponseCode(404)
+            );
+
+            Optional<DriverDto> optionalDriverDto = driverClient.getDriverByName("Lando", "NORRIS", 2025);
+
+            assertThat(optionalDriverDto).isEmpty();
+        }
+
+        @Test
+        void throwsException_whenJsonIsInvalid() {
+            String invalidJson = "{invalid";
+
+            mockWebServer.enqueue(new MockResponse()
+                    .setBody(invalidJson)
+                    .setResponseCode(200)
+            );
+
+            assertThatThrownBy(() ->
+                    driverClient.getDriverByName("Lewis", "Hamilton", 2025)
+            )
+                    .isInstanceOf(RuntimeException.class);
+        }
+
+        @Test
+        void returnsEmptyOptional_whenHttpStatusIsNotSuccessful() {
+            mockWebServer.enqueue(new MockResponse()
+                    .setResponseCode(500)
+            );
+
+            mockWebServer.enqueue(new MockResponse()
+                    .setResponseCode(500)
+            );
+
+            Optional<DriverDto> result =
+                    driverClient.getDriverByName("Lewis", "Hamilton", 1234);
+
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        void throwsRuntimeException_whenConnectionFails() throws IOException {
+            mockWebServer.shutdown();
+
+            assertThatThrownBy(() ->
+                    driverClient.getDriverByName("Lewis", "Hamilton", 1234)
+
+            ).isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("Failed to fetch data from OpenF1 API");
+        }
     }
 
-    @Test
-    void getDriverByFullName_returnsEmptyOptional_whenApiReturnsEmptyArray(){
+    @Nested
+    @DisplayName("getDriverByNumberAndMeetingKey")
+    class GetDriverByNumberAndMeetingKey {
 
-        String json = "[]";
+        @Test
+        void returnsDriver() {
+            String json = """
+                    [
+                        {
+                            "driver_number": 44,
+                            "first_name": "Lewis",
+                            "last_name": "Hamilton",
+                            "team_name": "Mercedes"
+                        }
+                    ]
+                    """;
 
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(json)
-                .setResponseCode(200)
-        );
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "application/json")
+                    .setBody(json)
+                    .setResponseCode(200)
+            );
 
-        Optional<DriverDto> driverApiDto = driverClient.getDriverByName("Unknown", "Driver", 2025);
+            Optional<DriverDto> optionalDriverDto =
+                    driverClient.getDriverByNumberAndMeetingKey(44, 2025);
 
-        assertThat(driverApiDto).isEmpty();
-    }
+            assertThat(optionalDriverDto).isPresent();
 
-    @Test
-    void getDriverByFullName_returnsEmptyOptional_whenApiReturns404(){
+            DriverDto driverDto = optionalDriverDto.get();
+            assertThat(driverDto.driver_number()).isEqualTo(44);
+            assertThat(driverDto.first_name()).isEqualTo("Lewis");
+            assertThat(driverDto.last_name()).isEqualTo("Hamilton");
+            assertThat(driverDto.team_name()).isEqualTo("Mercedes");
+        }
 
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(404)
-        );
+        @Test
+        void returnsEmptyOptional_whenApiReturnsEmptyArray() {
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "application/json")
+                    .setBody("[]")
+                    .setResponseCode(200)
+            );
 
-        Optional<DriverDto> optionalDriverDto = driverClient.getDriverByName("Lando", "NORRIS", 2025);
+            Optional<DriverDto> result =
+                    driverClient.getDriverByNumberAndMeetingKey(999, 2025);
 
-        assertThat(optionalDriverDto).isEmpty();
-    }
+            assertThat(result).isEmpty();
+        }
 
-    @Test
-    void getDriverByFullName_throwsException_whenJsonIsInvalid() {
-        String invalidJson = "{invalid";
+        @Test
+        void returnsEmptyOptional_whenApiReturns404() {
+            mockWebServer.enqueue(new MockResponse()
+                    .setResponseCode(404)
+            );
 
-        mockWebServer.enqueue(new MockResponse()
-                .setBody(invalidJson)
-                .setResponseCode(200)
-        );
+            Optional<DriverDto> result =
+                    driverClient.getDriverByNumberAndMeetingKey(44, 2025);
 
+            assertThat(result).isEmpty();
+        }
 
-        assertThatThrownBy(() ->
-                driverClient.getDriverByName("Lewis", "Hamilton", 2025)
-        )
-                .isInstanceOf(RuntimeException.class);
-    }
+        @Test
+        void returnsEmptyOptional_whenHttpStatusIsNotSuccessful() {
+            mockWebServer.enqueue(new MockResponse()
+                    .setResponseCode(500)
+            );
 
-    @Test
-    void getDriverByFullName_returnsEmptyOptional_whenHttpStatusIsNotSuccessful() {
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(500)
-        );
+            Optional<DriverDto> result =
+                    driverClient.getDriverByNumberAndMeetingKey(44, 2025);
 
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(500)
-        );
+            assertThat(result).isEmpty();
+        }
 
-        Optional<DriverDto> result =
-                driverClient.getDriverByName("Lewis", "Hamilton", 1234);
+        @Test
+        void throwsException_whenJsonIsInvalid() {
+            String invalidJson = "{invalid";
 
-        assertThat(result).isEmpty();
-    }
+            mockWebServer.enqueue(new MockResponse()
+                    .setBody(invalidJson)
+                    .setResponseCode(200)
+            );
 
-    @Test
-    void getDriverByFullName_throwsRuntimeException_whenConnectionFails() throws IOException{
+            assertThatThrownBy(() ->
+                    driverClient.getDriverByNumberAndMeetingKey(44, 2025)
+            ).isInstanceOf(RuntimeException.class);
+        }
 
-        mockWebServer.shutdown();
+        @Test
+        void throwsRuntimeException_whenConnectionFails() throws IOException {
+            mockWebServer.shutdown();
 
-        assertThatThrownBy(() ->
-                driverClient.getDriverByName("Lewis", "Hamilton", 1234)
-
-        ).isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch data from OpenF1 API");
-    }
-
-
-    @Test
-    void getDriverByNumberAndMeetingKey_returnsDriver() {
-
-        String json = """
-                [
-                    {
-                        "driver_number": 44,
-                        "first_name": "Lewis",
-                        "last_name": "Hamilton",
-                        "team_name": "Mercedes"
-                    }
-                ]
-                """;
-
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(json)
-                .setResponseCode(200)
-        );
-
-        Optional<DriverDto> optionalDriverDto =
-                driverClient.getDriverByNumberAndMeetingKey(44, 2025);
-
-        assertThat(optionalDriverDto).isPresent();
-
-        DriverDto driverDto = optionalDriverDto.get();
-        assertThat(driverDto.driver_number()).isEqualTo(44);
-        assertThat(driverDto.first_name()).isEqualTo("Lewis");
-        assertThat(driverDto.last_name()).isEqualTo("Hamilton");
-        assertThat(driverDto.team_name()).isEqualTo("Mercedes");
-    }
-
-    @Test
-    void getDriverByNumberAndMeetingKey_returnsEmptyOptional_whenApiReturnsEmptyArray() {
-
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody("[]")
-                .setResponseCode(200)
-        );
-
-        Optional<DriverDto> result =
-                driverClient.getDriverByNumberAndMeetingKey(999, 2025);
-
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void getDriverByNumberAndMeetingKey_returnsEmptyOptional_whenApiReturns404() {
-
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(404)
-        );
-
-        Optional<DriverDto> result =
-                driverClient.getDriverByNumberAndMeetingKey(44, 2025);
-
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void getDriverByNumberAndMeetingKey_returnsEmptyOptional_whenHttpStatusIsNotSuccessful() {
-
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(500)
-        );
-
-        Optional<DriverDto> result =
-                driverClient.getDriverByNumberAndMeetingKey(44, 2025);
-
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void getDriverByNumberAndMeetingKey_throwsException_whenJsonIsInvalid() {
-        String invalidJson = "{invalid";
-
-        mockWebServer.enqueue(new MockResponse()
-                .setBody(invalidJson)
-                .setResponseCode(200)
-        );
-
-        assertThatThrownBy(() ->
-                driverClient.getDriverByNumberAndMeetingKey(44, 2025)
-        ).isInstanceOf(RuntimeException.class);
-    }
-
-    @Test
-    void getDriverByNumberAndMeetingKey_throwsRuntimeException_whenConnectionFails() throws IOException {
-        mockWebServer.shutdown();
-
-        assertThatThrownBy(() ->
-                driverClient.getDriverByNumberAndMeetingKey(44, 2025)
-        ).isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch data from OpenF1 API");
+            assertThatThrownBy(() ->
+                    driverClient.getDriverByNumberAndMeetingKey(44, 2025)
+            ).isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("Failed to fetch data from OpenF1 API");
+        }
     }
 }

@@ -7,6 +7,8 @@ import htwsaar.nordpol.service.lap.LapService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import picocli.CommandLine;
 
 import java.io.ByteArrayOutputStream;
@@ -21,15 +23,13 @@ import static org.mockito.Mockito.when;
 
 public class LapCommandTest {
 
-    private static final int ILLEGAL_ARG_ERROR = 1;
-
     private LapService mockLapService;
     private ByteArrayOutputStream outputStream;
     private ByteArrayOutputStream errorStream;
     private LapsWithContext sampleLapContext;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         mockLapService = mock(LapService.class);
 
         sampleLapContext = new LapsWithContext(
@@ -37,17 +37,17 @@ public class LapCommandTest {
                 "Max Verstappen",
                 RACE,
                 List.of(
-                new Lap(
-                        1,
-                        8,
-                        9161,
-                        27.462,
-                        38.938,
-                        46.007,
-                        112.497,
-                        false
-                )
-        ));
+                        new Lap(
+                                1,
+                                8,
+                                9161,
+                                27.462,
+                                38.938,
+                                46.007,
+                                112.497,
+                                false
+                        )
+                ));
 
         outputStream = new ByteArrayOutputStream();
         errorStream = new ByteArrayOutputStream();
@@ -57,49 +57,58 @@ public class LapCommandTest {
     }
 
     @AfterEach
-    void tearDown(){
+    void tearDown() {
         System.setOut(System.out);
         System.setErr(System.err);
     }
 
-    @Test
-    public void lapInfo_printsFormattedLaps(){
-        when(mockLapService.getLapsByLocationYearSessionNameAndDriverNumber("Singapore Grand Prix",2025,RACE,1))
-        .thenReturn(sampleLapContext);
+    @Nested
+    @DisplayName("Success Scenarios")
+    class SuccessScenarios {
 
-    int exitCode = new CommandLine(
-            new LapCommand(mockLapService)
-    ).execute("-l", "Singapore Grand Prix", "-y","2025","-s", "RACE", "-d","1");
+        @Test
+        public void printsFormattedLaps() {
+            when(mockLapService.getLapsByLocationYearSessionNameAndDriverNumber("Singapore Grand Prix", 2025, RACE, 1))
+                    .thenReturn(sampleLapContext);
 
-    assertThat(exitCode).isZero();
-    assertThat(outputStream.toString()).contains("Race");
+            int exitCode = new CommandLine(
+                    new LapCommand(mockLapService)
+            ).execute("-l", "Singapore Grand Prix", "-y", "2025", "-s", "RACE", "-d", "1");
 
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString()).contains("Race");
+        }
+
+        @Test
+        public void helpOption_printsUsage() {
+            int exitCode = new CommandLine(
+                    new LapCommand(mockLapService)
+            ).execute("--help");
+
+            assertThat(exitCode).isZero();
+        }
     }
 
-    @Test
-    public void missingDriverNumber_printsErrorMessage(){
-        int exitCode = new CommandLine(
-                new LapCommand(mockLapService)
-        ).execute("-l", "Singapore", "-y","2025","-sn", "RACE");
+    @Nested
+    @DisplayName("Error Scenarios")
+    class ErrorScenarios {
 
-        assertThat(exitCode).isEqualTo(2);
-        assertThat(errorStream.toString()).contains("Invalid value for option");
-    }
+        @Test
+        public void missingDriverNumber_printsErrorMessage() {
+            int exitCode = new CommandLine(
+                    new LapCommand(mockLapService)
+            ).execute("-l", "Singapore", "-y", "2025", "-sn", "RACE");
 
-    @Test
-    public void helpOption_printsUsage(){
-        int exitCode = new CommandLine(
-                new LapCommand(mockLapService)
-        ).execute("--help");
+            assertThat(exitCode).isEqualTo(2);
+            assertThat(errorStream.toString()).contains("Invalid value for option");
+        }
 
-        assertThat(exitCode).isZero();
-    }
-
-    @Test
-    public void noArguments_printsUsageError(){
-        int exitCode = new CommandLine(
-                new LapCommand(mockLapService)
-        ).execute();
-        assertThat(exitCode).isEqualTo(2);
+        @Test
+        public void noArguments_printsUsageError() {
+            int exitCode = new CommandLine(
+                    new LapCommand(mockLapService)
+            ).execute();
+            assertThat(exitCode).isEqualTo(2);
+        }
     }
 }

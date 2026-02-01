@@ -9,6 +9,8 @@ import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.service.session.SessionService;
 import htwsaar.nordpol.service.weather.WeatherService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -45,85 +47,94 @@ public class WeatherServiceTest {
         weatherService = new WeatherService(weatherClient, weatherRepo, sessionService, meetingService, cacheService);
     }
 
+    @Nested
+    @DisplayName("Constructor Validation")
+    class ConstructorValidation {
 
-    @Test
-    void constructor_nullRepository_throwsException(){
-        assertThatThrownBy(() ->
-                new WeatherService(weatherClient, null, sessionService, meetingService, cacheService)
-        ).isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("weatherRepo");
+        @Test
+        void nullRepository_throwsException() {
+            assertThatThrownBy(() ->
+                    new WeatherService(weatherClient, null, sessionService, meetingService, cacheService)
+            ).isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("weatherRepo");
+        }
+
+        @Test
+        void nullClient_throwsException() {
+            assertThatThrownBy(() ->
+                    new WeatherService(null, weatherRepo, sessionService, meetingService, cacheService)
+            ).isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("weatherClient");
+        }
     }
 
-    @Test
-    void constructor_null_Client_throwsException(){
-        assertThatThrownBy(() ->
-                new WeatherService(null, weatherRepo, sessionService, meetingService, cacheService)
-        ).isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("weatherClient");
-    }
+    @Nested
+    @DisplayName("getWeatherByMeetingAndSessionKey")
+    class GetWeatherByMeetingAndSessionKey {
 
-    @Test
-    void getWeatherByMeetingKeyAndSessionKey_returnsWeatherFromDataBase() {
-        WeatherDto dbDto =
-                new WeatherDto(
-                        1111,
-                        2222,
-                        19.4,
-                        65.4,
-                        0,
-                        26.3,
-                        130.0,
-                        5.4
-                );
+        @Test
+        void returnsWeatherFromDatabase() {
+            WeatherDto dbDto =
+                    new WeatherDto(
+                            1111,
+                            2222,
+                            19.4,
+                            65.4,
+                            0,
+                            26.3,
+                            130.0,
+                            5.4
+                    );
 
-        when(weatherRepo.getWeatherDataByMeetingKeyAndSessionKey(1111,2222))
-                .thenReturn(Optional.of(dbDto));
+            when(weatherRepo.getWeatherDataByMeetingKeyAndSessionKey(1111, 2222))
+                    .thenReturn(Optional.of(dbDto));
 
-        Weather result =
-                weatherService.getWeatherByMeetingAndSessionKey(1111,2222);
+            Weather result =
+                    weatherService.getWeatherByMeetingAndSessionKey(1111, 2222);
 
-        assertThat(result.avgAirTemperature()).isEqualTo(19.4);
+            assertThat(result.avgAirTemperature()).isEqualTo(19.4);
 
-        verify(weatherClient, never()).getWeatherDataByMeetingKeyAndSessionKey(anyInt(), anyInt());
-        verify(weatherRepo).getWeatherDataByMeetingKeyAndSessionKey(anyInt(), anyInt());
-    }
+            verify(weatherClient, never()).getWeatherDataByMeetingKeyAndSessionKey(anyInt(), anyInt());
+            verify(weatherRepo).getWeatherDataByMeetingKeyAndSessionKey(anyInt(), anyInt());
+        }
 
-    @Test
-    void getWeatherByMeetingKeyAndSessionKey_fetchesFromApiAndSavesWeather() {
-        when(weatherRepo.getWeatherDataByMeetingKeyAndSessionKey(1111,2222))
-                .thenReturn(Optional.empty());
+        @Test
+        void fetchesFromApiAndSavesWeather() {
+            when(weatherRepo.getWeatherDataByMeetingKeyAndSessionKey(1111, 2222))
+                    .thenReturn(Optional.empty());
 
-        List<WeatherDto> weatherDtos = List.of(
-                new WeatherDto(
-                1111,
-                2222,
-                29.3,
-                87.0,
-                1,
-                38.3,
-                23.3,
-                19.3
-                )
-        );
+            List<WeatherDto> weatherDtos = List.of(
+                    new WeatherDto(
+                            1111,
+                            2222,
+                            29.3,
+                            87.0,
+                            1,
+                            38.3,
+                            23.3,
+                            19.3
+                    )
+            );
 
-        when(weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1111,2222))
-                .thenReturn(weatherDtos);
+            when(weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1111, 2222))
+                    .thenReturn(weatherDtos);
 
-        Weather result =
-                weatherService.getWeatherByMeetingAndSessionKey(1111,2222);
+            Weather result =
+                    weatherService.getWeatherByMeetingAndSessionKey(1111, 2222);
 
-        assertThat(result.meetingKey()).isEqualTo(2222);
-        assertThat(result.isRainfall()).isTrue();
-    }
+            assertThat(result.meetingKey()).isEqualTo(2222);
+            assertThat(result.isRainfall()).isTrue();
+        }
 
-    @Test
-    void getWeatherByMeetingKeyAndSessionKey_throwsException_whenWeatherNotFoundAnywhere() {
-        when(weatherRepo.getWeatherDataByMeetingKeyAndSessionKey(1111,2222))
-                .thenReturn(Optional.empty());
+        @Test
+        void throwsException_whenWeatherNotFoundAnywhere() {
+            when(weatherRepo.getWeatherDataByMeetingKeyAndSessionKey(1111, 2222))
+                    .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() ->
-                weatherService.getWeatherByMeetingAndSessionKey(1111,2222)
-        ).isInstanceOf(WeatherNotFoundException.class)
-         .hasMessageContaining("No weather-data");
+            assertThatThrownBy(() ->
+                    weatherService.getWeatherByMeetingAndSessionKey(1111, 2222)
+            ).isInstanceOf(WeatherNotFoundException.class)
+                    .hasMessageContaining("No weather-data");
+        }
     }
 }
