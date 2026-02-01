@@ -81,6 +81,7 @@ public final class ResultsTableRenderer {
                         String.format(headerFormat,
                                 position,
                                 trim(driverName, 22),
+                                trim(teamName, 16),
                                 result.driverNumber(),
                                 gapFormatter.gap(result.gapToLeader(), result.dsq(), result.dns(), result.dnf())));
             }
