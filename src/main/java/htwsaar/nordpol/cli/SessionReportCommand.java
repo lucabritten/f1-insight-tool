@@ -6,6 +6,7 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionReport;
 import htwsaar.nordpol.util.rendering.SessionReportRenderer;
 import htwsaar.nordpol.service.report.SessionReportService;
+import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -57,7 +58,7 @@ public class SessionReportCommand implements Callable<Integer> {
         names = {"--limit", "-lim"},
         description = "Optional: Limit the report to the top N drivers in classification order"
     )
-    private Integer topDrivers;
+    private Integer limit;
 
     @Option(
         names = {"--output", "-o"},
@@ -79,8 +80,17 @@ public class SessionReportCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        try {
-            SessionReport report = sessionReportService.buildReport(location, year, sessionName, topDrivers);
+        try(ProgressBar progressBar = ApplicationContext.progressBar()) {
+
+            SessionReport report = sessionReportService.buildReport(location,
+                    year,
+                    sessionName,
+                    limit,
+                    message -> {
+                        progressBar.setExtraMessage(" | " + message);
+                        progressBar.step();
+                    }
+            );
             Path outputPath = Paths.get(resolveOutputPath());
             renderer.render(report, outputPath);
             logger.info("Report written to: {}", outputPath.toAbsolutePath());

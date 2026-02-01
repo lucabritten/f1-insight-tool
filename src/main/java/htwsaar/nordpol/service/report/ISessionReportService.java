@@ -4,5 +4,5 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionReport;
 
 public interface ISessionReportService {
-    SessionReport buildReport(String location, int year, SessionName sessionName, Integer topDrivers);
+    SessionReport buildReport(String location, int year, SessionName sessionName, Integer topDrivers, ProgressListener listener);
 }

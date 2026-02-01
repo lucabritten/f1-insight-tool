@@ -9,7 +9,6 @@ import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.domain.SessionReport;
-import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.service.lap.LapService;
 import htwsaar.nordpol.service.meeting.MeetingService;
@@ -31,15 +30,13 @@ public class SessionReportService implements ISessionReportService {
     private final LapService lapService;
     private final WeatherService weatherService;
     private final DriverService driverService;
-    private final ICacheService cacheService;
 
     public SessionReportService(MeetingService meetingService,
                                 SessionService sessionService,
                                 SessionResultService sessionResultService,
                                 LapService lapService,
                                 WeatherService weatherService,
-                                DriverService driverService,
-                                ICacheService cacheService) {
+                                DriverService driverService) {
 
         requireNonNull(meetingService, "meetingService must not be null");
         requireNonNull(sessionService, "sessionService must not be null.");
@@ -47,7 +44,6 @@ public class SessionReportService implements ISessionReportService {
         requireNonNull(lapService, "lapService must not be null");
         requireNonNull(weatherService, "weatherService must not be null");
         requireNonNull(driverService, "driverService must not be null");
-        requireNonNull(cacheService, "cacheService must not be null");
 
         this.meetingService = meetingService;
         this.sessionService = sessionService;
@@ -55,52 +51,60 @@ public class SessionReportService implements ISessionReportService {
         this.lapService = lapService;
         this.weatherService = weatherService;
         this.driverService = driverService;
-        this.cacheService = cacheService;
     }
 
     @Override
-    public SessionReport buildReport(String location, int year, SessionName sessionName, Integer topDrivers) {
+    public SessionReport buildReport(String location, int year, SessionName sessionName, Integer topDrivers, ProgressListener progress) {
         if (topDrivers != null && topDrivers <= 0) {
             throw new IllegalArgumentException("topDrivers must be greater than zero.");
         }
 
-        Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
-        Session session = sessionService.getSessionByMeetingKeyAndSessionName(meeting.meetingKey(), sessionName);
+            progress.step("Fetching Meeting");
+            Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
 
-        WeatherWithContext weather = weatherService.getWeatherByLocationYearAndSessionName(location, year, sessionName);
+            progress.step("Fetching Session");
+            Session session = sessionService.getSessionByMeetingKeyAndSessionName(meeting.meetingKey(), sessionName);
 
-        SessionResultWithContext resultsContext = sessionResultService.getResultByLocationYearAndSessionType(location, year, sessionName);
+            progress.step("Fetching Weather");
+            WeatherWithContext weather = weatherService.getWeatherByLocationYearAndSessionName(location, year, sessionName);
 
-        List<SessionResult> reportResults = filterTopDrivers(resultsContext.results(), topDrivers);
-        driverService.preloadMissingDriversForMeeting(
-                year,
-                meeting.meetingKey(),
-                extractDriverNumbers(reportResults)
-        );
+            progress.step("Fetching Results");
+            SessionResultWithContext resultsContext = sessionResultService.getResultByLocationYearAndSessionType(location, year, sessionName);
 
-        SessionResultWithContext reportResultsContext = new SessionResultWithContext(
-                resultsContext.meetingName(),
-                resultsContext.sessionName(),
-                reportResults
-        );
+            progress.step("Filtering results");
+            List<SessionResult> reportResults = filterTopDrivers(resultsContext.results(), topDrivers);
 
-        Map<Driver, List<Lap>> lapSeriesByDriver = new LinkedHashMap<>();
-        int meetingKey = meeting.meetingKey();
-        for (SessionResult result : reportResults) {
-            Driver driver = resolveDriver(result.driverNumber(), year, meetingKey);
-            List<Lap> laps = resolveLaps(session.sessionKey(), result.driverNumber());
-            lapSeriesByDriver.put(driver, laps);
-        }
+            progress.step("Fetching missing drivers");
+            driverService.preloadMissingDriversForMeeting(
+                    year,
+                    meeting.meetingKey(),
+                    extractDriverNumbers(reportResults)
+            );
+            progress.step("Building report object");
+            SessionResultWithContext reportResultsContext = new SessionResultWithContext(
+                    resultsContext.meetingName(),
+                    resultsContext.sessionName(),
+                    reportResults
+            );
 
-        return new SessionReport(
-                meeting.meetingName(),
-                session.sessionName(),
-                meeting.year(),
-                meeting.location(),
-                weather,
-                reportResultsContext,
-                lapSeriesByDriver
-        );
+            Map<Driver, List<Lap>> lapSeriesByDriver = new LinkedHashMap<>();
+            int meetingKey = meeting.meetingKey();
+            progress.step("Generating report");
+            for (SessionResult result : reportResults) {
+                Driver driver = resolveDriver(result.driverNumber(), year, meetingKey);
+                List<Lap> laps = resolveLaps(session.sessionKey(), result.driverNumber());
+                lapSeriesByDriver.put(driver, laps);
+            }
+            progress.step("Finished report generation");
+            return new SessionReport(
+                    meeting.meetingName(),
+                    session.sessionName(),
+                    meeting.year(),
+                    meeting.location(),
+                    weather,
+                    reportResultsContext,
+                    lapSeriesByDriver
+            );
     }
 
     private List<SessionResult> filterTopDrivers(List<SessionResult> results, Integer topDrivers) {

@@ -29,6 +29,9 @@ import htwsaar.nordpol.service.report.SessionReportService;
 import htwsaar.nordpol.service.session.SessionService;
 import htwsaar.nordpol.service.sessionResult.SessionResultService;
 import htwsaar.nordpol.service.weather.WeatherService;
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
+import me.tongfei.progressbar.ProgressBarStyle;
 
 /**
  * Simple application context responsible for wiring application services.
@@ -59,21 +62,21 @@ ApplicationContext {
     }
 
     public static DriverService driverService() {
-        IDriverRepo IDriverRepo = new JooqDriverRepo(JooqConfig.createContext());
+        IDriverRepo driverRepo = new JooqDriverRepo(JooqConfig.createContext());
         IDriverClient driverClient = new DriverClient();
-        return new DriverService(IDriverRepo, driverClient, meetingService(), cacheService());
+        return new DriverService(driverRepo, driverClient, meetingService(), cacheService());
     }
 
     public static MeetingService meetingService() {
-        IMeetingRepo IMeetingRepo = new JooqMeetingRepo(JooqConfig.createContext());
+        IMeetingRepo meetingRepo = new JooqMeetingRepo(JooqConfig.createContext());
         MeetingClient meetingClient = new MeetingClient();
-        return new MeetingService(IMeetingRepo, meetingClient, cacheService());
+        return new MeetingService(meetingRepo, meetingClient, cacheService());
     }
 
     public static SessionService sessionService() {
-        ISessionRepo ISessionRepo = new JooqSessionRepo(JooqConfig.createContext());
+        ISessionRepo sessionRepo = new JooqSessionRepo(JooqConfig.createContext());
         SessionClient sessionClient = new SessionClient();
-        return new SessionService(ISessionRepo, sessionClient, meetingService(), cacheService());
+        return new SessionService(sessionRepo, sessionClient, meetingService(), cacheService());
     }
 
     public static WeatherService weatherService() {
@@ -101,8 +104,17 @@ ApplicationContext {
                 sessionResultService(),
                 lapService(),
                 weatherService(),
-                driverService(),
-                cacheService()
+                driverService()
         );
+    }
+
+    public static ProgressBar progressBar() {
+        return new ProgressBarBuilder()
+                .setTaskName("Generating session report")
+                .setInitialMax(9)
+                .setStyle(ProgressBarStyle.ASCII)
+                .setMaxRenderedLength(200)
+                .setUpdateIntervalMillis(100)
+                .build();
     }
 }

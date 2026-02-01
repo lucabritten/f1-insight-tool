@@ -55,8 +55,6 @@ class SessionReportServiceTest {
 
     private SessionReportService sessionReportService;
 
-    ICacheService cacheService = new CacheService();
-
     private Meeting defaultMeeting;
     private Session defaultSession;
     private Weather defaultWeather;
@@ -70,8 +68,7 @@ class SessionReportServiceTest {
                 sessionResultService,
                 lapService,
                 weatherService,
-                driverService,
-                cacheService
+                driverService
         );
 
         defaultMeeting = new Meeting(MEETING_KEY, COUNTRY_CODE, COUNTRY_NAME, LOCATION, MEETING_NAME, YEAR);
@@ -82,14 +79,14 @@ class SessionReportServiceTest {
 
     @Test
     void buildReport_throwsException_whenTopDriversIsZero() {
-        assertThatThrownBy(() -> sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, 0))
+        assertThatThrownBy(() -> sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, 0, message -> {}))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("topDrivers must be greater than zero.");
     }
 
     @Test
     void buildReport_throwsException_whenTopDriversIsNegative() {
-        assertThatThrownBy(() -> sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, -1))
+        assertThatThrownBy(() -> sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, -1, message -> {}))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("topDrivers must be greater than zero.");
     }
@@ -111,7 +108,7 @@ class SessionReportServiceTest {
         when(lapService.getLapsBySessionKeyAndDriverNumber(SESSION_KEY, 16)).thenReturn(List.of(lap1));
         when(lapService.getLapsBySessionKeyAndDriverNumber(SESSION_KEY, 55)).thenReturn(List.of(lap2));
 
-        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null);
+        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null, message -> {});
 
         assertThat(report.meetingName()).isEqualTo(MEETING_NAME);
         assertThat(report.sessionName()).isEqualTo(SessionName.RACE);
@@ -138,7 +135,7 @@ class SessionReportServiceTest {
         when(driverService.getDriverByNumberWithFallback(55, YEAR, MEETING_KEY)).thenReturn(driver55);
         when(lapService.getLapsBySessionKeyAndDriverNumber(SESSION_KEY, 55)).thenReturn(List.of(lap));
 
-        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, 1);
+        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, 1, message -> {});
 
         assertThat(report.sessionResults().results()).hasSize(1);
         assertThat(report.sessionResults().results().getFirst().driverNumber()).isEqualTo(55);
@@ -157,7 +154,7 @@ class SessionReportServiceTest {
 
         setupMocksForReport(emptyResults);
 
-        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null);
+        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null, message -> {});
 
         assertThat(report.sessionResults().results()).isEmpty();
         assertThat(report.lapSeriesByDriver()).isEmpty();
@@ -177,7 +174,7 @@ class SessionReportServiceTest {
         when(driverService.getDriverByNumberWithFallback(1, YEAR, MEETING_KEY)).thenReturn(driver);
         when(lapService.getLapsBySessionKeyAndDriverNumber(SESSION_KEY, 1)).thenReturn(List.of());
 
-        sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null);
+        sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null, message -> {});
 
         verify(driverService).preloadMissingDriversForMeeting(YEAR, MEETING_KEY, List.of(1));
     }
@@ -193,7 +190,7 @@ class SessionReportServiceTest {
                 .thenThrow(new DriverNotFoundException(99, YEAR));
         when(lapService.getLapsBySessionKeyAndDriverNumber(SESSION_KEY, 99)).thenReturn(List.of());
 
-        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null);
+        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null, message -> {});
 
         assertThat(report.lapSeriesByDriver()).hasSize(1);
         Driver unknownDriver = report.lapSeriesByDriver().keySet().iterator().next();
@@ -215,7 +212,7 @@ class SessionReportServiceTest {
         when(lapService.getLapsBySessionKeyAndDriverNumber(SESSION_KEY, 44))
                 .thenThrow(new LapNotFoundException(SESSION_KEY, 44));
 
-        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null);
+        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null, message -> {});
 
         assertThat(report.lapSeriesByDriver().get(driver)).isEmpty();
     }
@@ -228,7 +225,7 @@ class SessionReportServiceTest {
         when(weatherService.getWeatherByLocationYearAndSessionName(LOCATION, YEAR, SessionName.RACE))
                 .thenThrow(new RuntimeException("Weather service unavailable"));
 
-        assertThatThrownBy(() -> sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null))
+        assertThatThrownBy(() -> sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null, message -> {}))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Weather service unavailable");
     }
@@ -243,7 +240,7 @@ class SessionReportServiceTest {
         when(sessionResultService.getResultByLocationYearAndSessionType(LOCATION, YEAR, SessionName.RACE))
                 .thenThrow(new RuntimeException("Results not found"));
 
-        assertThatThrownBy(() -> sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null))
+        assertThatThrownBy(() -> sessionReportService.buildReport(LOCATION, YEAR, SessionName.RACE, null, message -> {}))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Results not found");
     }
@@ -269,7 +266,7 @@ class SessionReportServiceTest {
         when(driverService.getDriverByNumberWithFallback(1, YEAR, MEETING_KEY)).thenReturn(driver);
         when(lapService.getLapsBySessionKeyAndDriverNumber(SESSION_KEY, 1)).thenReturn(List.of());
 
-        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.QUALIFYING, null);
+        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.QUALIFYING, null, message -> {});
 
         assertThat(report.sessionName()).isEqualTo(SessionName.QUALIFYING);
         assertThat(report.sessionResults().sessionName()).isEqualTo(SessionName.QUALIFYING);
@@ -290,7 +287,7 @@ class SessionReportServiceTest {
         when(sessionResultService.getResultByLocationYearAndSessionType(LOCATION, YEAR, SessionName.PRACTICE1))
                 .thenReturn(new SessionResultWithContext(MEETING_NAME, SessionName.PRACTICE1, results));
 
-        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.PRACTICE1, null);
+        SessionReport report = sessionReportService.buildReport(LOCATION, YEAR, SessionName.PRACTICE1, null, message -> {});
 
         assertThat(report.sessionName()).isEqualTo(SessionName.PRACTICE1);
     }
