@@ -10,7 +10,11 @@ import static com.nordpol.jooq.tables.SessionResults.*;
 
 public class JooqSessionResultRepo implements ISessionResultRepo {
 
-    private DSLContext create;
+    private final DSLContext create;
+
+    private static final int Q1 = 0;
+    private static final int Q2 = 1;
+    private static final int Q3 = 2;
 
     public JooqSessionResultRepo(DSLContext create) {
         this.create = create;
@@ -73,16 +77,34 @@ public class JooqSessionResultRepo implements ISessionResultRepo {
                 .values(dto.session_key(),
                         dto.driver_number(),
                         dto.position(),
-                        dto.dnf() ? 1 : 0,
-                        dto.dns() ? 1 : 0,
-                        dto.dsq() ? 1 : 0,
-                        (dto.gap_to_leader() != null && !dto.gap_to_leader().isEmpty()) ? dto.gap_to_leader().get(0) : null,
-                        (dto.gap_to_leader() != null && dto.gap_to_leader().size() > 1) ? dto.gap_to_leader().get(1) : null,
-                        (dto.gap_to_leader() != null && dto.gap_to_leader().size() > 2) ? dto.gap_to_leader().get(2) : null,
-                        (dto.duration() != null && !dto.duration().isEmpty()) ? dto.duration().get(0) : null,
-                        (dto.duration() != null && dto.duration().size() > 1) ? dto.duration().get(1) : null,
-                        (dto.duration() != null && dto.duration().size() > 2) ? dto.duration().get(2) : null)
+                        status(dto.dnf()),
+                        status(dto.dns()),
+                        status(dto.dsq()),
+                        gap(dto.gap_to_leader(), Q1),
+                        gap(dto.gap_to_leader(), Q2),
+                        gap(dto.gap_to_leader(), Q3),
+                        duration(dto.duration(), Q1),
+                        duration(dto.duration(), Q2),
+                        duration(dto.duration(), Q3))
                 .execute()
         );
+    }
+
+    private int status(boolean status) {
+        return status ? 1 : 0;
+    }
+
+    private String gap(List<String> gaps, int qualifyingNumber) {
+        return mapListToDbValue(gaps, qualifyingNumber);
+    }
+
+    private Double duration(List<Double> durations, int qualifyingNumber) {
+        return mapListToDbValue(durations, qualifyingNumber);
+    }
+
+    private <T> T mapListToDbValue(List<T> list, int index) {
+        return (list != null && list.size() > index)
+                ? list.get(index)
+                : null;
     }
 }
