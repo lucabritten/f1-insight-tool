@@ -180,4 +180,103 @@ class SessionResultServiceTest {
             assertThat(result.results().get(1).dnf()).isTrue();
         }
     }
+
+    @Test
+    void getResultByLocationYearAndSessionType_sortsDnsAndDsqToBottom() {
+        Meeting meeting = new Meeting(1250, "US", "USA", "Austin", "Austin GP", 2025);
+        Session session = new Session(9640, 1250, SessionName.RACE, "RACE");
+
+        SessionResultDto normal = new SessionResultDto(
+                9640,
+                List.of("0.0"),
+                16,
+                false,
+                false,
+                false,
+                List.of(91.5),
+                3
+        );
+
+        SessionResultDto dns = new SessionResultDto(
+                9640,
+                List.of("DNS"),
+                22,
+                false,
+                true,
+                false,
+                List.of(),
+                0
+        );
+
+        SessionResultDto dsq = new SessionResultDto(
+                9640,
+                List.of("DSQ"),
+                10,
+                false,
+                false,
+                true,
+                List.of(),
+                0
+        );
+
+        when(meetingService.getMeetingByYearAndLocation(2025, "Austin"))
+                .thenReturn(meeting);
+        when(sessionService.getSessionByMeetingKeyAndSessionName(1250, SessionName.RACE))
+                .thenReturn(session);
+        when(sessionResultRepo.getSessionResultBySessionKey(9640))
+                .thenReturn(List.of(dsq, dns, normal));
+
+        SessionResultWithContext result =
+                sessionResultService.getResultByLocationYearAndSessionType(
+                        "Austin", 2025, SessionName.RACE
+                );
+
+        assertThat(result.results().get(0).driverNumber()).isEqualTo(16);
+        assertThat(result.results().get(1).dns() || result.results().get(1).dsq()).isTrue();
+        assertThat(result.results().get(2).dns() || result.results().get(2).dsq()).isTrue();
+    }
+
+    @Test
+    void getResultByLocationYearAndSessionType_sortsPositionZeroAfterValidPositions() {
+        Meeting meeting = new Meeting(1250, "US", "USA", "Austin", "Austin GP", 2025);
+        Session session = new Session(9640, 1250, SessionName.RACE, "RACE");
+
+        SessionResultDto validPosition = new SessionResultDto(
+                9640,
+                List.of("0.0"),
+                55,
+                false,
+                false,
+                false,
+                List.of(92.0),
+                5
+        );
+
+        SessionResultDto unknownPosition = new SessionResultDto(
+                9640,
+                List.of("0.0"),
+                99,
+                false,
+                false,
+                false,
+                List.of(92.5),
+                0
+        );
+
+        when(meetingService.getMeetingByYearAndLocation(2025, "Austin"))
+                .thenReturn(meeting);
+        when(sessionService.getSessionByMeetingKeyAndSessionName(1250, SessionName.RACE))
+                .thenReturn(session);
+        when(sessionResultRepo.getSessionResultBySessionKey(9640))
+                .thenReturn(List.of(unknownPosition, validPosition));
+
+        SessionResultWithContext result =
+                sessionResultService.getResultByLocationYearAndSessionType(
+                        "Austin", 2025, SessionName.RACE
+                );
+
+        assertThat(result.results().get(0).driverNumber()).isEqualTo(55);
+        assertThat(result.results().get(1).driverNumber()).isEqualTo(99);
+    }
 }
+
