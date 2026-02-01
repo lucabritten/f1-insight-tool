@@ -12,11 +12,14 @@ import htwsaar.nordpol.exception.DriverNotFoundException;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,89 +39,290 @@ public class DriverServiceTest {
     @Mock
     MeetingService meetingService;
 
-    ICacheService cacheService = ApplicationContext.cacheService();
+    ICacheService cacheService;
 
     DriverService driverService;
 
     @BeforeEach
     void setup() {
+        cacheService = ApplicationContext.cacheService();
         driverService = new DriverService(driverRepo, driverClient, meetingService, cacheService);
     }
 
-    @Test
-    void getDriverByName_returnsDriverFromDataBase() {
-        DriverDto dbDto =
-                new DriverDto("Lewis", "Hamilton", 44, "GBR");
+    @Nested
+    @DisplayName("Year Validation")
+    class YearValidation {
 
-        Meeting meeting = new Meeting(1279, "AUS", "Australia",
-                "Melbourne", "Australia GP", 2025);
-
-        when(meetingService.getMeetingsForSessionReport(2025))
-                .thenReturn(List.of(meeting));
-
-        when(driverRepo.getDriverByFullNameForYear("Lewis", "Hamilton", 2025))
-                .thenReturn(Optional.of(dbDto));
-
-        Driver result =
-                driverService.getDriverByNameAndYear("Lewis", "Hamilton", 2025);
-
-        assertThat(result.firstName()).isEqualTo("Lewis");
-
-        verify(driverClient, never()).getDriverByName(anyString(), anyString(), anyInt());
-        verify(driverRepo).getDriverByFullNameForYear("Lewis", "Hamilton", 2025);
+        @Test
+        void throwsException_whenYearIsInvalid() {
+            assertThatThrownBy(() ->
+                    driverService.getDriverByNameAndYear("Max", "Verstappen", 2022)
+            ).isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("Only data from 2023 onwards is available.");
+        }
     }
 
-    @Test
-    void getDriverByName_fetchesFromApiAndSavesDriver() {
+    @Nested
+    @DisplayName("getDriverByNameAndYear")
+    class GetDriverByNameAndYear {
 
-        Meeting meeting = new Meeting(1279,"AUS", "Australia", "Melbourne", "Australia GP",2026);
-        List<Meeting> meetingList = List.of(meeting);
+        @Test
+        void returnsDriverFromDatabase() {
+            DriverDto dbDto = new DriverDto("Lewis", "Hamilton", 44, "GBR");
+            Meeting meeting = new Meeting(1279, "AUS", "Australia",
+                    "Melbourne", "Australia GP", 2025);
 
-        when(driverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2026))
-                .thenReturn(Optional.empty());
+            when(meetingService.getMeetingsForSessionReport(2025))
+                    .thenReturn(List.of(meeting));
+            when(driverRepo.getDriverByFullNameForYear("Lewis", "Hamilton", 2025))
+                    .thenReturn(Optional.of(dbDto));
 
-        DriverDto apiDto =
-                new DriverDto("Max", "Verstappen", 1, "NLD");
+            Driver result = driverService.getDriverByNameAndYear("Lewis", "Hamilton", 2025);
 
-        when(driverClient.getDriverByName(eq("Max"), eq("Verstappen"), anyInt()))
-                .thenReturn(Optional.of(apiDto));
+            assertThat(result.firstName()).isEqualTo("Lewis");
+            verify(driverClient, never()).getDriverByName(anyString(), anyString(), anyInt());
+            verify(driverRepo).getDriverByFullNameForYear("Lewis", "Hamilton", 2025);
+        }
 
-        when(meetingService.getMeetingsForSessionReport(anyInt()))
-                .thenReturn(meetingList);
+        @Test
+        void fetchesFromApiAndSavesDriver() {
+            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2026);
 
-        Driver result =
-                driverService.getDriverByNameAndYear("Max", "Verstappen", 2026);
+            when(driverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2026))
+                    .thenReturn(Optional.empty());
 
-        assertThat(result.firstName()).isEqualTo("Max");
+            DriverDto apiDto = new DriverDto("Max", "Verstappen", 1, "NLD");
 
-        verify(driverRepo).saveOrUpdateDriverForYear(apiDto, 2026, 1279);
+            when(driverClient.getDriverByName(eq("Max"), eq("Verstappen"), anyInt()))
+                    .thenReturn(Optional.of(apiDto));
+            when(meetingService.getMeetingsForSessionReport(anyInt()))
+                    .thenReturn(List.of(meeting));
+
+            Driver result = driverService.getDriverByNameAndYear("Max", "Verstappen", 2026);
+
+            assertThat(result.firstName()).isEqualTo("Max");
+            verify(driverRepo).saveOrUpdateDriverForYear(apiDto, 2026, 1279);
+        }
+
+        @Test
+        void throwsException_whenDriverNotFoundAnywhere() {
+            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2026);
+
+            when(driverRepo.getDriverByFullNameForYear(anyString(), anyString(), anyInt()))
+                    .thenReturn(Optional.empty());
+            when(meetingService.getMeetingsForSessionReport(anyInt()))
+                    .thenReturn(List.of(meeting));
+            when(driverClient.getDriverByName(anyString(), anyString(), anyInt()))
+                    .thenReturn(Optional.empty());
+
+            assertThatThrownBy(() ->
+                    driverService.getDriverByNameAndYear("Alice", "Bob", 2025)
+            ).isInstanceOf(DriverNotFoundException.class);
+        }
     }
 
-    @Test
-    void getDriverByName_throwsException_whenDriverNotFoundAnywhere() {
+    @Nested
+    @DisplayName("getDriverByNumberAndYear")
+    class GetDriverByNumberAndYear {
 
-        Meeting meeting = new Meeting(1279,"AUS", "Australia", "Melbourne", "Australia GP",2026);
-        List<Meeting> meetingList = List.of(meeting);
+        @Test
+        void returnsDriverFromDatabase() {
+            DriverDto dbDto = new DriverDto("Max", "Verstappen", 1, "NLD");
+            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
 
-        when(driverRepo.getDriverByFullNameForYear(anyString(), anyString(), anyInt()))
-                .thenReturn(Optional.empty());
+            when(meetingService.getMeetingsForSessionReport(2025))
+                    .thenReturn(List.of(meeting));
+            when(driverRepo.getDriverByStartNumberForYear(1, 2025))
+                    .thenReturn(Optional.of(dbDto));
 
-        when(meetingService.getMeetingsForSessionReport(anyInt()))
-                .thenReturn(meetingList);
+            Driver result = driverService.getDriverByNumberAndYear(1, 2025);
 
-        when(driverClient.getDriverByName(anyString(), anyString(), anyInt()))
-                .thenReturn(Optional.empty());
+            assertThat(result.driverNumber()).isEqualTo(1);
+            assertThat(result.firstName()).isEqualTo("Max");
+            verify(driverClient, never()).getDriverByNumberAndMeetingKey(anyInt(), anyInt());
+        }
 
-        assertThatThrownBy(() ->
-                driverService.getDriverByNameAndYear("Alice", "Bob", 2025)
-        ).isInstanceOf(DriverNotFoundException.class);
+        @Test
+        void fetchesFromApiAndSavesDriver() {
+            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
+            DriverDto apiDto = new DriverDto("Charles", "Leclerc", 16, "MCO");
+
+            when(meetingService.getMeetingsForSessionReport(2025))
+                    .thenReturn(List.of(meeting));
+            when(driverRepo.getDriverByStartNumberForYear(16, 2025))
+                    .thenReturn(Optional.empty());
+            when(driverClient.getDriverByNumberAndMeetingKey(16, 1279))
+                    .thenReturn(Optional.of(apiDto));
+
+            Driver result = driverService.getDriverByNumberAndYear(16, 2025);
+
+            assertThat(result.driverNumber()).isEqualTo(16);
+            verify(driverRepo).saveOrUpdateDriverForYear(apiDto, 2025, 1279);
+        }
+
+        @Test
+        void throwsException_whenDriverNotFound() {
+            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
+
+            when(meetingService.getMeetingsForSessionReport(2025))
+                    .thenReturn(List.of(meeting));
+            when(driverRepo.getDriverByStartNumberForYear(99, 2025))
+                    .thenReturn(Optional.empty());
+            when(driverClient.getDriverByNumberAndMeetingKey(99, 1279))
+                    .thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> driverService.getDriverByNumberAndYear(99, 2025))
+                    .isInstanceOf(DriverNotFoundException.class);
+        }
     }
 
-    @Test
-    void getDriverByName_throwsException_whenYearIsInvalid() {
-        assertThatThrownBy(() ->
-                driverService.getDriverByNameAndYear("Max", "Verstappen", 2022)
-        ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Only data from 2023 onwards is available.");
+    @Nested
+    @DisplayName("getDriverByNumberAndMeetingKey")
+    class GetDriverByNumberAndMeetingKey {
+
+        @Test
+        void returnsDriverFromDatabase() {
+            DriverDto dbDto = new DriverDto("Lando", "Norris", 4, "GBR");
+
+            when(driverRepo.getDriverByStartNumberForYear(4, 2025))
+                    .thenReturn(Optional.of(dbDto));
+
+            Driver result = driverService.getDriverByNumberAndMeetingKey(4, 2025, 1280);
+
+            assertThat(result.driverNumber()).isEqualTo(4);
+            verify(driverClient, never()).getDriverByNumberAndMeetingKey(anyInt(), anyInt());
+        }
+
+        @Test
+        void fetchesFromApiAndSavesDriver() {
+            DriverDto apiDto = new DriverDto("Oscar", "Piastri", 81, "AUS");
+
+            when(driverRepo.getDriverByStartNumberForYear(81, 2025))
+                    .thenReturn(Optional.empty());
+            when(driverClient.getDriverByNumberAndMeetingKey(81, 1280))
+                    .thenReturn(Optional.of(apiDto));
+
+            Driver result = driverService.getDriverByNumberAndMeetingKey(81, 2025, 1280);
+
+            assertThat(result.driverNumber()).isEqualTo(81);
+            verify(driverRepo).saveOrUpdateDriverForYear(apiDto, 2025, 1280);
+        }
+
+        @Test
+        void throwsException_whenDriverNotFound() {
+            when(driverRepo.getDriverByStartNumberForYear(99, 2025))
+                    .thenReturn(Optional.empty());
+            when(driverClient.getDriverByNumberAndMeetingKey(99, 1280))
+                    .thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> driverService.getDriverByNumberAndMeetingKey(99, 2025, 1280))
+                    .isInstanceOf(DriverNotFoundException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("getDriverByNumberWithFallback")
+    class GetDriverByNumberWithFallback {
+
+        @Test
+        void returnsDriverFromDatabase() {
+            DriverDto dbDto = new DriverDto("George", "Russell", 63, "GBR");
+
+            when(driverRepo.getDriverByStartNumberForYear(63, 2025))
+                    .thenReturn(Optional.of(dbDto));
+
+            Driver result = driverService.getDriverByNumberWithFallback(63, 2025, 1280);
+
+            assertThat(result.driverNumber()).isEqualTo(63);
+            verify(driverClient, never()).getDriverByNumber(anyInt());
+        }
+
+        @Test
+        void fallsBackToDriverByNumber() {
+            DriverDto apiDto = new DriverDto("Carlos", "Sainz", 55, "ESP");
+
+            when(driverRepo.getDriverByStartNumberForYear(55, 2025))
+                    .thenReturn(Optional.empty());
+            when(driverClient.getDriverByNumberAndMeetingKey(55, 1280))
+                    .thenReturn(Optional.empty());
+            when(driverClient.getDriverByNumber(55))
+                    .thenReturn(Optional.of(apiDto));
+
+            Driver result = driverService.getDriverByNumberWithFallback(55, 2025, 1280);
+
+            assertThat(result.driverNumber()).isEqualTo(55);
+            verify(driverRepo).saveOrUpdateDriverForYear(apiDto, 2025, 1280);
+        }
+
+        @Test
+        void fallsBackToOtherMeetings() {
+            DriverDto apiDto = new DriverDto("Fernando", "Alonso", 14, "ESP");
+            Meeting meeting1 = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
+            Meeting meeting2 = new Meeting(1280, "CHN", "China", "Shanghai", "China GP", 2025);
+
+            when(driverRepo.getDriverByStartNumberForYear(14, 2025))
+                    .thenReturn(Optional.empty());
+            when(driverClient.getDriverByNumberAndMeetingKey(14, 1280))
+                    .thenReturn(Optional.empty());
+            when(driverClient.getDriverByNumber(14))
+                    .thenReturn(Optional.empty());
+            when(meetingService.getMeetingsForSessionReport(2025))
+                    .thenReturn(List.of(meeting1, meeting2));
+            when(driverClient.getDriverByNumberAndMeetingKey(14, 1279))
+                    .thenReturn(Optional.of(apiDto));
+
+            Driver result = driverService.getDriverByNumberWithFallback(14, 2025, 1280);
+
+            assertThat(result.driverNumber()).isEqualTo(14);
+            verify(driverRepo).saveOrUpdateDriverForYear(apiDto, 2025, 1279);
+        }
+
+        @Test
+        void throwsException_whenAllFallbacksFail() {
+            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
+
+            when(driverRepo.getDriverByStartNumberForYear(99, 2025))
+                    .thenReturn(Optional.empty());
+            when(driverClient.getDriverByNumberAndMeetingKey(99, 1280))
+                    .thenReturn(Optional.empty());
+            when(driverClient.getDriverByNumber(99))
+                    .thenReturn(Optional.empty());
+            when(meetingService.getMeetingsForSessionReport(2025))
+                    .thenReturn(List.of(meeting));
+            when(driverClient.getDriverByNumberAndMeetingKey(99, 1279))
+                    .thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> driverService.getDriverByNumberWithFallback(99, 2025, 1280))
+                    .isInstanceOf(DriverNotFoundException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("preloadMissingDriversForMeeting")
+    class PreloadMissingDriversForMeeting {
+
+        @Test
+        void loadsOnlyMissingDrivers() {
+            DriverDto apiDto = new DriverDto("Sergio", "Perez", 11, "MEX");
+
+            when(driverRepo.hasNamedDriverNumberForYear(1, 2025)).thenReturn(true);
+            when(driverRepo.hasNamedDriverNumberForYear(11, 2025)).thenReturn(false);
+            when(driverRepo.getDriverByStartNumberForYear(11, 2025)).thenReturn(Optional.empty());
+            when(driverClient.getDriverByNumberAndMeetingKey(11, 1280)).thenReturn(Optional.of(apiDto));
+
+            driverService.preloadMissingDriversForMeeting(2025, 1280, List.of(1, 11));
+
+            verify(driverRepo, never()).getDriverByStartNumberForYear(eq(1), anyInt());
+            verify(driverRepo).saveOrUpdateDriverForYear(apiDto, 2025, 1280);
+        }
+
+        @Test
+        void skipsNullDriverNumbers() {
+            when(driverRepo.hasNamedDriverNumberForYear(44, 2025)).thenReturn(true);
+
+            driverService.preloadMissingDriversForMeeting(2025, 1280, Arrays.asList(44, null));
+
+            verify(driverRepo, times(1)).hasNamedDriverNumberForYear(anyInt(), anyInt());
+        }
     }
 }
