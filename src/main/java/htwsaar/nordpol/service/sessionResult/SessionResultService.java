@@ -53,20 +53,18 @@ public class SessionResultService implements ISessionResultService {
 
         List<SessionResult> results = getResultsBySessionKey(sessionKey)
                 .stream()
-                .sorted(
-                        Comparator
-                                // Push DSQ/DNS/DNF to the bottom
-                                // Then by position; treat 0 (unknown) as last
-                                .comparingInt((SessionResult r) -> (r.dnf() || r.dns() || r.dsq()) ? 1 : 0)
-                                .thenComparingInt(r -> r.position() > 0 ? r.position() : Integer.MAX_VALUE)
-                                // Stable final tiebreaker: driver number
-                                .thenComparingInt(SessionResult::driverNumber)
-                )
+                .sorted(CLASSIFICATION_ORDER())
                 .toList();
         return new SessionResultWithContext(meeting.meetingName(),
                 session.sessionName(),
                 results
         );
+    }
+
+    private Comparator<SessionResult> CLASSIFICATION_ORDER() {
+        return Comparator.comparingInt((SessionResult result) -> (result.dnf() || result.dns() || result.dsq()) ? 1 : 0)
+                .thenComparing(result -> result.position() > 0 ? result.position() : Integer.MAX_VALUE)
+                .thenComparing(SessionResult::driverNumber);
     }
 
     private List<SessionResult> getResultsBySessionKey(int sessionKey) {
