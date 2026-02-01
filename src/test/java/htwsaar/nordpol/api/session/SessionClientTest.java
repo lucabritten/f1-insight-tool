@@ -5,6 +5,8 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -30,70 +32,79 @@ public class SessionClientTest {
         mockWebServer.shutdown();
     }
 
-    @Test
-    void getSessionByMeetingKeyAndsessionName_returnsSession(){
-        String json = """
-                [
-                    {
-                        "meeting_key": 1256,
-                        "session_key": 9999,
-                        "session_name": "Practice 1",
-                        "session_type": "Practice"
-                    }
-                ]
-                """;
+    @Nested
+    @DisplayName("getSessionByMeetingKeyAndSessionName")
+    class GetSessionByMeetingKeyAndSessionName {
 
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(json)
-                .setResponseCode(200)
-        );
+        @Test
+        void returnsSession() {
+            String json = """
+                    [
+                        {
+                            "meeting_key": 1256,
+                            "session_key": 9999,
+                            "session_name": "Practice 1",
+                            "session_type": "Practice"
+                        }
+                    ]
+                    """;
 
-        Optional<SessionDto> result = sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice");
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "application/json")
+                    .setBody(json)
+                    .setResponseCode(200)
+            );
 
-        assertThat(result).isPresent();
+            Optional<SessionDto> result = sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice");
 
-        SessionDto sessionDto = result.get();
+            assertThat(result).isPresent();
 
-        assertThat(sessionDto.meeting_key()).isEqualTo(1256);
-        assertThat(sessionDto.session_type()).isEqualTo("Practice");
+            SessionDto sessionDto = result.get();
 
+            assertThat(sessionDto.meeting_key()).isEqualTo(1256);
+            assertThat(sessionDto.session_type()).isEqualTo("Practice");
+        }
+
+        @Test
+        void returnsEmptyOptional_whenApiResponseIsEmpty() {
+            String json = "[]";
+
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "application/json")
+                    .setBody(json)
+                    .setResponseCode(200)
+            );
+
+            Optional<SessionDto> result = sessionClient.getSessionByMeetingKeyAndsessionName(2021, "DestroyHeadset");
+
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        void returnsEmptyOptional_whenHttpStatusIsNotSuccessful() {
+            mockWebServer.enqueue(new MockResponse()
+                    .setResponseCode(500)
+            );
+
+            Optional<SessionDto> result =
+                    sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice");
+
+            assertThat(result).isEmpty();
+        }
     }
 
-    @Test
-    void getSessionByMeetingKeyAndsessionName_returnsEmptyOptional_whenApiResponseIsEmpty(){
-        String json = "[]";
+    @Nested
+    @DisplayName("Error Handling")
+    class ErrorHandling {
 
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(json)
-                .setResponseCode(200)
-        );
+        @Test
+        void throwsRuntimeException_whenConnectionFails() throws IOException {
+            mockWebServer.shutdown();
 
-        Optional<SessionDto> result = sessionClient.getSessionByMeetingKeyAndsessionName(2021, "DestroyHeadset");
-
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void getSessionByMeetingKeyAndsessionName_returnsEmptyOptional_whenHttpStatusIsNotSuccessful(){
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(500)
-        );
-
-        Optional<SessionDto> result =
-                sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice");
-
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void getSessionByMeetingKeyAndsessionName_throwsRuntimeException_whenConnectionFails() throws IOException {
-        mockWebServer.shutdown();
-
-        assertThatThrownBy(() ->
-                sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice"))
-        .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch data from OpenF1 API");
+            assertThatThrownBy(() ->
+                    sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice"))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("Failed to fetch data from OpenF1 API");
+        }
     }
 }

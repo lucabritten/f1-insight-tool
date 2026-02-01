@@ -7,6 +7,8 @@ import org.jooq.impl.DSL;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,7 +22,6 @@ public class MeetingRepoTest {
     private Connection connection;
     private DSLContext create;
     private IMeetingRepo meetingRepo;
-
 
     @BeforeEach
     void setUp() throws Exception {
@@ -37,7 +38,7 @@ public class MeetingRepoTest {
                 );
                 """);
 
-                meetingRepo = new JooqMeetingRepo(create);
+        meetingRepo = new JooqMeetingRepo(create);
     }
 
     @AfterEach
@@ -47,76 +48,84 @@ public class MeetingRepoTest {
         }
     }
 
-    @Test
-    void saveMeeting_persistsMeeting() {
-        MeetingDto meetingData =
-                new MeetingDto(
-                        "USA", "United States", "Austin", 1247, "United States Grand Prix", 2024);
+    @Nested
+    @DisplayName("save")
+    class Save {
 
-        meetingRepo.save(meetingData);
+        @Test
+        void persistsMeeting() {
+            MeetingDto meetingData =
+                    new MeetingDto(
+                            "USA", "United States", "Austin", 1247, "United States Grand Prix", 2024);
 
-        Optional<MeetingDto> stored =
-                meetingRepo.getMeetingByYearAndLocation(2024, "Austin");
+            meetingRepo.save(meetingData);
 
-        assertThat(stored).isPresent();
+            Optional<MeetingDto> stored =
+                    meetingRepo.getMeetingByYearAndLocation(2024, "Austin");
 
-        MeetingDto dto = stored.get();
+            assertThat(stored).isPresent();
 
-        assertThat(dto.country_code()).isEqualTo("USA");
-        assertThat(dto.country_name()).isEqualTo("United States");
-        assertThat(dto.location()).isEqualTo("Austin");
-        assertThat(dto.meeting_key()).isEqualTo(1247);
-        assertThat(dto.meeting_name()).isEqualTo("United States Grand Prix");
-        assertThat(dto.year()).isEqualTo(2024);
+            MeetingDto dto = stored.get();
+
+            assertThat(dto.country_code()).isEqualTo("USA");
+            assertThat(dto.country_name()).isEqualTo("United States");
+            assertThat(dto.location()).isEqualTo("Austin");
+            assertThat(dto.meeting_key()).isEqualTo(1247);
+            assertThat(dto.meeting_name()).isEqualTo("United States Grand Prix");
+            assertThat(dto.year()).isEqualTo(2024);
+        }
     }
 
-    @Test
-    void saveMeeting_throwsException_whenLocationIsNull(){
-        MeetingDto meetingDto = new MeetingDto("USA", "United States", null, 1247, "United States Grand Prix", 2024);
+    @Nested
+    @DisplayName("Validation")
+    class Validation {
 
-        assertThatThrownBy(() -> meetingRepo.save(meetingDto))
-                .isInstanceOf(IllegalArgumentException.class);
+        @Test
+        void throwsException_whenLocationIsNull() {
+            MeetingDto meetingDto = new MeetingDto("USA", "United States", null, 1247, "United States Grand Prix", 2024);
+
+            assertThatThrownBy(() -> meetingRepo.save(meetingDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void throwsException_whenCountryCodeIsNull() {
+            MeetingDto meetingDto = new MeetingDto(null, "United States", "Austin", 1247, "United States Grand Prix", 2024);
+
+            assertThatThrownBy(() -> meetingRepo.save(meetingDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void throwsException_whenCountryNameIsNull() {
+            MeetingDto meetingDto = new MeetingDto("USA", null, "Austin", 1247, "United States Grand Prix", 2024);
+
+            assertThatThrownBy(() -> meetingRepo.save(meetingDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void throwsException_whenMeetingKeyIsNegative() {
+            MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", -1, "United States Grand Prix", 2024);
+
+            assertThatThrownBy(() -> meetingRepo.save(meetingDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void throwsException_whenMeetingNameIsNull() {
+            MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", 1247, null, 2024);
+
+            assertThatThrownBy(() -> meetingRepo.save(meetingDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void throwsException_whenYearIsNegative() {
+            MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", 1247, "United States Grand Prix", -1);
+
+            assertThatThrownBy(() -> meetingRepo.save(meetingDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
-
-    @Test
-    void saveMeeting_throwsException_whenCountryCodeIsNull(){
-        MeetingDto meetingDto = new MeetingDto(null, "United States", "Austin", 1247, "United States Grand Prix", 2024);
-
-        assertThatThrownBy(() -> meetingRepo.save(meetingDto))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void saveMeeting_throwsException_whenCountryNameIsNull(){
-        MeetingDto meetingDto = new MeetingDto("USA", null, "Austin", 1247, "United States Grand Prix", 2024);
-
-        assertThatThrownBy(() -> meetingRepo.save(meetingDto))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-
-    @Test
-    void saveMeeting_throwsException_whenMeetingKeyIsNegative(){
-        MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", -1, "United States Grand Prix", 2024);
-
-        assertThatThrownBy(() -> meetingRepo.save(meetingDto))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void saveMeeting_throwsException_whenMeetingNameIsNull(){
-        MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", 1247, null, 2024);
-
-        assertThatThrownBy(() -> meetingRepo.save(meetingDto))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void saveMeeting_throwsException_whenYearIsNegative(){
-        MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", 1247, "United States Grand Prix", -1);
-
-        assertThatThrownBy(() -> meetingRepo.save(meetingDto))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
 }

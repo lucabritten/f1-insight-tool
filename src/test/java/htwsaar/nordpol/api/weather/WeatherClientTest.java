@@ -5,6 +5,8 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -30,41 +32,45 @@ public class WeatherClientTest {
         mockWebServer.close();
     }
 
-    @Test
-    void getWeatherDataByMeetingKeyAndSessionKey_returnsWeatherList() {
-        String json = """
-                [
-                  {
-                    "session_key": 9001,
-                    "meeting_key": 1247,
-                    "air_temperature": 27.5,
-                    "humidity": 52.0,
-                    "rainfall": 0,
-                    "track_temperature": 39.1,
-                    "wind_direction": 180.0,
-                    "wind_speed": 3.4
-                  },
-                  {
-                    "session_key": 9001,
-                    "meeting_key": 1247,
-                    "air_temperature": 28.1,
-                    "humidity": 50.0,
-                    "rainfall": 0,
-                    "track_temperature": 40.0,
-                    "wind_direction": 175.0,
-                    "wind_speed": 3.1
-                  }
-                ]
-                """;
+    @Nested
+    @DisplayName("getWeatherDataByMeetingKeyAndSessionKey")
+    class GetWeatherDataByMeetingKeyAndSessionKey {
 
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(json)
-                .setResponseCode(200)
-        );
+        @Test
+        void returnsWeatherList() {
+            String json = """
+                    [
+                      {
+                        "session_key": 9001,
+                        "meeting_key": 1247,
+                        "air_temperature": 27.5,
+                        "humidity": 52.0,
+                        "rainfall": 0,
+                        "track_temperature": 39.1,
+                        "wind_direction": 180.0,
+                        "wind_speed": 3.4
+                      },
+                      {
+                        "session_key": 9001,
+                        "meeting_key": 1247,
+                        "air_temperature": 28.1,
+                        "humidity": 50.0,
+                        "rainfall": 0,
+                        "track_temperature": 40.0,
+                        "wind_direction": 175.0,
+                        "wind_speed": 3.1
+                      }
+                    ]
+                    """;
 
-        List<WeatherDto> result =
-                weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1247, 9001);
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "application/json")
+                    .setBody(json)
+                    .setResponseCode(200)
+            );
+
+            List<WeatherDto> result =
+                    weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1247, 9001);
 
         assertThat(result)
                 .isNotEmpty()
@@ -81,55 +87,61 @@ public class WeatherClientTest {
         assertThat(first.wind_speed()).isEqualTo(3.4);
     }
 
-    @Test
-    void getWeatherDataByMeetingKeyAndSessionKey_returnsEmptyOptional_whenApiResponseIsEmpty() {
-        String json = "[]";
+        @Test
+        void returnsEmptyList_whenApiResponseIsEmpty() {
+            String json = "[]";
 
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(json)
-                .setResponseCode(200)
-        );
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "application/json")
+                    .setBody(json)
+                    .setResponseCode(200)
+            );
 
-        List<WeatherDto> result =
-                weatherClient.getWeatherDataByMeetingKeyAndSessionKey(9999, 8888);
+            List<WeatherDto> result =
+                    weatherClient.getWeatherDataByMeetingKeyAndSessionKey(9999, 8888);
 
-        assertThat(result).isEmpty();
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        void returnsEmptyList_whenHttpStatusIsNotSuccessful() {
+            mockWebServer.enqueue(new MockResponse()
+                    .setResponseCode(500)
+            );
+
+            List<WeatherDto> result =
+                    weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1247, 9001);
+
+            assertThat(result).isEmpty();
+        }
     }
 
-    @Test
-    void getWeatherDataByMeetingKeyAndSessionKey_throwsException_whenJsonIsInvalid() {
-        String invalidJson = "{invalid";
+    @Nested
+    @DisplayName("Error Handling")
+    class ErrorHandling {
 
-        mockWebServer.enqueue(new MockResponse()
-                .setBody(invalidJson)
-                .setResponseCode(200)
-        );
+        @Test
+        void throwsException_whenJsonIsInvalid() {
+            String invalidJson = "{invalid";
 
-        assertThatThrownBy(() ->
-                weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1247, 9001)
-        ).isInstanceOf(RuntimeException.class);
-    }
+            mockWebServer.enqueue(new MockResponse()
+                    .setBody(invalidJson)
+                    .setResponseCode(200)
+            );
 
-    @Test
-    void getWeatherDataByMeetingKeyAndSessionKey_returnsEmptyOptional_whenHttpStatusIsNotSuccessful() {
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(500)
-        );
+            assertThatThrownBy(() ->
+                    weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1247, 9001)
+            ).isInstanceOf(RuntimeException.class);
+        }
 
-        List<WeatherDto> result =
-                weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1247, 9001);
+        @Test
+        void throwsRuntimeException_whenConnectionFails() throws IOException {
+            mockWebServer.shutdown();
 
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void getWeatherDataByMeetingKeyAndSessionKey_throwsRuntimeException_whenConnectionFails() throws IOException {
-        mockWebServer.shutdown();
-
-        assertThatThrownBy(() ->
-                weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1247, 9001)
-        ).isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch data from OpenF1 API");
+            assertThatThrownBy(() ->
+                    weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1247, 9001)
+            ).isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("Failed to fetch data from OpenF1 API");
+        }
     }
 }

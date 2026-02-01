@@ -6,6 +6,8 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -57,136 +59,156 @@ public class DriverRepoTest {
         }
     }
 
-    @Test
-    void saveDriver_persistsDriver() {
-        DriverDto driverData =
-                new DriverDto("Lando", "Norris", 4, "McLaren RACING");
+    @Nested
+    @DisplayName("saveOrUpdateDriverForYear")
+    class SaveOrUpdateDriverForYear {
+
+        @Test
+        void persistsDriver() {
+            DriverDto driverData =
+                    new DriverDto("Lando", "Norris", 4, "McLaren RACING");
 
         driverRepo.saveOrUpdateDriverForYear(driverData, 2025, 1111);
 
         Optional<DriverDto> stored =
                 driverRepo.getDriverByFullNameForYear("Lando", "Norris", 2025);
 
-        assertThat(stored).isPresent();
+            assertThat(stored).isPresent();
 
-        DriverDto dto = stored.get();
+            DriverDto dto = stored.get();
 
-        assertThat(dto.driver_number()).isEqualTo(4);
-        assertThat(dto.first_name()).isEqualTo("Lando");
-        assertThat(dto.last_name()).isEqualTo("Norris");
-        assertThat(dto.team_name()).isEqualTo("McLaren RACING");
+            assertThat(dto.driver_number()).isEqualTo(4);
+            assertThat(dto.first_name()).isEqualTo("Lando");
+            assertThat(dto.last_name()).isEqualTo("Norris");
+            assertThat(dto.team_name()).isEqualTo("McLaren RACING");
+        }
+
+        @Test
+        void sameDriver_canHaveDifferentNumbersInDifferentYear() {
+            DriverDto max2025 =
+                    new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
+
+            DriverDto max2026 =
+                    new DriverDto("Max", "Verstappen", 3, "NLD");
+
+            driverRepo.saveOrUpdateDriverForYear(max2025, 2025, 1111);
+            driverRepo.saveOrUpdateDriverForYear(max2026, 2026, 2222);
+
+            assertThat(driverRepo
+                    .getDriverByStartNumberForYear(1, 2025)).isPresent();
+
+            assertThat(driverRepo
+                    .getDriverByStartNumberForYear(3, 2026)).isPresent();
+        }
+
+        @Test
+        void sameDriver_sameYear_updatesStartNumber() {
+            DriverDto max1 =
+                    new DriverDto("Max", "Verstappen", 33, "Red Bull Racing");
+
+            DriverDto max2 =
+                    new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
+
+            driverRepo.saveOrUpdateDriverForYear(max1, 2025, 1111);
+            driverRepo.saveOrUpdateDriverForYear(max2, 2025, 1112);
+
+            Optional<DriverDto> stored =
+                    driverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2025);
+
+            assertThat(stored).isPresent();
+            assertThat(stored.get().driver_number()).isEqualTo(1);
+        }
     }
 
-    @Test
-    void getDriverByFullName_returnsNullWhenMissing() {
-        Optional<DriverDto> stored =
-                driverRepo.getDriverByFullNameForYear("Unknown", "Driver", 2025);
+    @Nested
+    @DisplayName("getDriverByFullNameForYear")
+    class GetDriverByFullNameForYear {
 
-        assertThat(stored).isEmpty();
+        @Test
+        void returnsNullWhenMissing() {
+            Optional<DriverDto> stored =
+                    driverRepo.getDriverByFullNameForYear("Unknown", "Driver", 2025);
+
+            assertThat(stored).isEmpty();
+        }
+
+        @Test
+        void returnsCorrectDriver_forMultipleEntries() {
+            DriverDto lando = new DriverDto("Lando", "Norris", 4, "McLaren RACING");
+            DriverDto max = new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
+
+            driverRepo.saveOrUpdateDriverForYear(lando, 2025, 1111);
+            driverRepo.saveOrUpdateDriverForYear(max, 2025, 1111);
+
+            Optional<DriverDto> stored =
+                    driverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2025);
+
+            assertThat(stored).isPresent();
+
+            DriverDto dto = stored.get();
+            assertThat(dto.driver_number()).isEqualTo(1);
+            assertThat(dto.first_name()).isEqualTo("Max");
+            assertThat(dto.last_name()).isEqualTo("Verstappen");
+            assertThat(dto.team_name()).isEqualTo("Red Bull Racing");
+        }
     }
 
-    @Test
-    void getDriverByFullName_returnsCorrectDriver_forMultipleEntries() {
-        DriverDto lando = new DriverDto("Lando", "Norris", 4, "McLaren RACING");
-        DriverDto max = new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
+    @Nested
+    @DisplayName("Cascade Delete")
+    class CascadeDelete {
 
-        driverRepo.saveOrUpdateDriverForYear(lando, 2025, 1111);
-        driverRepo.saveOrUpdateDriverForYear(max, 2025, 1111);
+        @Test
+        void deletingDriver_removesDriverNumbers() {
+            DriverDto max =
+                    new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
 
-        Optional<DriverDto> stored =
-                driverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2025);
+            driverRepo.saveOrUpdateDriverForYear(max, 2025, 1111);
 
-        assertThat(stored).isPresent();
+            create.deleteFrom(DRIVERS)
+                    .where(DRIVERS.FIRST_NAME.eq("Max"))
+                    .execute();
 
-        DriverDto dto = stored.get();
-        assertThat(dto.driver_number()).isEqualTo(1);
-        assertThat(dto.first_name()).isEqualTo("Max");
-        assertThat(dto.last_name()).isEqualTo("Verstappen");
-        assertThat(dto.team_name()).isEqualTo("Red Bull Racing");
+            assertThat(driverRepo.getDriverByStartNumberForYear(1, 2025))
+                    .isEmpty();
+        }
     }
 
-    @Test
-    void saveDriver_throwsException_whenDriverNumberIsNegative(){
-        DriverDto driverDto = new DriverDto("Max", "Verstappen", -1, "Red Bull Racing");
+    @Nested
+    @DisplayName("Validation")
+    class Validation {
 
-        assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForYear(driverDto, 2025, 1111))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+        @Test
+        void throwsException_whenDriverNumberIsNegative() {
+            DriverDto driverDto = new DriverDto("Max", "Verstappen", -1, "Red Bull Racing");
 
-    @Test
-    void saveDriver_throwsException_whenFirstnameIsNull(){
-        DriverDto driverDto = new DriverDto(null, "Verstappen", 1, "Red Bull Racing");
+            assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForYear(driverDto, 2025, 1111))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
 
-        assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForYear(driverDto, 2025, 1111))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+        @Test
+        void throwsException_whenFirstnameIsNull() {
+            DriverDto driverDto = new DriverDto(null, "Verstappen", 1, "Red Bull Racing");
 
-    @Test
-    void saveDriver_throwsException_whenTeamNameIsNull(){
-        DriverDto driverDto = new DriverDto("Max", "Verstappen", 1, null);
+            assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForYear(driverDto, 2025, 1111))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
 
-        assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForYear(driverDto, 2025, 1111))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+        @Test
+        void throwsException_whenTeamNameIsNull() {
+            DriverDto driverDto = new DriverDto("Max", "Verstappen", 1, null);
 
-    @Test
-    void sameDriver_canHaveDifferentNumbersInDifferentYear() {
-        DriverDto max2025 =
-                new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
+            assertThatThrownBy(() -> driverRepo.saveOrUpdateDriverForYear(driverDto, 2025, 1111))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
 
-        DriverDto max2026 =
-                new DriverDto("Max", "Verstappen", 3, "NLD");
+        @Test
+        void invalidYear_throwsException() {
+            DriverDto max =
+                    new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
 
-        driverRepo.saveOrUpdateDriverForYear(max2025, 2025, 1111);
-        driverRepo.saveOrUpdateDriverForYear(max2026, 2026, 2222);
-
-        assertThat(driverRepo
-                .getDriverByStartNumberForYear(1, 2025)).isPresent();
-
-        assertThat(driverRepo
-                .getDriverByStartNumberForYear(3, 2026)).isPresent();
-    }
-
-    @Test
-    void sameDriver_sameYear_updatesStartNumber(){
-        DriverDto max1 =
-                new DriverDto("Max", "Verstappen", 33, "Red Bull Racing");
-
-        DriverDto max2 =
-                new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
-
-        driverRepo.saveOrUpdateDriverForYear(max1, 2025, 1111);
-        driverRepo.saveOrUpdateDriverForYear(max2, 2025, 1112);
-
-        Optional<DriverDto> stored =
-                driverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2025);
-
-        assertThat(stored).isPresent();
-        assertThat(stored.get().driver_number()).isEqualTo(1);
-    }
-
-    @Test
-    void deletingDriver_removesDriverNumbers() {
-        DriverDto max =
-                new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
-
-        driverRepo.saveOrUpdateDriverForYear(max, 2025, 1111);
-
-        create.deleteFrom(DRIVERS)
-                .where(DRIVERS.FIRST_NAME.eq("Max"))
-                .execute();
-
-        assertThat(driverRepo.getDriverByStartNumberForYear(1, 2025))
-                .isEmpty();
-    }
-
-    @Test
-    void invalidYear_throwsException(){
-        DriverDto max =
-                new DriverDto("Max", "Verstappen", 1, "Red Bull Racing");
-
-        assertThatThrownBy(() ->
-                driverRepo.saveOrUpdateDriverForYear(max, 1900, 1111))
-                .isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() ->
+                    driverRepo.saveOrUpdateDriverForYear(max, 1900, 1111))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 }

@@ -9,6 +9,8 @@ import htwsaar.nordpol.repository.session.ISessionRepo;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.session.SessionService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -42,79 +44,89 @@ public class SessionServiceTest {
         sessionService = new SessionService(sessionRepo, sessionClient, meetingService, cacheService);
     }
 
-    @Test
-    void getSessionByMeetingKeyAndSessionName_returnsSessionFromDatabase() {
-        SessionDto sessionDto =
-                new SessionDto(1256, 9999, "Practice 1", "Practice 1");
+    @Nested
+    @DisplayName("getSessionByMeetingKeyAndSessionName")
+    class GetSessionByMeetingKeyAndSessionName {
 
-        when(sessionRepo.getSessionByMeetingKeyAndSessionName(1256, SessionName.PRACTICE1.dbValue()))
-                .thenReturn(Optional.of(sessionDto));
+        @Test
+        void returnsSessionFromDatabase() {
+            SessionDto sessionDto =
+                    new SessionDto(1256, 9999, "Practice 1", "Practice 1");
 
-        Session result =
-                sessionService.getSessionByMeetingKeyAndSessionName(1256, SessionName.PRACTICE1);
+            when(sessionRepo.getSessionByMeetingKeyAndSessionName(1256, SessionName.PRACTICE1.dbValue()))
+                    .thenReturn(Optional.of(sessionDto));
 
-        assertThat(result.meetingKey()).isEqualTo(1256);
+            Session result =
+                    sessionService.getSessionByMeetingKeyAndSessionName(1256, SessionName.PRACTICE1);
 
-        verify(sessionClient, never()).getSessionByMeetingKeyAndsessionName(1256, "Practice 1");
-        verify(sessionRepo).getSessionByMeetingKeyAndSessionName(1256, "Practice 1");
+            assertThat(result.meetingKey()).isEqualTo(1256);
+
+            verify(sessionClient, never()).getSessionByMeetingKeyAndsessionName(1256, "Practice 1");
+            verify(sessionRepo).getSessionByMeetingKeyAndSessionName(1256, "Practice 1");
+        }
+
+        @Test
+        void fetchesFromApiAndSavesSession() {
+            when(sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
+                    .thenReturn(Optional.empty());
+
+            SessionDto apiDto =
+                    new SessionDto(1256, 9999, "Practice 1", "Practice 1");
+
+            when(sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice 1"))
+                    .thenReturn(Optional.of(apiDto));
+
+            Session result =
+                    sessionService.getSessionByMeetingKeyAndSessionName(1256, SessionName.PRACTICE1);
+
+            assertThat(result.meetingKey()).isEqualTo(1256);
+
+            verify(sessionRepo, times(1)).save(apiDto);
+        }
+
+        @Test
+        void doesNotSave_whenFoundInDatabase() {
+            SessionDto sessionDto = new SessionDto(1234, 4321, "Practice 1", "Practice");
+
+            when(sessionRepo.getSessionByMeetingKeyAndSessionName(1234, "Practice 1"))
+                    .thenReturn(Optional.of(sessionDto));
+
+            sessionService.getSessionByMeetingKeyAndSessionName(1234, SessionName.PRACTICE1);
+
+            verify(sessionRepo, never()).save(any());
+        }
+
+        @Test
+        void throwsException_ifSessionIsNotFound() {
+            when(sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
+                    .thenReturn(Optional.empty());
+
+            when(sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice 1"))
+                    .thenReturn(Optional.empty());
+
+            assertThatThrownBy(() ->
+                    sessionService.getSessionByMeetingKeyAndSessionName(1256, SessionName.PRACTICE1))
+                    .isInstanceOf(SessionNotFoundException.class)
+                    .hasMessageContaining("Session not found");
+        }
     }
 
-    @Test
-    void getSessionByMeetingKeyAndSessionName_fetchesFromApiAndSavesSession(){
-        when(sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
-                .thenReturn(Optional.empty());
+    @Nested
+    @DisplayName("Cache Flow")
+    class CacheFlow {
 
-        SessionDto apiDto =
-                new SessionDto(1256, 9999, "Practice 1", "Practice 1");
+        @Test
+        void databaseIsQueriedBeforeApi() {
+            when(sessionRepo.getSessionByMeetingKeyAndSessionName(anyInt(), anyString()))
+                    .thenReturn(Optional.empty());
+            when(sessionClient.getSessionByMeetingKeyAndsessionName(anyInt(), anyString()))
+                    .thenReturn(Optional.of(new SessionDto(1234, 4321, "Race", "Race")));
 
-        when(sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice 1"))
-                .thenReturn(Optional.of(apiDto));
+            sessionService.getSessionByMeetingKeyAndSessionName(1234, SessionName.RACE);
 
-        Session result =
-                sessionService.getSessionByMeetingKeyAndSessionName(1256, SessionName.PRACTICE1);
-
-        assertThat(result.meetingKey()).isEqualTo(1256);
-
-        verify(sessionRepo, times(1)).save(apiDto);
-    }
-
-    @Test
-    void getSessionByMeetingKeyAndSessionName_doesNotSave_whenFoundInDatabase() {
-        SessionDto sessionDto = new SessionDto(1234, 4321, "Practice 1", "Practice");
-
-        when(sessionRepo.getSessionByMeetingKeyAndSessionName(1234,"Practice 1"))
-                .thenReturn(Optional.of(sessionDto));
-
-        sessionService.getSessionByMeetingKeyAndSessionName(1234,SessionName.PRACTICE1);
-
-        verify(sessionRepo, never()).save(any());
-    }
-
-    @Test
-    void getSessionByMeetingKeyAndSessionName_throwsException_ifSessionIsNotFound() {
-        when(sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1"))
-                .thenReturn(Optional.empty());
-
-        when(sessionClient.getSessionByMeetingKeyAndsessionName(1256, "Practice 1"))
-                .thenReturn(Optional.empty());
-
-        assertThatThrownBy(() ->
-                sessionService.getSessionByMeetingKeyAndSessionName(1256, SessionName.PRACTICE1))
-                .isInstanceOf(SessionNotFoundException.class)
-                .hasMessageContaining("Session not found");
-    }
-
-    @Test
-    void databaseIsQueriedBeforeApi() {
-        when(sessionRepo.getSessionByMeetingKeyAndSessionName(anyInt(), anyString()))
-                .thenReturn(Optional.empty());
-        when(sessionClient.getSessionByMeetingKeyAndsessionName(anyInt(), anyString()))
-                .thenReturn(Optional.of(new SessionDto(1234,4321,"Race", "Race")));
-
-        sessionService.getSessionByMeetingKeyAndSessionName(1234, SessionName.RACE);
-
-        InOrder inOrder = inOrder(sessionRepo, sessionClient);
-        inOrder.verify(sessionRepo).getSessionByMeetingKeyAndSessionName(anyInt(), anyString());
-        inOrder.verify(sessionClient).getSessionByMeetingKeyAndsessionName(anyInt(), anyString());
+            InOrder inOrder = inOrder(sessionRepo, sessionClient);
+            inOrder.verify(sessionRepo).getSessionByMeetingKeyAndSessionName(anyInt(), anyString());
+            inOrder.verify(sessionClient).getSessionByMeetingKeyAndsessionName(anyInt(), anyString());
+        }
     }
 }

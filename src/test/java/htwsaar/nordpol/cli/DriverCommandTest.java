@@ -5,6 +5,8 @@ import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.exception.DriverNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
@@ -26,7 +28,7 @@ public class DriverCommandTest {
     private static final int BUSINESS_LOGIC_ERROR = 1;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         mockDriverService = mock(DriverService.class);
 
         outputStream = new ByteArrayOutputStream();
@@ -37,92 +39,102 @@ public class DriverCommandTest {
     }
 
     @AfterEach
-    void tearDown(){
+    void tearDown() {
         System.setOut(System.out);
         System.setErr(System.err);
     }
 
-    @Test
-    void driverInfo_printsFormattedDriver(){
-        when(mockDriverService.getDriverByNameAndYear("Max", "Verstappen", Year.now().getValue()))
-                .thenReturn(new Driver("Max", "Verstappen", 1, "NED"));
+    @Nested
+    @DisplayName("Success Scenarios")
+    class SuccessScenarios {
 
-        int exitCode = new CommandLine(
-                new DriverCommand(mockDriverService)
-        ).execute("-fn", "Max", "-ln", "Verstappen");
+        @Test
+        void printsFormattedDriver() {
+            when(mockDriverService.getDriverByNameAndYear("Max", "Verstappen", Year.now().getValue()))
+                    .thenReturn(new Driver("Max", "Verstappen", 1, "NED"));
 
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString())
-                .contains("Verstappen");
+            int exitCode = new CommandLine(
+                    new DriverCommand(mockDriverService)
+            ).execute("-fn", "Max", "-ln", "Verstappen");
+
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString())
+                    .contains("Verstappen");
+        }
+
+        @Test
+        void shortAndLongOptions_work() {
+            when(mockDriverService.getDriverByNameAndYear("Max", "Verstappen", 2024))
+                    .thenReturn(new Driver("Max", "Verstappen", 1, "NED"));
+
+            int exitCode = new CommandLine(new DriverCommand(mockDriverService))
+                    .execute("--first-name", "Max", "--last-name", "Verstappen", "--year", "2024");
+
+            assertThat(exitCode).isZero();
+        }
+
+        @Test
+        void helpOption_printsUsage() {
+            int exitCode = new CommandLine(
+                    new DriverCommand(mockDriverService)
+            ).execute("--help");
+
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString()).contains("driver");
+        }
     }
 
-    @Test
-    void missingLastName_causesError(){
-        int exitCode = new CommandLine(
-                new DriverCommand(mockDriverService)
-        ).execute("-fn", "Max");
+    @Nested
+    @DisplayName("Error Scenarios")
+    class ErrorScenarios {
 
-        assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
-        assertThat(errorStream.toString())
-                .contains("Missing required option")
-                .contains("--last-name");
-    }
+        @Test
+        void missingLastName_causesError() {
+            int exitCode = new CommandLine(
+                    new DriverCommand(mockDriverService)
+            ).execute("-fn", "Max");
 
-    @Test
-    void noArguments_printsUsageError(){
-        int exitCode = new CommandLine(
-                new DriverCommand(mockDriverService)
-        ).execute();
+            assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
+            assertThat(errorStream.toString())
+                    .contains("Missing required option")
+                    .contains("--last-name");
+        }
 
-        assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
-    }
+        @Test
+        void noArguments_printsUsageError() {
+            int exitCode = new CommandLine(
+                    new DriverCommand(mockDriverService)
+            ).execute();
 
-    @Test
-    void unknownDriver_printsMessage() {
-        when(mockDriverService.getDriverByNameAndYear("Foo", "Bar", 2024))
-                .thenThrow(new DriverNotFoundException("Foo", "Bar", 2024));
+            assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
+        }
 
-        int exitCode = new CommandLine(
-                new DriverCommand(mockDriverService)
-        ).execute("-fn", "Foo", "-ln", "Bar", "-y", "2024");
+        @Test
+        void unknownDriver_printsMessage() {
+            when(mockDriverService.getDriverByNameAndYear("Foo", "Bar", 2024))
+                    .thenThrow(new DriverNotFoundException("Foo", "Bar", 2024));
 
-        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
-        assertThat(errorStream.toString())
-                .contains("not found");
-    }
+            int exitCode = new CommandLine(
+                    new DriverCommand(mockDriverService)
+            ).execute("-fn", "Foo", "-ln", "Bar", "-y", "2024");
 
-    @Test
-    void helpOption_printsUsage() {
-        int exitCode = new CommandLine(
-                new DriverCommand(mockDriverService)
-        ).execute("--help");
+            assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+            assertThat(errorStream.toString())
+                    .contains("not found");
+        }
 
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("driver");
-    }
+        @Test
+        void invalidYear_printsErrorMessage() {
+            when(mockDriverService.getDriverByNameAndYear("Max", "Verstappen", 1899))
+                    .thenThrow(new IllegalArgumentException("No data for year: 1899"));
 
-    @Test
-    void shortAndLongOptions_work() {
-        when(mockDriverService.getDriverByNameAndYear("Max", "Verstappen", 2024))
-                .thenReturn(new Driver("Max", "Verstappen", 1, "NED"));
+            int exitCode = new CommandLine(
+                    new DriverCommand(mockDriverService)
+            ).execute("-fn", "Max", "-ln", "Verstappen", "-s", "1899");
 
-        int exitCode = new CommandLine(new DriverCommand(mockDriverService))
-                .execute("--first-name", "Max", "--last-name", "Verstappen", "--year", "2024");
-
-        assertThat(exitCode).isZero();
-    }
-
-    @Test
-    void invalidYear_printsErrorMessage() {
-        when(mockDriverService.getDriverByNameAndYear("Max", "Verstappen", 1899))
-                .thenThrow(new IllegalArgumentException("No data for year: 1899"));
-
-        int exitCode = new CommandLine(
-                new DriverCommand(mockDriverService)
-        ).execute("-fn", "Max", "-ln", "Verstappen", "-s", "1899");
-
-        assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
-        assertThat(errorStream.toString())
-                .contains("1899");
+            assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
+            assertThat(errorStream.toString())
+                    .contains("1899");
+        }
     }
 }

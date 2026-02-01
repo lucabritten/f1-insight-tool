@@ -1,10 +1,13 @@
 package htwsaar.nordpol.api.baseclient;
+
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -48,23 +51,27 @@ class BaseClientTest {
         mockWebServer.close();
     }
 
-    @Test
-    void fetchList_returnsList() {
-        String json = """
-                [
-                    { "value": "A" },
-                    { "value": "B" }
-                ]
-                """;
+    @Nested
+    @DisplayName("fetchList")
+    class FetchList {
 
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(json)
-                .setResponseCode(200)
-        );
+        @Test
+        void returnsList() {
+            String json = """
+                    [
+                        { "value": "A" },
+                        { "value": "B" }
+                    ]
+                    """;
 
-        List<TestDto> result =
-                baseClient.fetchListTest(OpenF1Endpoint.TEST, Map.of("key", "value"), TestDto[].class);
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "application/json")
+                    .setBody(json)
+                    .setResponseCode(200)
+            );
+
+            List<TestDto> result =
+                    baseClient.fetchListTest(OpenF1Endpoint.TEST, Map.of("key", "value"), TestDto[].class);
 
         assertThat(result)
                 .isNotNull()
@@ -74,107 +81,123 @@ class BaseClientTest {
         assertThat(result.get(1).value()).isEqualTo("B");
     }
 
-    @Test
-    void fetchSingle_returnsElement() {
-        String json = """
+        @Test
+        void returnsEmptyList_whenHttpStatusIsNotSuccessful() {
+            mockWebServer.enqueue(new MockResponse()
+                    .setResponseCode(500)
+            );
+
+            List<TestDto> result =
+                    baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class);
+
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("fetchSingle")
+    class FetchSingle {
+
+        @Test
+        void returnsElement() {
+            String json = """
+                    [
+                        { "value": "A" }
+                    ]
+                    """;
+
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "application/json")
+                    .setBody(json)
+                    .setResponseCode(200)
+            );
+
+            Optional<TestDto> result =
+                    baseClient.fetchSingleTest(OpenF1Endpoint.TEST, null, TestDto[].class);
+
+            assertThat(result).isPresent();
+            assertThat(result.get().value()).isEqualTo("A");
+        }
+
+        @Test
+        void returnsEmptyOptional_whenResponseIsEmpty() {
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "application/json")
+                    .setBody("[]")
+                    .setResponseCode(200)
+            );
+
+            Optional<TestDto> result =
+                    baseClient.fetchSingleTest(OpenF1Endpoint.TEST, null, TestDto[].class);
+
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("Error Handling")
+    class ErrorHandling {
+
+        @Test
+        void throwsException_whenJsonIsInvalid() {
+            mockWebServer.enqueue(new MockResponse()
+                    .setBody("{invalid")
+                    .setResponseCode(200)
+            );
+
+            assertThatThrownBy(() ->
+                    baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class)
+            ).isInstanceOf(RuntimeException.class);
+        }
+
+        @Test
+        void throwsRuntimeException_whenConnectionFails() throws IOException {
+            mockWebServer.shutdown();
+
+            assertThatThrownBy(() ->
+                    baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class)
+            )
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("Failed to fetch data from OpenF1 API");
+        }
+    }
+
+    @Nested
+    @DisplayName("Rate Limiting")
+    class RateLimiting {
+
+        @Test
+        void retriesOnce_whenRateLimitedWith429() throws InterruptedException {
+            String json = """
                 [
                     { "value": "A" }
                 ]
                 """;
 
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody(json)
-                .setResponseCode(200)
-        );
+            mockWebServer.enqueue(new MockResponse()
+                    .setResponseCode(429)
+                    .setBody("Rate limit")
+            );
 
-        Optional<TestDto> result =
-                baseClient.fetchSingleTest(OpenF1Endpoint.TEST, null, TestDto[].class);
+            mockWebServer.enqueue(new MockResponse()
+                    .setResponseCode(200)
+                    .addHeader("Content-Type", "application/json")
+                    .setBody(json)
+            );
 
-        assertThat(result).isPresent();
-        assertThat(result.get().value()).isEqualTo("A");
-    }
+            List<TestDto> result =
+                    baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class);
 
-    @Test
-    void fetchSingle_returnsEmptyOptional_whenResponseIsEmpty() {
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setBody("[]")
-                .setResponseCode(200)
-        );
+            assertThat(result).hasSize(1);
+            assertThat(result.getFirst().value()).isEqualTo("A");
 
-        Optional<TestDto> result =
-                baseClient.fetchSingleTest(OpenF1Endpoint.TEST, null, TestDto[].class);
+            assertThat(mockWebServer.getRequestCount()).isEqualTo(2);
 
-        assertThat(result).isEmpty();
-    }
+            var firstRequest = mockWebServer.takeRequest();
+            var secondRequest = mockWebServer.takeRequest();
 
-    @Test
-    void fetchList_returnsEmptyList_whenHttpStatusIsNotSuccessful() {
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(500)
-        );
-
-        List<TestDto> result =
-                baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class);
-
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void fetchList_throwsException_whenJsonIsInvalid() {
-        mockWebServer.enqueue(new MockResponse()
-                .setBody("{invalid")
-                .setResponseCode(200)
-        );
-
-        assertThatThrownBy(() ->
-                baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class)
-        ).isInstanceOf(RuntimeException.class);
-    }
-
-    @Test
-    void fetchList_throwsRuntimeException_whenConnectionFails() throws IOException {
-        mockWebServer.shutdown();
-
-        assertThatThrownBy(() ->
-                baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class)
-        )
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Failed to fetch data from OpenF1 API");
-    }
-
-    @Test
-    void fetchList_retriesOnce_whenRateLimitedWith429() throws InterruptedException {
-        String json = """
-            [
-                { "value": "A" }
-            ]
-            """;
-
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(429)
-                .setBody("Rate limit")
-        );
-
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .addHeader("Content-Type", "application/json")
-                .setBody(json)
-        );
-
-        List<TestDto> result =
-                baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class);
-
-        assertThat(result).hasSize(1);
-        assertThat(result.getFirst().value()).isEqualTo("A");
-
-        assertThat(mockWebServer.getRequestCount()).isEqualTo(2);
-
-        var firstRequest = mockWebServer.takeRequest();
-        var secondRequest = mockWebServer.takeRequest();
-
-        assertThat(firstRequest.getPath()).isEqualTo("/v1/test");
-        assertThat(secondRequest.getPath()).isEqualTo("/v1/test");
+            assertThat(firstRequest.getPath()).isEqualTo("/v1/test");
+            assertThat(secondRequest.getPath()).isEqualTo("/v1/test");
+        }
     }
 }
