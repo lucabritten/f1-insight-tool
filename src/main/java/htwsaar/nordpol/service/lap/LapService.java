@@ -66,6 +66,9 @@ public class LapService implements ILapService {
         );
     }
 
+    /**
+     * Retrieves laps from cache or fetches them from the OpenF1 API and persists them.
+     */
     @Override
     public List<Lap> getLapsBySessionKeyAndDriverNumber(int sessionKey, int driverNumber) {
 
@@ -116,7 +119,6 @@ public class LapService implements ILapService {
                 .toList();
     }
 
-    //Übergangslösung mit der driver list
     @Override
     public FastestLapsWithContext getFastestLapByLocationYearSessionNameAndDriverNumber(String location, int year, SessionName sessionName, int driverNumber, int count){
         Meeting meeting = meetingService.getMeetingByYearAndLocation(year, location);
@@ -127,10 +129,9 @@ public class LapService implements ILapService {
 
         List<Lap> fastestLaps = getFastestLapBySessionKeyAndDriverNumber(sessionKey, driverNumber, count);
 
-        Driver driver = driverService.getDriverByNumberAndYear(driverNumber, year);
-
-        List<Driver> drivers = new ArrayList<>();
-        fastestLaps.forEach(lap -> drivers.add(driver));
+        List<Driver> drivers = fastestLaps.stream()
+                .map(lap -> driverService.getDriverByNumberAndYear(lap.driverNumber(), year))
+                .toList();
 
         return new FastestLapsWithContext(meeting.meetingName(),
                 session.sessionName(),
@@ -154,19 +155,6 @@ public class LapService implements ILapService {
                 .filter(l -> !l.isPitOutLap())
                 .sorted(Comparator.comparingDouble(Lap::lapDuration))
                 .limit(count)
-                .toList();
-    }
-
-    private List<Lap> filterTopNLaps(List<Lap> laps, int topN) {
-        if (laps == null || laps.isEmpty()) {
-            return List.of();
-        }
-
-        return laps.stream()
-                .filter(l -> l.lapDuration() > 0)
-                .filter(l -> !l.isPitOutLap())
-                .sorted(Comparator.comparingDouble(Lap::lapDuration))
-                .limit(topN)
                 .toList();
     }
 }
