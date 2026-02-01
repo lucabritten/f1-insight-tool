@@ -1,6 +1,8 @@
 package htwsaar.nordpol.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -15,6 +17,8 @@ public abstract class BaseClient {
     protected final ObjectMapper objectMapper = new ObjectMapper();
     protected final String baseUrl;
 
+    private static final Logger log = LoggerFactory.getLogger(BaseClient.class);
+
     protected BaseClient(String baseUrl){
         this.baseUrl = baseUrl;
         this.okHttpClient = new OkHttpClient().newBuilder()
@@ -26,13 +30,12 @@ public abstract class BaseClient {
                     Request request = chain.request();
                     Response response = chain.proceed(request);
 
-                    // 429 is how the api indicates a rate limit error
                     if (!response.isSuccessful() && response.code() == 429) {
-                        System.err.println("Rate limit hit: " + response.message());
-                        response.close(); // Close the failed response
+                        log.warn("Rate limit hit: {}", response.message());
+                        response.close();
 
                         try {
-                            System.out.println("Waiting 1 second before retry...");
+                            log.info("Waiting 1 second before retry...");
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
@@ -58,7 +61,7 @@ public abstract class BaseClient {
 
         String url = buildUrl(endpoint.path(), queryParameter);
 
-        System.out.println(url);
+        log.info("URL: {}", url);
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -66,8 +69,7 @@ public abstract class BaseClient {
         try (Response response = okHttpClient.newCall(request).execute()) {
             String bodyString = response.body() != null ? response.body().string() : "";
             if (!response.isSuccessful()) {
-                System.out.println("OpenF1 request failed: " + response.code() + " " + response.message()
-                        + " body=" + bodyString);
+                log.error("OpenF1 request failed: {} {} body={}",response.code(), response.message(), bodyString);
                 return List.of();
             }
 
