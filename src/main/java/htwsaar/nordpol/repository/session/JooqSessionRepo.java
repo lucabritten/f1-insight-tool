@@ -47,12 +47,12 @@ public class JooqSessionRepo implements ISessionRepo{
 
     @Override
     public Optional<SessionDto> getSessionByMeetingKeyAndSessionName(int meetingKey, String sessionName) {
-        var record = create.select(SESSIONS.MEETING_KEY, SESSIONS.SESSION_KEY, SESSIONS.SESSION_NAME, SESSIONS.SESSION_TYPE)
+        var result = create.select(SESSIONS.MEETING_KEY, SESSIONS.SESSION_KEY, SESSIONS.SESSION_NAME, SESSIONS.SESSION_TYPE)
                 .from(SESSIONS)
                 .where(SESSIONS.MEETING_KEY.eq(meetingKey)
                         .and(SESSIONS.SESSION_NAME.eq(sessionName)))
                 .fetchOneInto(SessionDto.class);
 
-        return Optional.ofNullable(record);
+        return Optional.ofNullable(result);
     }
 }

@@ -73,7 +73,7 @@ public class JooqMeetingRepo implements IMeetingRepo {
 
     @Override
     public Optional<MeetingDto> getMeetingByYearAndLocation(int year, String location) {
-        var record = create.select(
+        var result = create.select(
                         MEETINGS.COUNTRY_CODE,
                         MEETINGS.COUNTRY_NAME,
                         MEETINGS.LOCATION,
@@ -85,7 +85,7 @@ public class JooqMeetingRepo implements IMeetingRepo {
                         .and(MEETINGS.LOCATION.eq(location)))
                 .fetchOneInto(MeetingDto.class);
 
-        return Optional.ofNullable(record);
+        return Optional.ofNullable(result);
     }
 
     @Override

@@ -22,7 +22,7 @@ public class WeatherRepoTest {
 
     private Connection connection;
     private DSLContext create;
-    private IWeatherRepo IWeatherRepo;
+    private IWeatherRepo weatherRepo;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -42,7 +42,7 @@ public class WeatherRepoTest {
                                      );
         """);
 
-        IWeatherRepo = new JooqWeatherRepo(create);
+        weatherRepo = new JooqWeatherRepo(create);
     }
 
     @AfterEach
@@ -56,10 +56,10 @@ public class WeatherRepoTest {
     void saveWeather_persistsMeeting() {
         WeatherDto weatherData = new WeatherDto(1256, 1234, 21.00,12.47,30, 20.24, 44.00, 20.00);
 
-        IWeatherRepo.save(weatherData);
+        weatherRepo.save(weatherData);
 
         Optional<WeatherDto> stored =
-                IWeatherRepo.getWeatherDataByMeetingKeyAndSessionKey(1234, 1256);
+                weatherRepo.getWeatherDataByMeetingKeyAndSessionKey(1234, 1256);
 
         assertThat(stored).isPresent();
 
@@ -77,7 +77,7 @@ public class WeatherRepoTest {
     @Test
     void getWeatherDataByMeetingKeyAndSessionKey_returnsEmptyOptional_whenMissing() {
         Optional<WeatherDto> stored =
-                IWeatherRepo.getWeatherDataByMeetingKeyAndSessionKey(1234, 1256);
+                weatherRepo.getWeatherDataByMeetingKeyAndSessionKey(1234, 1256);
         assertThat(stored).isEmpty();
     }
     @Test
@@ -85,18 +85,18 @@ public class WeatherRepoTest {
         WeatherDto dto =
                 new WeatherDto(1256, 1234, 21.0, 12.0, 1, 20.0, 44.0, 20.0);
 
-        IWeatherRepo.save(dto);
+        weatherRepo.save(dto);
 
-        assertThatThrownBy(() -> IWeatherRepo.save(dto))
+        assertThatThrownBy(() -> weatherRepo.save(dto))
                 .isInstanceOf(Exception.class);
     }
     @Test
     void getWeather_returnsCorrectRow_whenMultipleExist() {
-        IWeatherRepo.save(new WeatherDto(1, 100, 10, 10, 0, 10, 10, 10));
-        IWeatherRepo.save(new WeatherDto(2, 200, 20, 20, 1, 20, 20, 20));
+        weatherRepo.save(new WeatherDto(1, 100, 10, 10, 0, 10, 10, 10));
+        weatherRepo.save(new WeatherDto(2, 200, 20, 20, 1, 20, 20, 20));
 
         Optional<WeatherDto> stored =
-                IWeatherRepo.getWeatherDataByMeetingKeyAndSessionKey(200, 2);
+                weatherRepo.getWeatherDataByMeetingKeyAndSessionKey(200, 2);
 
         assertThat(stored).isPresent();
         assertThat(stored.get().meeting_key()).isEqualTo(200);

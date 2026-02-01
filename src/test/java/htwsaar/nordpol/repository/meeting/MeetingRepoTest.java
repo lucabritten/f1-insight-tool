@@ -19,7 +19,7 @@ public class MeetingRepoTest {
 
     private Connection connection;
     private DSLContext create;
-    private IMeetingRepo IMeetingRepo;
+    private IMeetingRepo meetingRepo;
 
 
     @BeforeEach
@@ -37,7 +37,7 @@ public class MeetingRepoTest {
                 );
                 """);
 
-                IMeetingRepo = new JooqMeetingRepo(create);
+                meetingRepo = new JooqMeetingRepo(create);
     }
 
     @AfterEach
@@ -53,10 +53,10 @@ public class MeetingRepoTest {
                 new MeetingDto(
                         "USA", "United States", "Austin", 1247, "United States Grand Prix", 2024);
 
-        IMeetingRepo.save(meetingData);
+        meetingRepo.save(meetingData);
 
         Optional<MeetingDto> stored =
-                IMeetingRepo.getMeetingByYearAndLocation(2024, "Austin");
+                meetingRepo.getMeetingByYearAndLocation(2024, "Austin");
 
         assertThat(stored).isPresent();
 
@@ -74,7 +74,7 @@ public class MeetingRepoTest {
     void saveMeeting_throwsException_whenLocationIsNull(){
         MeetingDto meetingDto = new MeetingDto("USA", "United States", null, 1247, "United States Grand Prix", 2024);
 
-        assertThatThrownBy(() -> IMeetingRepo.save(meetingDto))
+        assertThatThrownBy(() -> meetingRepo.save(meetingDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -82,7 +82,7 @@ public class MeetingRepoTest {
     void saveMeeting_throwsException_whenCountryCodeIsNull(){
         MeetingDto meetingDto = new MeetingDto(null, "United States", "Austin", 1247, "United States Grand Prix", 2024);
 
-        assertThatThrownBy(() -> IMeetingRepo.save(meetingDto))
+        assertThatThrownBy(() -> meetingRepo.save(meetingDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -90,7 +90,7 @@ public class MeetingRepoTest {
     void saveMeeting_throwsException_whenCountryNameIsNull(){
         MeetingDto meetingDto = new MeetingDto("USA", null, "Austin", 1247, "United States Grand Prix", 2024);
 
-        assertThatThrownBy(() -> IMeetingRepo.save(meetingDto))
+        assertThatThrownBy(() -> meetingRepo.save(meetingDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -99,7 +99,7 @@ public class MeetingRepoTest {
     void saveMeeting_throwsException_whenMeetingKeyIsNegative(){
         MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", -1, "United States Grand Prix", 2024);
 
-        assertThatThrownBy(() -> IMeetingRepo.save(meetingDto))
+        assertThatThrownBy(() -> meetingRepo.save(meetingDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -107,7 +107,7 @@ public class MeetingRepoTest {
     void saveMeeting_throwsException_whenMeetingNameIsNull(){
         MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", 1247, null, 2024);
 
-        assertThatThrownBy(() -> IMeetingRepo.save(meetingDto))
+        assertThatThrownBy(() -> meetingRepo.save(meetingDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -115,7 +115,7 @@ public class MeetingRepoTest {
     void saveMeeting_throwsException_whenYearIsNegative(){
         MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", 1247, "United States Grand Prix", -1);
 
-        assertThatThrownBy(() -> IMeetingRepo.save(meetingDto))
+        assertThatThrownBy(() -> meetingRepo.save(meetingDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

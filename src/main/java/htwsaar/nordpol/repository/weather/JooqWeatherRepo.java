@@ -42,12 +42,12 @@ public class JooqWeatherRepo implements IWeatherRepo{
 
     @Override
     public Optional<WeatherDto> getWeatherDataByMeetingKeyAndSessionKey(int meetingKey, int sessionKey) {
-        var record = create.select(asterisk())
+        var result = create.select(asterisk())
                 .from(WEATHER)
                 .where(WEATHER.MEETING_KEY.eq(meetingKey)
                         .and(WEATHER.SESSION_KEY.eq(sessionKey)))
                 .fetchOneInto(WeatherDto.class);
 
-        return Optional.ofNullable(record);
+        return Optional.ofNullable(result);
     }
 }

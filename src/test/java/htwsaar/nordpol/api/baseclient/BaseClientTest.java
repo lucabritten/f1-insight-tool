@@ -66,9 +66,10 @@ class BaseClientTest {
         List<TestDto> result =
                 baseClient.fetchListTest(OpenF1Endpoint.TEST, Map.of("key", "value"), TestDto[].class);
 
-        assertThat(result).isNotNull();
-        assertThat(result).isNotEmpty();
-        assertThat(result.size()).isEqualTo(2);
+        assertThat(result)
+                .isNotNull()
+                .isNotEmpty();
+        assertThat(result).hasSize(2);
         assertThat(result.get(0).value()).isEqualTo("A");
         assertThat(result.get(1).value()).isEqualTo("B");
     }

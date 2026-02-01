@@ -66,16 +66,16 @@ public class WeatherClientTest {
         List<WeatherDto> result =
                 weatherClient.getWeatherDataByMeetingKeyAndSessionKey(1247, 9001);
 
-        assertThat(result).isNotEmpty();
-
-        assertThat(result).hasSize(2);
+        assertThat(result)
+                .isNotEmpty()
+                .hasSize(2);
 
         WeatherDto first = result.getFirst();
         assertThat(first.meeting_key()).isEqualTo(1247);
         assertThat(first.session_key()).isEqualTo(9001);
         assertThat(first.air_temperature()).isEqualTo(27.5);
         assertThat(first.humidity()).isEqualTo(52.0);
-        assertThat(first.rainfall()).isEqualTo(0);
+        assertThat(first.rainfall()).isZero();
         assertThat(first.track_temperature()).isEqualTo(39.1);
         assertThat(first.wind_direction()).isEqualTo(180.0);
         assertThat(first.wind_speed()).isEqualTo(3.4);

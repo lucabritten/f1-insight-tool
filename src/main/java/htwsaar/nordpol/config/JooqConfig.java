@@ -100,7 +100,7 @@ public class JooqConfig {
 
     private static Set<String> extractTableNames(String schemaSql) {
         Set<String> tableNames = new HashSet<>();
-        Pattern pattern = Pattern.compile("(?i)create\\s+table\\s+\\\"?([A-Za-z0-9_]+)\\\"?");
+        Pattern pattern = Pattern.compile("(?i)create\\s+table\\s+\"?(\\w+)\"?");
         Matcher matcher = pattern.matcher(schemaSql);
         while (matcher.find()) {
             tableNames.add(matcher.group(1));

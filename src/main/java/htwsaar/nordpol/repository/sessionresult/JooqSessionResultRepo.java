@@ -38,23 +38,23 @@ public class JooqSessionResultRepo implements ISessionResultRepo {
             )
             .from(SESSION_RESULTS)
             .where(SESSION_RESULTS.SESSION_KEY.eq(sessionKey))
-            .fetch(record -> new SessionResultDto(
-                record.get(SESSION_RESULTS.SESSION_KEY),
+            .fetch(result -> new SessionResultDto(
+                result.get(SESSION_RESULTS.SESSION_KEY),
                 Stream.of(
-                    record.get(SESSION_RESULTS.GAP_TO_LEADER_Q1),
-                    record.get(SESSION_RESULTS.GAP_TO_LEADER_Q2),
-                    record.get(SESSION_RESULTS.GAP_TO_LEADER_Q3)
+                    result.get(SESSION_RESULTS.GAP_TO_LEADER_Q1),
+                    result.get(SESSION_RESULTS.GAP_TO_LEADER_Q2),
+                    result.get(SESSION_RESULTS.GAP_TO_LEADER_Q3)
                 ).toList(),
-                record.get(SESSION_RESULTS.DRIVER_NUMBER),
-                record.get(SESSION_RESULTS.DNF) == 1,
-                record.get(SESSION_RESULTS.DNS) == 1,
-                record.get(SESSION_RESULTS.DSQ) == 1,
+                result.get(SESSION_RESULTS.DRIVER_NUMBER),
+                result.get(SESSION_RESULTS.DNF) == 1,
+                result.get(SESSION_RESULTS.DNS) == 1,
+                result.get(SESSION_RESULTS.DSQ) == 1,
                 Stream.of(
-                    record.get(SESSION_RESULTS.DURATION_Q1),
-                    record.get(SESSION_RESULTS.DURATION_Q2),
-                    record.get(SESSION_RESULTS.DURATION_Q3)
+                    result.get(SESSION_RESULTS.DURATION_Q1),
+                    result.get(SESSION_RESULTS.DURATION_Q2),
+                    result.get(SESSION_RESULTS.DURATION_Q3)
                 ).toList(),
-                record.get(SESSION_RESULTS.POSITION)
+                result.get(SESSION_RESULTS.POSITION)
             ));
     }
 

@@ -105,7 +105,7 @@ public class LapRepoTest {
 
         List<LapDto> stored = lapRepo.getLapsBySessionKeyAndDriverNumber(1011, 33);
 
-        assertThat(stored.size()).isEqualTo(3);
+        assertThat(stored).hasSize(3);
         assertThat(stored.getFirst().driver_number()).isEqualTo(33);
         assertThat(stored.getFirst().session_key()).isEqualTo(1011);
         assertThat(stored.getFirst().lap_number()).isEqualTo(1);

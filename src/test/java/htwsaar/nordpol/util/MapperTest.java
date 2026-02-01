@@ -60,7 +60,7 @@ public class MapperTest {
         assertThat(weather.meetingKey()).isEqualTo(1256);
         assertThat(weather.avgAirTemperature()).isEqualTo(21.0);
         assertThat(weather.avgHumidity()).isEqualTo(12.0);
-        assertThat(weather.isRainfall()).isEqualTo(true);
+        assertThat(weather.isRainfall()).isTrue();
         assertThat(weather.avgTrackTemperature()).isEqualTo(20.0);
         assertThat(weather.avgWindDirection()).isEqualTo(44.0);
         assertThat(weather.avgWindSpeed()).isEqualTo(20.0);
@@ -80,7 +80,7 @@ public class MapperTest {
         assertThat(lap.durationSector2()).isEqualTo(29.8);
         assertThat(lap.durationSector3()).isEqualTo(31.2);
         assertThat(lap.lapDuration()).isEqualTo(91.1);
-        assertThat(lap.isPitOutLap()).isEqualTo(false);
+        assertThat(lap.isPitOutLap()).isFalse();
     }
 
     /*

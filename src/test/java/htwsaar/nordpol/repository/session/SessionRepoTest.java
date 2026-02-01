@@ -19,7 +19,7 @@ public class SessionRepoTest {
 
     private Connection connection;
     private DSLContext create;
-    private ISessionRepo ISessionRepo;
+    private ISessionRepo sessionRepo;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -50,7 +50,7 @@ public class SessionRepoTest {
             values (1256, 'Japan', 'JPN', 'Suzuka', 'Japanese Grand Prix', 2025);
         """);
 
-        ISessionRepo = new JooqSessionRepo(create);
+        sessionRepo = new JooqSessionRepo(create);
     }
 
     @AfterEach
@@ -65,10 +65,10 @@ public class SessionRepoTest {
         SessionDto sessionData =
                 new SessionDto(1256, 9999, "Practice 1", "Practice");
 
-        ISessionRepo.save(sessionData);
+        sessionRepo.save(sessionData);
 
         Optional<SessionDto> stored =
-                ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1");
+                sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Practice 1");
 
         assertThat(stored).isPresent();
 
@@ -83,7 +83,7 @@ public class SessionRepoTest {
     @Test
     void getSessionByMeetingKeyAndsessionName_returnsEmptyWhenMissing() {
         Optional<SessionDto> stored =
-                ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Race");
+                sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Race");
 
         assertThat(stored).isEmpty();
     }
@@ -95,11 +95,11 @@ public class SessionRepoTest {
         SessionDto race =
                 new SessionDto(1256, 10006, "Race", "Race");
 
-        ISessionRepo.save(practice);
-        ISessionRepo.save(race);
+        sessionRepo.save(practice);
+        sessionRepo.save(race);
 
         Optional<SessionDto> stored =
-                ISessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Race");
+                sessionRepo.getSessionByMeetingKeyAndSessionName(1256, "Race");
 
         assertThat(stored).isPresent();
 
@@ -114,7 +114,7 @@ public class SessionRepoTest {
         SessionDto sessionDto =
                 new SessionDto(-1, 9999, "Practice 1", "Practice");
 
-        assertThatThrownBy(() -> ISessionRepo.save(sessionDto))
+        assertThatThrownBy(() -> sessionRepo.save(sessionDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -123,7 +123,7 @@ public class SessionRepoTest {
         SessionDto sessionDto =
                 new SessionDto(1256, -1, "Practice 1", "Practice");
 
-        assertThatThrownBy(() -> ISessionRepo.save(sessionDto))
+        assertThatThrownBy(() -> sessionRepo.save(sessionDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -132,7 +132,7 @@ public class SessionRepoTest {
         SessionDto sessionDto =
                 new SessionDto(1256, 9999, null, "Practice");
 
-        assertThatThrownBy(() -> ISessionRepo.save(sessionDto))
+        assertThatThrownBy(() -> sessionRepo.save(sessionDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -141,7 +141,7 @@ public class SessionRepoTest {
         SessionDto sessionDto =
                 new SessionDto(1256, 9999, "Practice 1", null);
 
-        assertThatThrownBy(() -> ISessionRepo.save(sessionDto))
+        assertThatThrownBy(() -> sessionRepo.save(sessionDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
