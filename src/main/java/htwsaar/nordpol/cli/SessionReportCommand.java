@@ -4,6 +4,7 @@ import htwsaar.nordpol.cli.converter.SessionNameConverter;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionReport;
+import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.util.rendering.SessionReportRenderer;
 import htwsaar.nordpol.service.report.SessionReportService;
 import me.tongfei.progressbar.ProgressBar;
@@ -95,8 +96,8 @@ public class SessionReportCommand implements Callable<Integer> {
             renderer.render(report, outputPath);
             logger.info("Report written to: {}", outputPath.toAbsolutePath());
             return 0;
-        } catch (IllegalArgumentException e) {
-            System.err.println("Invalid input: " + e.getMessage());
+        } catch (DataNotFoundException e) {
+            System.err.println("Requested data not found: " + e.getMessage());
             System.err.println("Use --help for usage information.");
             return 2;
         } catch (Exception e) {

@@ -3,6 +3,7 @@ import htwsaar.nordpol.cli.converter.SessionNameConverter;
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
+import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.lap.LapService;
 import htwsaar.nordpol.util.formatting.CliFormatter;
 import picocli.CommandLine.Command;
@@ -65,8 +66,8 @@ public class LapCommand implements Callable<Integer> {
             String output = CliFormatter.formatLaps(lap);
             System.out.println(output);
             return 0;
-        } catch (IllegalArgumentException e) {
-            System.err.println("Invalid input: " + e.getMessage());
+        } catch (DataNotFoundException e) {
+            System.err.println("Requested data not found: " + e.getMessage());
             System.err.println("Use --help for usage information.");
             return 2;
         } catch (Exception e) {

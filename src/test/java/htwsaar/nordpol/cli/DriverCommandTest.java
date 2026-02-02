@@ -118,7 +118,7 @@ public class DriverCommandTest {
                     new DriverCommand(mockDriverService)
             ).execute("-fn", "Foo", "-ln", "Bar", "-y", "2024");
 
-            assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+            assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
             assertThat(errorStream.toString())
                     .contains("not found");
         }

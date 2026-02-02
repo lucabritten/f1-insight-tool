@@ -3,6 +3,8 @@ package htwsaar.nordpol.cli;
 
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.domain.Lap;
+import htwsaar.nordpol.domain.SessionName;
+import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.service.lap.LapService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
@@ -67,7 +69,7 @@ public class LapCommandTest {
     class SuccessScenarios {
 
         @Test
-        public void printsFormattedLaps() {
+        void printsFormattedLaps() {
             when(mockLapService.getLapsByLocationYearSessionNameAndDriverNumber("Singapore Grand Prix", 2025, RACE, 1))
                     .thenReturn(sampleLapContext);
 
@@ -80,7 +82,7 @@ public class LapCommandTest {
         }
 
         @Test
-        public void helpOption_printsUsage() {
+       void helpOption_printsUsage() {
             int exitCode = new CommandLine(
                     new LapCommand(mockLapService)
             ).execute("--help");
@@ -94,20 +96,33 @@ public class LapCommandTest {
     class ErrorScenarios {
 
         @Test
-        public void missingDriverNumber_printsErrorMessage() {
+        void missingDriverNumber_printsErrorMessage() {
             int exitCode = new CommandLine(
                     new LapCommand(mockLapService)
-            ).execute("-l", "Singapore", "-y", "2025", "-sn", "RACE");
+            ).execute("-l", "Singapore", "-y", "2025", "-s", "RACE");
 
             assertThat(exitCode).isEqualTo(2);
-            assertThat(errorStream.toString()).contains("Invalid value for option");
+            assertThat(errorStream.toString()).contains("Missing required option");
         }
 
         @Test
-        public void noArguments_printsUsageError() {
+        void noArguments_printsUsageError() {
             int exitCode = new CommandLine(
                     new LapCommand(mockLapService)
             ).execute();
+            assertThat(exitCode).isEqualTo(2);
+        }
+
+        @Test
+        void invalidParam_catchesDataNotFoundException() {
+            when(mockLapService.getLapsByLocationYearSessionNameAndDriverNumber("Saarbrücken", 2024, RACE, 1))
+                    .thenThrow(MeetingNotFoundException.class);
+
+            int exitCode = new CommandLine(
+                    new LapCommand(mockLapService)
+            ).execute("-l", "Saarbrücken", "-y", "2024", "-s", "RACE", "-d", "1");
+
+            assertThat(errorStream.toString()).contains("Use --help");
             assertThat(exitCode).isEqualTo(2);
         }
     }

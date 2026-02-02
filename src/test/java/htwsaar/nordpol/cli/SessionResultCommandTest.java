@@ -3,7 +3,9 @@ package htwsaar.nordpol.cli;
 import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionResult;
+import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.service.sessionResult.ISessionResultService;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 
+import static htwsaar.nordpol.domain.SessionName.RACE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -98,5 +101,18 @@ public class SessionResultCommandTest {
 
         verify(mockSessionResultService, times(1))
                 .getResultByLocationYearAndSessionType("Monza", 2024, SessionName.QUALIFYING);
+    }
+
+    @Test
+    void invalidParam_catchesDataNotFoundException() {
+        when(mockSessionResultService.getResultByLocationYearAndSessionType("Saarbrücken", 2024, RACE))
+                .thenThrow(MeetingNotFoundException.class);
+
+        int exitCode = new CommandLine(
+                new SessionResultCommand(mockSessionResultService)
+        ).execute("-l", "Saarbrücken", "-y", "2024", "-s", "RACE");
+
+        AssertionsForClassTypes.assertThat(errorStream.toString()).contains("Use --help");
+        AssertionsForClassTypes.assertThat(exitCode).isEqualTo(2);
     }
 }

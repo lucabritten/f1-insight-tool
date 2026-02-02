@@ -145,7 +145,7 @@ public class WeatherCommandTest {
                     new WeatherCommand(mockWeatherService)
             ).execute("-l", "Saarbrücken", "-y", "2024", "-sn", "Race");
 
-            assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
+            assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
             assertThat(errorStream.toString())
                     .contains("not found");
         }

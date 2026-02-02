@@ -1,6 +1,7 @@
 package htwsaar.nordpol.cli;
 
 import htwsaar.nordpol.domain.Driver;
+import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.config.ApplicationContext;
 
@@ -62,8 +63,8 @@ public class DriverCommand implements Callable<Integer> {
             String output = CliFormatter.formatDriver(driver);
             System.out.println(output);
             return 0;
-        } catch (IllegalArgumentException e) {
-            System.err.println("Invalid input: " + e.getMessage());
+        } catch (DataNotFoundException e) {
+            System.err.println("Requested data not found: " + e.getMessage());
             System.err.println("Use --help for usage information.");
             return 2;
         } catch (Exception e) {
