@@ -1,6 +1,6 @@
 # F1 Insight CLI Tool 🏎️
 
-A command-line tool to explore Formula 1 data such as drivers, weather, sessions and meetings. The tool queries the public OpenF1 API and can cache/query data locally via SQLite and jOOQ. Data is supported from season 2023 onwards.
+A command-line tool to explore Formula 1 data such as drivers, weather, sessions, and meetings. The tool queries the public OpenF1 API and can cache/query data locally via SQLite and jOOQ. Data is supported from season 2023 onwards.
 
 ---
 
@@ -11,6 +11,7 @@ A command-line tool to explore Formula 1 data such as drivers, weather, sessions
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Build & Run](#build--run)
 - [Usage](#usage)
   - [Global Help](#global-help)
   - [driver](#driver)
@@ -18,9 +19,11 @@ A command-line tool to explore Formula 1 data such as drivers, weather, sessions
   - [laps](#laps)
   - [fastest-laps](#fastest-laps)
   - [session-report](#session-report)
-- [Build & Run](#build--run)
+- [Exit Codes](#exit-codes)
+- [Caching Strategy](#caching-strategy)
 - [Configuration](#configuration)
 - [Data Sources](#data-sources)
+- [Limitations](#limitations)
 - [Troubleshooting](#troubleshooting)
 - [Roadmap](#roadmap)
 - [Acknowledgements](#acknowledgements)
@@ -39,7 +42,7 @@ It is built with a layered architecture and a clean separation between CLI, serv
 - Driver lookup by first and last name for a specific year
 - Weather aggregation by location, year and session name (e.g., Race, Qualifying)
 - Fastest lap lookup by location, year, session, with optional driver filter
-- PDF session reports with weather, results, and lap time comparisons
+- PDF session reports with weather, results, and lap time comparisons graphic
 - Local persistence via SQLite, with jOOQ for type-safe data access
 - Simple, consistent CLI UX with Picocli
 - Tested with JUnit 5 and AssertJ
@@ -47,8 +50,8 @@ It is built with a layered architecture and a clean separation between CLI, serv
 ## Architecture
 High-level components:
 - `F1CLI` – root command that wires subcommands
-- `DriverCommand`, `WeatherCommand` and `LapCommand` – CLI entry points (Picocli)
-- `DriverService`, `WeatherService`, ... – domain/business logic
+- `*Command` – CLI entry points (Picocli)
+- `*Service`, ... – domain/business logic
 - `Jooq*Repo` – repositories using jOOQ over SQLite
 - `*Client` – HTTP clients integrating with OpenF1
 
@@ -75,6 +78,12 @@ Or build a shaded JAR and run it:
 mvn clean package
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar driver-info --first-name Max --last-name Verstappen --year 2024
 ```
+
+## Build & Run
+- Build with tests: `mvn clean verify`
+- Build without tests: `mvn -DskipTests clean package`
+- Run via Maven Exec Plugin: `mvn -q exec:java -Dexec.args="<args>"`
+- Run shaded JAR: `java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar <args>`
 
 ## Usage
 ### Global Help
@@ -137,7 +146,7 @@ Options:
 - `--session-name, -s`(required): session name (e.g., `Race`, PRACTICE1)
 - `--driver-number, -d` (optional): driver number to filter by
 - `--limit, -lim` (optional): limit to the first N laps (default: 1),
-Examples:
+  Examples:
 ```bash
 mvn -q exec:java -Dexec.args="fastest-laps -l Austin -y 2025 -s Qualifying"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar fastest-laps -l Austin -s Race -d 81 --limit 3
@@ -161,12 +170,21 @@ java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar session-report -l Monza -y 202
 Preview of a possible report (related cmd: `session-report -lim 3  -l Monza -s race -y 2025`):
 <img width="1514" height="1256" alt="image" src="https://github.com/user-attachments/assets/798523c2-1485-4818-85fa-7c4efce8201a" />
 
+## Exit Codes
 
-## Build & Run
-- Build with tests: `mvn clean verify`
-- Build without tests: `mvn -DskipTests clean package`
-- Run via Maven Exec Plugin: `mvn -q exec:java -Dexec.args="<args>"`
-- Run shaded JAR: `java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar <args>`
+The CLI uses standard Unix exit codes:
+
+- `0` - successful execution
+- `1` - invalid command usage or invalid parameters
+- `2` - no data found for the given criteria
+
+## Caching Strategy
+To reduce API calls and improve performance, the application caches data locally
+using a SQLite database.
+
+- On each request, the local database is queried first
+- If no data is found, the OpenF1 API is queried
+- Retrieved data is persisted and reused for later requests
 
 ## Configuration
 - Network: API calls go to the public OpenF1 API; no API key is required.
@@ -181,6 +199,10 @@ Project packages of interest:
 - Services: `htwsaar.nordpol.service`
 - Repositories: `htwsaar.nordpol.repository.*`
 - API Clients & DTOs: `htwsaar.nordpol.api.*`
+
+## Limitations
+- Data is available from season 2023 onwards only
+- The tool relies on the public OpenF1 API and is subject to its rate limits.
 
 ## Troubleshooting
 - "Class not found" for jOOQ generated types: ensure `mvn clean package` (or at least `mvn generate-sources`) has been run and `f1data.db` exists in the project root.
