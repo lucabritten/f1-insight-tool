@@ -70,7 +70,7 @@ public class DriverServiceTest {
         void returnsDriverFromDatabase() {
             DriverDto dbDto = new DriverDto("Lewis", "Hamilton", 44, "GBR");
             Meeting meeting = new Meeting(1279, "AUS", "Australia",
-                    "Melbourne", "Australia GP", 2025);
+                    "Melbourne", "Australia GP", 2025, "https://www.url_to_flag.com");
 
             when(meetingService.getMeetingsByYear(2025))
                     .thenReturn(List.of(meeting));
@@ -86,7 +86,7 @@ public class DriverServiceTest {
 
         @Test
         void fetchesFromApiAndSavesDriver() {
-            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2026);
+            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2026, "https://www.url_to_flag.com");
 
             when(driverRepo.getDriverByFullNameForYear("Max", "Verstappen", 2026))
                     .thenReturn(Optional.empty());
@@ -106,7 +106,7 @@ public class DriverServiceTest {
 
         @Test
         void throwsException_whenDriverNotFoundAnywhere() {
-            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2026);
+            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2026, "https://www.url_to_flag.com");
 
             when(driverRepo.getDriverByFullNameForYear(anyString(), anyString(), anyInt()))
                     .thenReturn(Optional.empty());
@@ -128,7 +128,7 @@ public class DriverServiceTest {
         @Test
         void returnsDriverFromDatabase() {
             DriverDto dbDto = new DriverDto("Max", "Verstappen", 1, "NLD");
-            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
+            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025, "https://www.url_to_flag.com");
 
             when(meetingService.getMeetingsByYear(2025))
                     .thenReturn(List.of(meeting));
@@ -144,7 +144,7 @@ public class DriverServiceTest {
 
         @Test
         void fetchesFromApiAndSavesDriver() {
-            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
+            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025, "https://www.url_to_flag.com");
             DriverDto apiDto = new DriverDto("Charles", "Leclerc", 16, "MCO");
 
             when(meetingService.getMeetingsByYear(2025))
@@ -162,7 +162,7 @@ public class DriverServiceTest {
 
         @Test
         void throwsException_whenDriverNotFound() {
-            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
+            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025, "https://www.url_to_flag.com");
 
             when(meetingService.getMeetingsByYear(2025))
                     .thenReturn(List.of(meeting));
@@ -240,8 +240,8 @@ public class DriverServiceTest {
         @Test
         void fallsBackToOtherMeetings() {
             DriverDto apiDto = new DriverDto("Fernando", "Alonso", 14, "ESP");
-            Meeting meeting1 = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
-            Meeting meeting2 = new Meeting(1280, "CHN", "China", "Shanghai", "China GP", 2025);
+            Meeting meeting1 = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025, "https://www.url_to_flag.com");
+            Meeting meeting2 = new Meeting(1280, "CHN", "China", "Shanghai", "China GP", 2025, "https://www.url_to_flag.com");
 
             when(driverRepo.getDriverByStartNumberForYear(14, 2025))
                     .thenReturn(Optional.empty());
@@ -260,7 +260,7 @@ public class DriverServiceTest {
 
         @Test
         void throwsException_whenAllFallbacksFail() {
-            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
+            Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025, "https://www.url_to_flag.com");
 
             when(driverRepo.getDriverByStartNumberForYear(99, 2025))
                     .thenReturn(Optional.empty());
@@ -312,7 +312,7 @@ public class DriverServiceTest {
             int meetingKey = 3000;
 
             Meeting meeting2026 = new Meeting(meetingKey, "AUS", "Australia",
-                    "Melbourne", "Australia GP", 2026);
+                    "Melbourne", "Australia GP", 2026, "https://www.url_to_flag.com");
 
             when(driverRepo.getDriverByStartNumberForYear(number, year))
                     .thenReturn(Optional.empty());

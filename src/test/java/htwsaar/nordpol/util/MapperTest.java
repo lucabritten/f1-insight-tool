@@ -33,7 +33,7 @@ public class MapperTest {
 
         @Test
         void mapsAllFields() {
-            MeetingDto dto = new MeetingDto("BEL", "Belgium", "Spa-Francorchamps", 1000, "Sprint Qualifying", 2025);
+            MeetingDto dto = new MeetingDto("BEL", "Belgium", "Spa-Francorchamps", 1000, "Sprint Qualifying", 2025, "https://www.url_to_flag.com");
 
             Meeting meeting = Mapper.toMeeting(dto);
 

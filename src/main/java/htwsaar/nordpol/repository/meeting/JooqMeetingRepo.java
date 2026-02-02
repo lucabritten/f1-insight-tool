@@ -28,13 +28,15 @@ public class JooqMeetingRepo implements IMeetingRepo {
                         MEETINGS.COUNTRY_CODE,
                         MEETINGS.LOCATION,
                         MEETINGS.MEETING_NAME,
-                        MEETINGS.YEAR)
+                        MEETINGS.YEAR,
+                        MEETINGS.COUNTRY_FLAG)
                 .values(dto.meeting_key(),
                         dto.country_name(),
                         dto.country_code(),
                         dto.location(),
                         dto.meeting_name(),
-                        dto.year())
+                        dto.year(),
+                        dto.country_flag())
                 .onConflict(MEETINGS.MEETING_KEY)
                 .doUpdate()
                 .set(MEETINGS.COUNTRY_NAME, dto.country_name())
@@ -42,6 +44,7 @@ public class JooqMeetingRepo implements IMeetingRepo {
                 .set(MEETINGS.LOCATION, dto.location())
                 .set(MEETINGS.MEETING_NAME, dto.meeting_name())
                 .set(MEETINGS.YEAR, dto.year())
+                .set(MEETINGS.COUNTRY_FLAG, dto.country_flag())
                 .execute();
 
     }
@@ -79,7 +82,8 @@ public class JooqMeetingRepo implements IMeetingRepo {
                         MEETINGS.LOCATION,
                         MEETINGS.MEETING_KEY,
                         MEETINGS.MEETING_NAME,
-                        MEETINGS.YEAR)
+                        MEETINGS.YEAR,
+                        MEETINGS.COUNTRY_FLAG)
                 .from(MEETINGS)
                 .where(MEETINGS.YEAR.eq(year)
                         .and(MEETINGS.LOCATION.eq(location)))
@@ -96,7 +100,8 @@ public class JooqMeetingRepo implements IMeetingRepo {
                         MEETINGS.LOCATION,
                         MEETINGS.MEETING_KEY,
                         MEETINGS.MEETING_NAME,
-                        MEETINGS.YEAR)
+                        MEETINGS.YEAR,
+                        MEETINGS.COUNTRY_FLAG)
                 .from(MEETINGS)
                 .where(MEETINGS.YEAR.eq(year))
                 .fetchInto(MeetingDto.class)

@@ -128,7 +128,7 @@ public class LapServiceTest {
             String location = "Monza";
             int year = 2024;
             SessionName sessionName = SessionName.QUALIFYING;
-            Meeting meeting = new Meeting(100, "IT", "Italy", "Monza", meetingName, year);
+            Meeting meeting = new Meeting(100, "IT", "Italy", "Monza", meetingName, year, "https://www.url_to_flag.com");
             Session session = new Session(200, 100, sessionName, "Qualifying");
 
             when(meetingService.getMeetingByYearAndLocation(year, location)).thenReturn(meeting);
@@ -162,7 +162,7 @@ public class LapServiceTest {
             int year = 2024;
             SessionName sessionName = SessionName.QUALIFYING;
 
-            Meeting meeting = new Meeting(100, "IT", "Italy", "Monza", meetingName, year);
+            Meeting meeting = new Meeting(100, "IT", "Italy", "Monza", meetingName, year, "https://www.url_to_flag.com");
             Session session = new Session(200, 100, sessionName, "Qualifying");
 
             when(meetingService.getMeetingByYearAndLocation(year, location)).thenReturn(meeting);
@@ -203,7 +203,7 @@ public class LapServiceTest {
             String location = "Monza";
             int year = 2024;
             SessionName sessionName = SessionName.QUALIFYING;
-            Meeting meeting = new Meeting(100, "IT", "Italy", location, "Italy GP", year);
+            Meeting meeting = new Meeting(100, "IT", "Italy", location, "Italy GP", year, "https://www.url_to_flag.com");
             Session session = new Session(200, 100, sessionName, "Qualifying");
 
             when(meetingService.getMeetingByYearAndLocation(year, location)).thenReturn(meeting);
@@ -228,7 +228,7 @@ public class LapServiceTest {
             SessionName sessionName = SessionName.RACE;
             int driverNumber = 16;
 
-            Meeting meeting = new Meeting(300, "IT", "Italy", location, "Italy GP", year);
+            Meeting meeting = new Meeting(300, "IT", "Italy", location, "Italy GP", year, "https://www.url_to_flag.com");
             Session session = new Session(400, 300, sessionName, "Race");
 
             when(meetingService.getMeetingByYearAndLocation(year, location)).thenReturn(meeting);
@@ -260,7 +260,7 @@ public class LapServiceTest {
             SessionName sessionName = SessionName.RACE;
             int driverNumber = 55;
 
-            Meeting meeting = new Meeting(500, "IT", "Italy", location, "Italy GP", year);
+            Meeting meeting = new Meeting(500, "IT", "Italy", location, "Italy GP", year, "https://www.url_to_flag.com");
             Session session = new Session(600, 500, sessionName, "Race");
 
             when(meetingService.getMeetingByYearAndLocation(year, location)).thenReturn(meeting);
@@ -289,7 +289,7 @@ public class LapServiceTest {
             SessionName sessionName = SessionName.RACE;
             int driverNumber = 20;
 
-            Meeting meeting = new Meeting(700, "IT", "Italy", location, "Italy GP", year);
+            Meeting meeting = new Meeting(700, "IT", "Italy", location, "Italy GP", year, "https://www.url_to_flag.com");
             Session session = new Session(800, 700, sessionName, "Race");
 
             when(meetingService.getMeetingByYearAndLocation(year, location)).thenReturn(meeting);

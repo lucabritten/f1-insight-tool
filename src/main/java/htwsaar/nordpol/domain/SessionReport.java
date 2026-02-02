@@ -13,6 +13,7 @@ public record SessionReport(
         String location,
         WeatherWithContext weather,
         SessionResultWithContext sessionResults,
-        Map<Driver, List<Lap>> lapSeriesByDriver
+        Map<Driver, List<Lap>> lapSeriesByDriver,
+        String countryFlagUrl
 ) {
 }

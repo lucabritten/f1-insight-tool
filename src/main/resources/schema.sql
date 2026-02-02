@@ -6,6 +6,7 @@ CREATE TABLE "Meetings" (
     location TEXT NOT NULL,
     meeting_name TEXT NOT NULL,
     "year" INTEGER NOT NULL,
+    country_flag TEXT NOT NULL,
     CONSTRAINT "pk_Meetings" PRIMARY KEY (meeting_key)
 );
 

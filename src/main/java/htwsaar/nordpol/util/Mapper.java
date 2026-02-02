@@ -3,6 +3,9 @@ package htwsaar.nordpol.util;
 import htwsaar.nordpol.api.dto.*;
 import htwsaar.nordpol.domain.*;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class Mapper {
 
     private Mapper(){
@@ -18,14 +21,15 @@ public class Mapper {
                 dto.team_name()
         );
     }
-    public static Meeting toMeeting(MeetingDto dto){
+    public static Meeting toMeeting(MeetingDto dto) {
         return new Meeting(
                 dto.meeting_key(),
                 dto.country_code(),
                 dto.country_name(),
                 dto.location(),
                 dto.meeting_name(),
-                dto.year()
+                dto.year(),
+                dto.country_flag()
         );
     }
     public static Session toSession(SessionDto dto){

@@ -9,5 +9,6 @@ public record MeetingDto(String country_code,
                          String location,
                          int meeting_key,
                          String meeting_name,
-                         int year) {
+                         int year,
+                         String country_flag) {
 }

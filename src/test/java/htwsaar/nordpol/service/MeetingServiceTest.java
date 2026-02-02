@@ -49,7 +49,7 @@ public class MeetingServiceTest {
         @Test
         void returnsMeetingFromDatabase() {
             MeetingDto meetingDto =
-                    new MeetingDto("JPN", "Japan", "Suzuka", 1256, "Japanese Grand Prix", 2025);
+                    new MeetingDto("JPN", "Japan", "Suzuka", 1256, "Japanese Grand Prix", 2025, "https://www.url_to_flag.com");
 
             when(meetingRepo.getMeetingByYearAndLocation(2025, "Suzuka"))
                     .thenReturn(Optional.of(meetingDto));
@@ -69,7 +69,7 @@ public class MeetingServiceTest {
                     .thenReturn(Optional.empty());
 
             MeetingDto apiDto =
-                    new MeetingDto("JPN", "Japan", "Suzuka", 1256, "Japanese Grand Prix", 2025);
+                    new MeetingDto("JPN", "Japan", "Suzuka", 1256, "Japanese Grand Prix", 2025, "https://www.url_to_flag.com");
 
             when(meetingClient.getMeetingByYearAndLocation(2025, "Suzuka"))
                     .thenReturn(Optional.of(apiDto));
@@ -103,8 +103,8 @@ public class MeetingServiceTest {
 
         @Test
         void queriesApiFirst() {
-            MeetingDto dto1 = new MeetingDto("ITA", "Italy", "Monza", 1234, "Monza GP", 2025);
-            MeetingDto dto2 = new MeetingDto("ITA", "Italy", "Imola", 1235, "Imola GP", 2025);
+            MeetingDto dto1 = new MeetingDto("ITA", "Italy", "Monza", 1234, "Monza GP", 2025, "https://www.url_to_flag.com");
+            MeetingDto dto2 = new MeetingDto("ITA", "Italy", "Imola", 1235, "Imola GP", 2025, "https://www.url_to_flag.com");
 
             when(meetingClient.getMeetingsByYear(2025))
                     .thenReturn(List.of(dto1, dto2));
@@ -118,8 +118,8 @@ public class MeetingServiceTest {
 
         @Test
         void fallsBackToDb_whenApiResultIsEmpty() {
-            MeetingDto dto1 = new MeetingDto("ITA", "Italy", "Monza", 1234, "Monza GP", 2025);
-            MeetingDto dto2 = new MeetingDto("ITA", "Italy", "Imola", 1235, "Imola GP", 2025);
+            MeetingDto dto1 = new MeetingDto("ITA", "Italy", "Monza", 1234, "Monza GP", 2025, "https://www.url_to_flag.com");
+            MeetingDto dto2 = new MeetingDto("ITA", "Italy", "Imola", 1235, "Imola GP", 2025, "https://www.url_to_flag.com");
 
             when(meetingClient.getMeetingsByYear(2025))
                     .thenReturn(List.of());

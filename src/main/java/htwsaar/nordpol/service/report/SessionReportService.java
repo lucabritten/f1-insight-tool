@@ -103,7 +103,8 @@ public class SessionReportService implements ISessionReportService {
                     meeting.location(),
                     weather,
                     reportResultsContext,
-                    lapSeriesByDriver
+                    lapSeriesByDriver,
+                    meeting.countryFlagUrl()
             );
     }
 

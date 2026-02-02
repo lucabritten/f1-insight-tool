@@ -34,7 +34,8 @@ public class MeetingRepoTest {
                     country_code text not null,
                     location text not null,
                     meeting_name text not null,
-                    year int
+                    year int,
+                    country_flag text
                 );
                 """);
 
@@ -56,7 +57,7 @@ public class MeetingRepoTest {
         void persistsMeeting() {
             MeetingDto meetingData =
                     new MeetingDto(
-                            "USA", "United States", "Austin", 1247, "United States Grand Prix", 2024);
+                            "USA", "United States", "Austin", 1247, "United States Grand Prix", 2024, "https://www.url_to_flag.com");
 
             meetingRepo.save(meetingData);
 
@@ -82,7 +83,7 @@ public class MeetingRepoTest {
 
         @Test
         void throwsException_whenLocationIsNull() {
-            MeetingDto meetingDto = new MeetingDto("USA", "United States", null, 1247, "United States Grand Prix", 2024);
+            MeetingDto meetingDto = new MeetingDto("USA", "United States", null, 1247, "United States Grand Prix", 2024, "https://www.url_to_flag.com");
 
             assertThatThrownBy(() -> meetingRepo.save(meetingDto))
                     .isInstanceOf(IllegalArgumentException.class);
@@ -90,7 +91,7 @@ public class MeetingRepoTest {
 
         @Test
         void throwsException_whenCountryCodeIsNull() {
-            MeetingDto meetingDto = new MeetingDto(null, "United States", "Austin", 1247, "United States Grand Prix", 2024);
+            MeetingDto meetingDto = new MeetingDto(null, "United States", "Austin", 1247, "United States Grand Prix", 2024, "https://www.url_to_flag.com");
 
             assertThatThrownBy(() -> meetingRepo.save(meetingDto))
                     .isInstanceOf(IllegalArgumentException.class);
@@ -98,7 +99,7 @@ public class MeetingRepoTest {
 
         @Test
         void throwsException_whenCountryNameIsNull() {
-            MeetingDto meetingDto = new MeetingDto("USA", null, "Austin", 1247, "United States Grand Prix", 2024);
+            MeetingDto meetingDto = new MeetingDto("USA", null, "Austin", 1247, "United States Grand Prix", 2024, "https://www.url_to_flag.com");
 
             assertThatThrownBy(() -> meetingRepo.save(meetingDto))
                     .isInstanceOf(IllegalArgumentException.class);
@@ -106,7 +107,7 @@ public class MeetingRepoTest {
 
         @Test
         void throwsException_whenMeetingKeyIsNegative() {
-            MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", -1, "United States Grand Prix", 2024);
+            MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", -1, "United States Grand Prix", 2024, "https://www.url_to_flag.com");
 
             assertThatThrownBy(() -> meetingRepo.save(meetingDto))
                     .isInstanceOf(IllegalArgumentException.class);
@@ -114,7 +115,7 @@ public class MeetingRepoTest {
 
         @Test
         void throwsException_whenMeetingNameIsNull() {
-            MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", 1247, null, 2024);
+            MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", 1247, null, 2024, "https://www.url_to_flag.com");
 
             assertThatThrownBy(() -> meetingRepo.save(meetingDto))
                     .isInstanceOf(IllegalArgumentException.class);
@@ -122,7 +123,7 @@ public class MeetingRepoTest {
 
         @Test
         void throwsException_whenYearIsNegative() {
-            MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", 1247, "United States Grand Prix", -1);
+            MeetingDto meetingDto = new MeetingDto("USA", "United States", "Austin", 1247, "United States Grand Prix", -1, "https://www.url_to_flag.com");
 
             assertThatThrownBy(() -> meetingRepo.save(meetingDto))
                     .isInstanceOf(IllegalArgumentException.class);

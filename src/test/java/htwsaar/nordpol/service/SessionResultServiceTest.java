@@ -53,7 +53,7 @@ class SessionResultServiceTest {
 
         @Test
         void returnsResultsFromDatabase() {
-            Meeting meeting = new Meeting(1250, "USA", "USA", "Austin", "United States Grand Prix", 2025);
+            Meeting meeting = new Meeting(1250, "USA", "USA", "Austin", "United States Grand Prix", 2025, "https://www.url_to_flag.com");
             Session session = new Session(9640, 1250, SessionName.RACE, "RACE");
 
             SessionResultDto r1 = new SessionResultDto(
@@ -100,7 +100,7 @@ class SessionResultServiceTest {
 
         @Test
         void fetchesFromApiAndStoresWhenDbIsEmpty() {
-            Meeting meeting = new Meeting(1250, "United States Grand Prix", "USA", "Austin", "Austin GP", 2025);
+            Meeting meeting = new Meeting(1250, "United States Grand Prix", "USA", "Austin", "Austin GP", 2025, "https://www.url_to_flag.com");
             Session session = new Session(9640, 1250, SessionName.QUALIFYING, "RACE");
 
             SessionResultDto apiResult = new SessionResultDto(
@@ -139,7 +139,7 @@ class SessionResultServiceTest {
 
         @Test
         void sortsDnfsToBottom() {
-            Meeting meeting = new Meeting(1250, "United States Grand Prix", "USA", "Austin", "Austin GP", 2025);
+            Meeting meeting = new Meeting(1250, "United States Grand Prix", "USA", "Austin", "Austin GP", 2025, "https://www.url_to_flag.com");
             Session session = new Session(9640, 1250, SessionName.RACE, "RACE");
 
             SessionResultDto finished = new SessionResultDto(
@@ -183,7 +183,7 @@ class SessionResultServiceTest {
 
     @Test
     void getResultByLocationYearAndSessionType_sortsDnsAndDsqToBottom() {
-        Meeting meeting = new Meeting(1250, "US", "USA", "Austin", "Austin GP", 2025);
+        Meeting meeting = new Meeting(1250, "US", "USA", "Austin", "Austin GP", 2025, "https://www.url_to_flag.com");
         Session session = new Session(9640, 1250, SessionName.RACE, "RACE");
 
         SessionResultDto normal = new SessionResultDto(
@@ -238,7 +238,7 @@ class SessionResultServiceTest {
 
     @Test
     void getResultByLocationYearAndSessionType_sortsPositionZeroAfterValidPositions() {
-        Meeting meeting = new Meeting(1250, "US", "USA", "Austin", "Austin GP", 2025);
+        Meeting meeting = new Meeting(1250, "US", "USA", "Austin", "Austin GP", 2025, "https://www.url_to_flag.com");
         Session session = new Session(9640, 1250, SessionName.RACE, "RACE");
 
         SessionResultDto validPosition = new SessionResultDto(

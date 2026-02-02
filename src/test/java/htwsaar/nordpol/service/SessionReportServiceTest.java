@@ -76,7 +76,7 @@ class SessionReportServiceTest {
                 driverService
         );
 
-        defaultMeeting = new Meeting(MEETING_KEY, COUNTRY_CODE, COUNTRY_NAME, LOCATION, MEETING_NAME, YEAR);
+        defaultMeeting = new Meeting(MEETING_KEY, COUNTRY_CODE, COUNTRY_NAME, LOCATION, MEETING_NAME, YEAR, "https://www.url_to_flag.com");
         defaultSession = new Session(SESSION_KEY, MEETING_KEY, SessionName.RACE, "Race");
         defaultWeather = new Weather(SESSION_KEY, MEETING_KEY, 22.0, 55.0, false, 34.0, 180.0, 4.5);
         defaultWeatherContext = new WeatherWithContext(MEETING_NAME, COUNTRY_NAME, SessionName.RACE, defaultWeather);
