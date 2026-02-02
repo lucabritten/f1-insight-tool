@@ -1,12 +1,13 @@
 package htwsaar.nordpol.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import htwsaar.nordpol.config.ApplicationContext;
+import htwsaar.nordpol.config.api.ApiClientConfig;
 import htwsaar.nordpol.exception.ExternalApiException;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -15,38 +16,15 @@ import java.util.Optional;
 public abstract class BaseClient {
 
     protected final OkHttpClient okHttpClient;
-    protected final ObjectMapper objectMapper = new ObjectMapper();
+    protected final ObjectMapper objectMapper;
     protected final String baseUrl;
 
     private static final Logger log = LoggerFactory.getLogger(BaseClient.class);
 
     protected BaseClient(String baseUrl){
         this.baseUrl = baseUrl;
-        this.okHttpClient = new OkHttpClient().newBuilder()
-                .callTimeout(Duration.ofSeconds(10))
-                .connectTimeout(Duration.ofSeconds(5))
-                .readTimeout(Duration.ofSeconds(10))
-                .writeTimeout(Duration.ofSeconds(10))
-                .addInterceptor(chain -> {
-                    Request request = chain.request();
-                    Response response = chain.proceed(request);
-
-                    if (!response.isSuccessful() && response.code() == 429) {
-                        log.warn("Rate limit hit: {}", response.message());
-                        response.close();
-
-                        try {
-                            log.info("Waiting 1 second before retry...");
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-
-                        response = chain.proceed(request);
-                    }
-                    return response;
-                })
-                .build();
+        this.okHttpClient = ApiClientConfig.openF1HttpClient();
+        this.objectMapper = ApplicationContext.objectMapper();
     }
 
     protected BaseClient(){

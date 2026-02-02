@@ -1,5 +1,6 @@
 package htwsaar.nordpol.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.driver.DriverClient;
 import htwsaar.nordpol.api.driver.IDriverClient;
 import htwsaar.nordpol.api.lap.LapClient;
@@ -116,5 +117,9 @@ ApplicationContext {
                 .setMaxRenderedLength(100)
                 .setUpdateIntervalMillis(100)
                 .build();
+    }
+
+    public static ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 }
