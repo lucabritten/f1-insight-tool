@@ -1,5 +1,6 @@
 package htwsaar.nordpol.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import htwsaar.nordpol.exception.ExternalApiException;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public abstract class BaseClient {
 
             return Arrays.asList(objectMapper.readValue(bodyString, responseType));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to fetch data from OpenF1 API", e);
+            throw new ExternalApiException("Failed to fetch data from OpenF1 API (url=" + url + ")", e);
         }
     }
 
