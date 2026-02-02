@@ -167,8 +167,9 @@ Examples:
 mvn -q exec:java -Dexec.args="session-report -l 'Las Vegas' -s Qualifying --limit 10"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar session-report -l Monza -y 2024 -s Race
 ```
-Preview of a possible report (related cmd: `session-report -lim 3  -l Monza -s race -y 2025`):
-<img width="1514" height="1256" alt="image" src="https://github.com/user-attachments/assets/798523c2-1485-4818-85fa-7c4efce8201a" />
+Preview of a possible report (related cmd: `session-report -l Silverstone -y 2025 -s race -lim 5`):
+<img width="1286" height="1220" alt="image" src="https://github.com/user-attachments/assets/1a2a064a-c339-47c9-9546-eda5b5c36b00" />
+
 
 ## Exit Codes
 
