@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface IMeetingService {
     Meeting getMeetingByYearAndLocation(int year, String location);
-    List<Meeting> getMeetingsForSessionReport(int year);
+    List<Meeting> getMeetingsByYear(int year);
 }

@@ -106,7 +106,7 @@ public class DriverService implements IDriverService {
             return getDriverByNumberAndMeetingKey(number, year, meetingKey);
         } catch (DriverNotFoundException ex) {
 
-            List<Meeting> meetings = meetingService.getMeetingsForSessionReport(year);
+            List<Meeting> meetings = meetingService.getMeetingsByYear(year);
             for (Meeting meeting : meetings) {
                 Optional<DriverDto> dtoFromOtherMeeting =
                         driverClient.getDriverByNumberAndMeetingKey(number, meeting.meetingKey());
@@ -140,7 +140,7 @@ public class DriverService implements IDriverService {
     }
 
     private int getMeetingKeyForYear(int year) {
-        List<Meeting> meeting = meetingService.getMeetingsForSessionReport(year);
+        List<Meeting> meeting = meetingService.getMeetingsByYear(year);
         return meeting.getFirst().meetingKey();
     }
 
