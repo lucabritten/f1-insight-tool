@@ -15,6 +15,7 @@ import picocli.CommandLine;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Year;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -165,7 +166,8 @@ public class SessionReportCommandTest {
 
             ArgumentCaptor<Path> pathCaptor = ArgumentCaptor.forClass(Path.class);
             verify(renderer, times(1)).render(eq(report), pathCaptor.capture());
-            assertThat(pathCaptor.getValue().toString()).endsWith("reports/monza-race.pdf");
+            String path = Paths.get("reports", "monza-race.pdf").toString();
+            assertThat(pathCaptor.getValue().toString()).endsWith(path);
         }
 
     }
@@ -212,8 +214,9 @@ public class SessionReportCommandTest {
 
             ArgumentCaptor<Path> pathCaptor = ArgumentCaptor.forClass(Path.class);
             verify(renderer, times(1)).render(eq(report), pathCaptor.capture());
+            String path = Paths.get("reports", "session-report-las-vegas-2024-qualifying.pdf").toString();
             assertThat(pathCaptor.getValue().toString())
-                    .endsWith("reports/session-report-las-vegas-2024-qualifying.pdf");
+                    .endsWith(path);
         }
 
     }
