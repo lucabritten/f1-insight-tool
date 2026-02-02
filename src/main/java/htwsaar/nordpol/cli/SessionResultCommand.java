@@ -2,6 +2,7 @@ package htwsaar.nordpol.cli;
 import htwsaar.nordpol.cli.converter.SessionNameConverter;
 import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.SessionName;
+import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.sessionResult.ISessionResultService;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.util.formatting.CliFormatter;
@@ -63,8 +64,8 @@ public class SessionResultCommand implements Callable<Integer> {
             SessionResultWithContext result = sessionResultService.getResultByLocationYearAndSessionType(location, year, sessionName);
             System.out.println(CliFormatter.formatSessionResults(result));
             return 0;
-        } catch (IllegalArgumentException e) {
-            System.err.println("Invalid input: " + e.getMessage());
+        } catch (DataNotFoundException e) {
+            System.err.println("Requested data not found: " + e.getMessage());
             System.err.println("Use --help for usage information.");
             return 2;
         } catch (Exception e) {
