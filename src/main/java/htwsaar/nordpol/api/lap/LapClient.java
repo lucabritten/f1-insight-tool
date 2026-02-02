@@ -4,6 +4,7 @@ import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.dto.LapDto;
 import java.util.List;
 import java.util.Map;
+import static htwsaar.nordpol.api.OpenF1Param.*;
 
 
 public class LapClient extends BaseClient implements ILapClient{
@@ -20,8 +21,8 @@ public class LapClient extends BaseClient implements ILapClient{
         return fetchList(
                 OpenF1Endpoint.LAPS,
                 Map.of(
-                        "session_key", sessionKey,
-                        "driver_number", driverNumber
+                        SESSION_KEY, sessionKey,
+                        DRIVER_NUMBER, driverNumber
                 ),
                 LapDto[].class
         );
@@ -31,7 +32,7 @@ public class LapClient extends BaseClient implements ILapClient{
     public List<LapDto> getLapsBySessionKey(int sessionKey) {
         return fetchList(
                 OpenF1Endpoint.LAPS,
-                Map.of("session_key", sessionKey),
+                Map.of(SESSION_KEY, sessionKey),
                 LapDto[].class
         );
     }

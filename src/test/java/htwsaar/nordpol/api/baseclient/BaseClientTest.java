@@ -2,6 +2,8 @@ package htwsaar.nordpol.api.baseclient;
 
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
+import htwsaar.nordpol.api.OpenF1Param;
+import htwsaar.nordpol.exception.ExternalApiException;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
@@ -28,11 +30,11 @@ class BaseClientTest {
             super(baseUrl);
         }
 
-        <T> List<T> fetchListTest(OpenF1Endpoint endpoint, Map<String, ?> queryParameter, Class<T[]> responseType) {
+        <T> List<T> fetchListTest(OpenF1Endpoint endpoint, Map<OpenF1Param, ?> queryParameter, Class<T[]> responseType) {
             return super.fetchList(endpoint, queryParameter, responseType);
         }
 
-        <T> Optional<T> fetchSingleTest(OpenF1Endpoint endpoint, Map<String, ?> queryParameter, Class<T[]> responseType) {
+        <T> Optional<T> fetchSingleTest(OpenF1Endpoint endpoint, Map<OpenF1Param, ?> queryParameter, Class<T[]> responseType) {
             return super.fetchSingle(endpoint, queryParameter, responseType);
         }
     }
@@ -71,7 +73,7 @@ class BaseClientTest {
             );
 
             List<TestDto> result =
-                    baseClient.fetchListTest(OpenF1Endpoint.TEST, Map.of("key", "value"), TestDto[].class);
+                    baseClient.fetchListTest(OpenF1Endpoint.TEST, Map.of(OpenF1Param.SESSION_KEY, "value"), TestDto[].class);
 
         assertThat(result)
                 .isNotNull()
@@ -147,7 +149,7 @@ class BaseClientTest {
 
             assertThatThrownBy(() ->
                     baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class)
-            ).isInstanceOf(RuntimeException.class);
+            ).isInstanceOf(ExternalApiException.class);
         }
 
         @Test
@@ -157,7 +159,7 @@ class BaseClientTest {
             assertThatThrownBy(() ->
                     baseClient.fetchListTest(OpenF1Endpoint.TEST, null, TestDto[].class)
             )
-                    .isInstanceOf(RuntimeException.class)
+                    .isInstanceOf(ExternalApiException.class)
                     .hasMessageContaining("Failed to fetch data from OpenF1 API");
         }
     }

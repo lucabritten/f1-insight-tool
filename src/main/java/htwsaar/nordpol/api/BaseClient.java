@@ -53,12 +53,12 @@ public abstract class BaseClient {
         this("https://api.openf1.org/v1");
     }
 
-    protected <T> Optional<T> fetchSingle(OpenF1Endpoint endpoint, Map<String, ?> queryParameter, Class<T[]> responseType) {
+    protected <T> Optional<T> fetchSingle(OpenF1Endpoint endpoint, Map<OpenF1Param, ?> queryParameter, Class<T[]> responseType) {
         List<T> results = fetchList(endpoint, queryParameter, responseType);
         return results.stream().findFirst();
     }
 
-    protected <T> List<T> fetchList(OpenF1Endpoint endpoint, Map<String, ?> queryParameter, Class<T[]> responseType) {
+    protected <T> List<T> fetchList(OpenF1Endpoint endpoint, Map<OpenF1Param, ?> queryParameter, Class<T[]> responseType) {
 
         String url = buildUrl(endpoint.path(), queryParameter);
 
@@ -80,13 +80,13 @@ public abstract class BaseClient {
         }
     }
 
-    private String buildUrl(String path, Map<String, ?> queryParameter) {
+    private String buildUrl(String path, Map<OpenF1Param, ?> queryParameter) {
         HttpUrl.Builder builder = HttpUrl.parse(baseUrl + path).newBuilder();
 
         if(queryParameter != null) {
             queryParameter.forEach((k, v) -> {
                 if (v != null) {
-                    builder.addQueryParameter(k, String.valueOf(v));
+                    builder.addQueryParameter(k.apiName(), String.valueOf(v));
                 }
             });
         }

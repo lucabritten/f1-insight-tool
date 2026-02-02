@@ -5,6 +5,7 @@ import htwsaar.nordpol.api.dto.MeetingDto;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
+import static htwsaar.nordpol.api.OpenF1Param.*;
 
 public class MeetingClient extends BaseClient implements IMeetingClient {
 
@@ -21,8 +22,8 @@ public class MeetingClient extends BaseClient implements IMeetingClient {
         return fetchSingle(
                 OpenF1Endpoint.MEETINGS,
                 Map.of(
-                        "year", year,
-                        "location", location
+                        YEAR, year,
+                        LOCATION, location
                 ),
                 MeetingDto[].class
         );
@@ -32,7 +33,7 @@ public class MeetingClient extends BaseClient implements IMeetingClient {
     public List<MeetingDto> getMeetingsByYear (int year) {
         return fetchList(
                 OpenF1Endpoint.MEETINGS,
-                Map.of("year", year),
+                Map.of(YEAR, year),
                 MeetingDto[].class
         );
     }
