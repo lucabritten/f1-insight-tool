@@ -105,12 +105,7 @@ public class DriverService implements IDriverService {
         try {
             return getDriverByNumberAndMeetingKey(number, year, meetingKey);
         } catch (DriverNotFoundException ex) {
-            Optional<DriverDto> dtoFromApi = driverClient.getDriverByNumber(number);
-            if (dtoFromApi.isPresent()) {
-                DriverDto driverDto = dtoFromApi.get();
-                driverRepo.saveOrUpdateDriverForYear(driverDto, year, meetingKey);
-                return Mapper.toDriver(driverDto);
-            }
+
             List<Meeting> meetings = meetingService.getMeetingsForSessionReport(year);
             for (Meeting meeting : meetings) {
                 Optional<DriverDto> dtoFromOtherMeeting =

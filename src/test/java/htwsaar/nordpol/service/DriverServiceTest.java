@@ -234,24 +234,7 @@ public class DriverServiceTest {
             Driver result = driverService.getDriverByNumberWithFallback(63, 2025, 1280);
 
             assertThat(result.driverNumber()).isEqualTo(63);
-            verify(driverClient, never()).getDriverByNumber(anyInt());
-        }
-
-        @Test
-        void fallsBackToDriverByNumber() {
-            DriverDto apiDto = new DriverDto("Carlos", "Sainz", 55, "ESP");
-
-            when(driverRepo.getDriverByStartNumberForYear(55, 2025))
-                    .thenReturn(Optional.empty());
-            when(driverClient.getDriverByNumberAndMeetingKey(55, 1280))
-                    .thenReturn(Optional.empty());
-            when(driverClient.getDriverByNumber(55))
-                    .thenReturn(Optional.of(apiDto));
-
-            Driver result = driverService.getDriverByNumberWithFallback(55, 2025, 1280);
-
-            assertThat(result.driverNumber()).isEqualTo(55);
-            verify(driverRepo).saveOrUpdateDriverForYear(apiDto, 2025, 1280);
+            verify(driverClient, never()).getDriverByNumberAndMeetingKey(anyInt(), anyInt());
         }
 
         @Test
@@ -263,8 +246,6 @@ public class DriverServiceTest {
             when(driverRepo.getDriverByStartNumberForYear(14, 2025))
                     .thenReturn(Optional.empty());
             when(driverClient.getDriverByNumberAndMeetingKey(14, 1280))
-                    .thenReturn(Optional.empty());
-            when(driverClient.getDriverByNumber(14))
                     .thenReturn(Optional.empty());
             when(meetingService.getMeetingsForSessionReport(2025))
                     .thenReturn(List.of(meeting1, meeting2));
@@ -284,8 +265,6 @@ public class DriverServiceTest {
             when(driverRepo.getDriverByStartNumberForYear(99, 2025))
                     .thenReturn(Optional.empty());
             when(driverClient.getDriverByNumberAndMeetingKey(99, 1280))
-                    .thenReturn(Optional.empty());
-            when(driverClient.getDriverByNumber(99))
                     .thenReturn(Optional.empty());
             when(meetingService.getMeetingsForSessionReport(2025))
                     .thenReturn(List.of(meeting));
