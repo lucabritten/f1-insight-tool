@@ -3,6 +3,7 @@ package htwsaar.nordpol.cli;
 import htwsaar.nordpol.cli.view.FastestLapsWithContext;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Lap;
+import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.service.lap.LapService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -114,6 +115,19 @@ public class FastestLapCommandTest {
 
             assertThat(exitCode).isEqualTo(2);
             assertThat(errorStream.toString()).contains("Missing required option");
+        }
+
+        @Test
+        void invalidParam_cachesDataNotFoundException() {
+            when(mockLapService.getFastestLapByLocationYearAndSessionName("Saarbrücken", 2024, RACE, 1))
+                    .thenThrow(MeetingNotFoundException.class);
+
+            int exitCode = new CommandLine(
+                    new FastestLapCommand(mockLapService)
+            ).execute("-l", "Saarbrücken", "-y", "2024", "-s", "race", "-lim", "1");
+
+            assertThat(errorStream.toString()).contains("Use --help");
+            assertThat(exitCode).isEqualTo(2);
         }
     }
 }
