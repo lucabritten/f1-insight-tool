@@ -3,8 +3,7 @@ package htwsaar.nordpol.api.sessionresult;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.IOException;
 
@@ -21,9 +20,18 @@ public class SessionResultClientTest {
         mockWebServer.start();
         client = new SessionResultClient(mockWebServer.url("/v1").toString());
     }
-    @Test
-    void getSessionResultBySessionKey_callsCorrectEndpointWithQueryParam() throws InterruptedException {
-        String json = """
+
+    @AfterEach
+    void tearDown() throws IOException {
+        mockWebServer.shutdown();
+    }
+
+    @Nested
+    @DisplayName("getSessionResultsBySessionKey")
+    class getSessionResultBySessionKey{
+        @Test
+        void callsCorrectEndpointWithQueryParam() throws InterruptedException {
+            String json = """
                 [
                    {
                       "position":1,
@@ -64,17 +72,18 @@ public class SessionResultClientTest {
                 ]
                 """;
 
-        mockWebServer.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-                        .setBody(json)
-        );
+            mockWebServer.enqueue(
+                    new MockResponse()
+                            .setResponseCode(200)
+                            .setBody(json)
+            );
 
-        client.getSessionResultBySessionKey(7782);
+            client.getSessionResultBySessionKey(7782);
 
-        RecordedRequest request = mockWebServer.takeRequest();
+            RecordedRequest request = mockWebServer.takeRequest();
 
-        assertThat(request.getPath())
-                .isEqualTo("/v1/session_result?session_key=7782");
+            assertThat(request.getPath())
+                    .isEqualTo("/v1/session_result?session_key=7782");
+        }
     }
 }
