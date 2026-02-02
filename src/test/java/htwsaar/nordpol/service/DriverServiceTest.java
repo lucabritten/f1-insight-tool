@@ -274,6 +274,7 @@ public class DriverServiceTest {
             assertThatThrownBy(() -> driverService.getDriverByNumberWithFallback(99, 2025, 1280))
                     .isInstanceOf(DriverNotFoundException.class);
         }
+
     }
 
     @Nested
@@ -302,6 +303,32 @@ public class DriverServiceTest {
             driverService.preloadMissingDriversForMeeting(2025, 1280, Arrays.asList(44, null));
 
             verify(driverRepo, times(1)).hasNamedDriverNumberForYear(anyInt(), anyInt());
+        }
+
+        @Test
+        void doesNotUseDriverFromDifferentYearDuringFallback() {
+            int year = 2026;
+            int number = 1;
+            int meetingKey = 3000;
+
+            Meeting meeting2026 = new Meeting(meetingKey, "AUS", "Australia",
+                    "Melbourne", "Australia GP", 2026);
+
+            when(driverRepo.getDriverByStartNumberForYear(number, year))
+                    .thenReturn(Optional.empty());
+
+            when(driverClient.getDriverByNumberAndMeetingKey(number, meetingKey))
+                    .thenReturn(Optional.empty());
+
+            when(meetingService.getMeetingsByYear(year))
+                    .thenReturn(List.of(meeting2026));
+
+            assertThatThrownBy(() ->
+                    driverService.getDriverByNumberWithFallback(number, year, meetingKey)
+            ).isInstanceOf(DriverNotFoundException.class);
+
+            verify(driverRepo, never())
+                    .saveOrUpdateDriverForYear(any(), anyInt(), anyInt());
         }
     }
 }
