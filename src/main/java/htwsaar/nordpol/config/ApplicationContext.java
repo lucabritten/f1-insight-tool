@@ -113,7 +113,7 @@ ApplicationContext {
                 .setTaskName("Generating session report")
                 .setInitialMax(9)
                 .setStyle(ProgressBarStyle.ASCII)
-                .setMaxRenderedLength(200)
+                .setMaxRenderedLength(100)
                 .setUpdateIntervalMillis(100)
                 .build();
     }

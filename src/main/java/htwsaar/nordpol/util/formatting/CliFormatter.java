@@ -197,14 +197,16 @@ public class CliFormatter {
         }
 
         return """
-                %s%s
+                %s========== %s RESULTS ==========%s
                 Meeting: %s
                 Session: %s
                 Results: %d
                 %s
                 %s
                 """.formatted(
-                BOLD, RESET,
+                BOLD,
+                context.sessionName().displayName().toUpperCase(),
+                RESET,
                 context.meetingName(),
                 context.sessionName().displayName(),
                 context.results().size(),
