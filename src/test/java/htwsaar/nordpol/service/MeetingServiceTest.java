@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,6 +94,56 @@ public class MeetingServiceTest {
             assertThatThrownBy(() -> meetingService.getMeetingByYearAndLocation(2025, "Suzuka"))
                     .isInstanceOf(MeetingNotFoundException.class)
                     .hasMessageContaining("Meeting not found");
+        }
+    }
+
+    @Nested
+    @DisplayName("getMeetingsForYear")
+    class getMeetingsForYear {
+
+        @Test
+        void queriesApiFirst() {
+            MeetingDto dto1 = new MeetingDto("ITA", "Italy", "Monza", 1234, "Monza GP", 2025);
+            MeetingDto dto2 = new MeetingDto("ITA", "Italy", "Imola", 1235, "Imola GP", 2025);
+
+            when(meetingClient.getMeetingsByYear(2025))
+                    .thenReturn(List.of(dto1, dto2));
+
+            List<Meeting> results = meetingService.getMeetingsByYear(2025);
+
+            assertThat(results).hasSize(2);
+            assertThat(results.getFirst().year()).isEqualTo(2025);
+            verify(meetingRepo, never()).getMeetingsByYear(2025);
+        }
+
+        @Test
+        void fallsBackToDb_whenApiResultIsEmpty() {
+            MeetingDto dto1 = new MeetingDto("ITA", "Italy", "Monza", 1234, "Monza GP", 2025);
+            MeetingDto dto2 = new MeetingDto("ITA", "Italy", "Imola", 1235, "Imola GP", 2025);
+
+            when(meetingClient.getMeetingsByYear(2025))
+                    .thenReturn(List.of());
+
+            when(meetingRepo.getMeetingsByYear(2025))
+                    .thenReturn(List.of(dto1, dto2));
+
+            List<Meeting> results = meetingService.getMeetingsByYear(2025);
+
+            assertThat(results).hasSize(2);
+            assertThat(results.getFirst().year()).isEqualTo(2025);
+            verify(meetingRepo).getMeetingsByYear(2025);
+        }
+
+        @Test
+        void throwsException_ifNoDataIsAvailable() {
+            when(meetingClient.getMeetingsByYear(2025))
+                    .thenReturn(List.of());
+
+            when(meetingRepo.getMeetingsByYear(2025))
+                    .thenReturn(List.of());
+
+            assertThatThrownBy(() -> meetingService.getMeetingsByYear(2025)).
+                    isInstanceOf(MeetingNotFoundException.class);
         }
     }
 }
