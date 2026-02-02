@@ -4,8 +4,9 @@ import picocli.CommandLine.Command;
 
 /**
  * Exit codes:
- * 0 - success
- * 2 - Entity not found / invalid input / BUSINESS LOGIC ERROR
+ * <p> 0 - successful execution</p>
+ * <p> 1 - invalid command usage/parameters</p>
+ * <p> 2 - no data found for the given criteria</p>
  */
 @Command(name = "f1-insight",
         mixinStandardHelpOptions = true,
