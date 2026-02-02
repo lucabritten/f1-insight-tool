@@ -165,7 +165,7 @@ public class SessionReportCommandTest {
 
             ArgumentCaptor<Path> pathCaptor = ArgumentCaptor.forClass(Path.class);
             verify(renderer, times(1)).render(eq(report), pathCaptor.capture());
-            assertThat(pathCaptor.getValue().toString()).endsWith("reports\\monza-race.pdf");
+            assertThat(pathCaptor.getValue().toString()).endsWith("reports/monza-race.pdf");
         }
 
     }
@@ -213,7 +213,7 @@ public class SessionReportCommandTest {
             ArgumentCaptor<Path> pathCaptor = ArgumentCaptor.forClass(Path.class);
             verify(renderer, times(1)).render(eq(report), pathCaptor.capture());
             assertThat(pathCaptor.getValue().toString())
-                    .endsWith("reports\\session-report-las-vegas-2024-qualifying.pdf");
+                    .endsWith("reports/session-report-las-vegas-2024-qualifying.pdf");
         }
 
     }
