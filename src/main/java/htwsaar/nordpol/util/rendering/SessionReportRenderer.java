@@ -17,7 +17,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -61,7 +61,7 @@ public class SessionReportRenderer {
             boolean chartOnNewPage = false;
             float chartWidth = 0f;
             float chartHeight = 0f;
-            float chartY = 0f;
+            float chartY;
 
             float pageWidth = page.getMediaBox().getWidth();
             float contentWidth = pageWidth - (2 * MARGIN);
@@ -187,7 +187,7 @@ public class SessionReportRenderer {
     }
 
     private BufferedImage loadImageFromUrl(String imageUrl) throws IOException {
-        try(InputStream inputStream = new URL(imageUrl).openStream()) {
+        try(InputStream inputStream = URI.create(imageUrl).toURL().openStream()) {
             return ImageIO.read(inputStream);
         }
     }
