@@ -3,9 +3,6 @@ package htwsaar.nordpol.util;
 import htwsaar.nordpol.api.dto.*;
 import htwsaar.nordpol.domain.*;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 public class Mapper {
 
     private Mapper(){
