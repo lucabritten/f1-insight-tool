@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -91,6 +92,42 @@ public class MeetingClientTest {
                     meetingClient.getMeetingByYearAndLocation(2024, "Austin");
 
             assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("GetMeetingByYear")
+    class getMeetingByYear {
+
+        @Test
+        void returnsMeetingList() {
+            String json = """
+                    [
+                        {
+                            "meeting_key": 1247,
+                            "country_code": "USA",
+                            "country_name": "United States",
+                            "location": "Austin",
+                            "year": 2024
+                        },
+                        {
+                            "meeting_key": 1248,
+                            "country_code": "AUT",
+                            "country_name": "Austria",
+                            "location": "Spielberg",
+                            "year": 2024
+                        }
+                    ]
+                    """;
+
+            mockWebServer.enqueue(new MockResponse()
+                            .setBody(json)
+                            .setResponseCode(200));
+
+            List<MeetingDto> result = meetingClient.getMeetingsByYear(2024);
+            assertThat(result).isNotEmpty();
+            assertThat(result).hasSize(2);
+            assertThat(result.getFirst().year()).isEqualTo(2024);
         }
     }
 
