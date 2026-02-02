@@ -58,6 +58,9 @@ public class XChartLapChartBuilder implements LapChartBuilder {
             }
             Driver driver = entry.getKey();
             String seriesName = driver.lastName() + " #" + driver.driverNumber();
+            if(xData.isEmpty() || yData.isEmpty())
+                continue;
+
             chart.addSeries(seriesName, xData, yData);
             maxYValue = Math.max(maxYValue, Collections.max(yData));
             minYValue = Math.min(minYValue, Collections.min(yData));
