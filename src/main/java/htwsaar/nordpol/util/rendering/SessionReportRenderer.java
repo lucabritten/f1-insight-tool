@@ -12,8 +12,12 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -22,6 +26,7 @@ public class SessionReportRenderer {
     private final static float MARGIN = 50f;
     private final static float NEW_PARAGRAPH = 5f;
     private final static float COLUMN_GAP = 20f;
+    private final static int LINE_SPACING = 4;
 
     private final static int HEADER_SIZE = 16;
     private final static int SUB_HEADER_SIZE = 14;
@@ -29,6 +34,10 @@ public class SessionReportRenderer {
 
     private final static float CHART_TITLE_OFFSET = 10f;
     private final static float CHART_SECTION_SPACING = 2.5f * NEW_PARAGRAPH;
+
+    private final static int FLAG_WIDTH = 64;
+    private final static int FLAG_HEIGHT = 40;
+    private final static float IMAGE_BORDER_WIDTH = 0.5f;
 
     private final ResultsTableRenderer resultsTableRenderer = new ResultsTableRenderer(new TimeFormatter(), new GapFormatter());
     private final LapChartBuilder chartBuilder = new XChartLapChartBuilder();
@@ -68,6 +77,10 @@ public class SessionReportRenderer {
                 float leftY = writeSessionDetails(contentStream,leftX, y, report);
                 float rightY = y;
 
+                BufferedImage flagImage = loadImageFromUrl(report.countryFlagUrl());
+                float flagX = pageWidth - MARGIN - FLAG_WIDTH;
+                rightY = drawImage(document, contentStream, flagImage, flagX, rightY, FLAG_WIDTH, FLAG_HEIGHT);
+
                 writeWeatherBlock(contentStream, rightX, rightY, report.weather());
                 y = Math.min(leftY, rightY) - NEW_PARAGRAPH;
 
@@ -83,7 +96,7 @@ public class SessionReportRenderer {
                     if (!chartOnNewPage) {
                         y -= CHART_SECTION_SPACING;
                         y = writeLine(contentStream, PDType1Font.HELVETICA_BOLD, SUB_HEADER_SIZE, MARGIN, y, "Lap Time Comparison");
-                        drawChartImage(document, contentStream, chartImage, MARGIN, y - chartHeight + CHART_TITLE_OFFSET, chartWidth, chartHeight);
+                        drawImage(document, contentStream, chartImage, MARGIN, y - chartHeight + CHART_TITLE_OFFSET, chartWidth, chartHeight);
                     }
                 }
             }
@@ -94,7 +107,7 @@ public class SessionReportRenderer {
                 float newPageY = page.getMediaBox().getHeight() - MARGIN;
                 try (PDPageContentStream chartStream = new PDPageContentStream(document, page)) {
                     writeLine(chartStream, PDType1Font.HELVETICA_BOLD, SUB_HEADER_SIZE, MARGIN, newPageY, "Lap Time Comparison");
-                    drawChartImage(document, chartStream, chartImage, MARGIN, newPageY - chartHeight - CHART_TITLE_OFFSET, chartWidth, chartHeight);
+                    drawImage(document, chartStream, chartImage, MARGIN, newPageY - chartHeight - CHART_TITLE_OFFSET, chartWidth, chartHeight);
                 }
             }
 
@@ -139,17 +152,24 @@ public class SessionReportRenderer {
                         weather.isRainfall() ? "Yes" : "No"));
     }
 
-
-
-    private void drawChartImage(PDDocument document,
+    private float drawImage(PDDocument document,
                                 PDPageContentStream contentStream,
-                                BufferedImage chartImage,
+                                BufferedImage image,
                                 float x,
                                 float y,
                                 float width,
                                 float height) throws IOException {
-        PDImageXObject pdImage = LosslessFactory.createFromImage(document, chartImage);
-        contentStream.drawImage(pdImage, x, y, width, height);
+        if(image != null) {
+            PDImageXObject pdImage = LosslessFactory.createFromImage(document, image);
+            contentStream.drawImage(pdImage, x, y, width, height);
+
+            contentStream.setLineWidth(IMAGE_BORDER_WIDTH);
+            contentStream.setStrokingColor(Color.GRAY);
+            contentStream.addRect(x, y, width, height);
+            contentStream.stroke();
+            return y - height + LINE_SPACING;
+        }
+        return y;
     }
 
     private float writeLine(PDPageContentStream contentStream,
@@ -163,6 +183,12 @@ public class SessionReportRenderer {
         contentStream.newLineAtOffset(x, y);
         contentStream.showText(text);
         contentStream.endText();
-        return y - (size + 4);
+        return y - (size + LINE_SPACING);
+    }
+
+    private BufferedImage loadImageFromUrl(String imageUrl) throws IOException {
+        try(InputStream inputStream = new URL(imageUrl).openStream()) {
+            return ImageIO.read(inputStream);
+        }
     }
 }
