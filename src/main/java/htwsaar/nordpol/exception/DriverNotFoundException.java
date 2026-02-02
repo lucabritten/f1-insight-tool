@@ -1,6 +1,6 @@
 package htwsaar.nordpol.exception;
 
-public class DriverNotFoundException extends RuntimeException{
+public class DriverNotFoundException extends DataNotFoundException{
     public DriverNotFoundException(String firstName, String lastName, int year){
         super("Driver not found: " + firstName + " " + lastName + " for year " + year);
     }
