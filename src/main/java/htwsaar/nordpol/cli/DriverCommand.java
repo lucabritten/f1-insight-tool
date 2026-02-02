@@ -6,6 +6,8 @@ import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.config.ApplicationContext;
 
 import htwsaar.nordpol.util.formatting.CliFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -23,6 +25,8 @@ import java.util.concurrent.Callable;
         mixinStandardHelpOptions = true
 )
 public class DriverCommand implements Callable<Integer> {
+
+    private static final Logger logger = LoggerFactory.getLogger(DriverCommand.class);
 
     @Option(names = {"--first-name",
             "-fn"},
@@ -61,14 +65,14 @@ public class DriverCommand implements Callable<Integer> {
         try {
             Driver driver = driverService.getDriverByNameAndYear(firstName, lastName, year);
             String output = CliFormatter.formatDriver(driver);
-            System.out.println(output);
+            logger.info(output);
             return 0;
         } catch (DataNotFoundException e) {
-            System.err.println("Requested data not found: " + e.getMessage());
-            System.err.println("Use --help for usage information.");
+            logger.error("Requested data not found: {}", e.getMessage());
+            logger.error("Use --help for usage information.");
             return 2;
         } catch (Exception e) {
-            System.err.println("Unexpected error: " + e.getMessage());
+            logger.error("Unexpected error: {}", e.getMessage(), e);
             return 1;
         }
     }

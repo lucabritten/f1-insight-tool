@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Appender for INFO level messages (to stdout) -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender for WARN and ERROR level messages (to stderr) -->
+    <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- CLI package logs at INFO level with proper stdout/stderr routing -->
+    <logger name="htwsaar.nordpol.cli" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="STDERR"/>
+    </logger>
+
+    <!-- Reduce noise from third-party libraries -->
+    <logger name="org.jooq" level="WARN"/>
+    <logger name="org.sqlite" level="WARN"/>
+    <logger name="okhttp3" level="WARN"/>
+
+    <root level="WARN">
+        <appender-ref ref="STDERR"/>
+    </root>
+
+</configuration>

@@ -97,11 +97,11 @@ public class SessionReportCommand implements Callable<Integer> {
             logger.info("Report written to: {}", outputPath.toAbsolutePath());
             return 0;
         } catch (DataNotFoundException e) {
-            System.err.println("Requested data not found: " + e.getMessage());
-            System.err.println("Use --help for usage information.");
+            logger.error("Requested data not found: {}", e.getMessage());
+            logger.error("Use --help for usage information.");
             return 2;
         } catch (Exception e) {
-            System.err.println("Unexpected error: " + e.getMessage());
+            logger.error("Unexpected error: {}", e.getMessage(), e);
             return 1;
         }
     }

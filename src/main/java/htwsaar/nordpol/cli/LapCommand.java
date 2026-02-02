@@ -6,6 +6,8 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.lap.LapService;
 import htwsaar.nordpol.util.formatting.CliFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -23,6 +25,8 @@ import java.util.concurrent.Callable;
         mixinStandardHelpOptions = true
 )
 public class LapCommand implements Callable<Integer> {
+
+    private static final Logger logger = LoggerFactory.getLogger(LapCommand.class);
 
     @Option(names = {"--location", "-l"},
             description = "The meeting location (e.g., Monza)",
@@ -64,14 +68,14 @@ public class LapCommand implements Callable<Integer> {
         try {
             LapsWithContext lap = lapService.getLapsByLocationYearSessionNameAndDriverNumber(location, year, sessionName, driverNumber);
             String output = CliFormatter.formatLaps(lap);
-            System.out.println(output);
+            logger.info(output);
             return 0;
         } catch (DataNotFoundException e) {
-            System.err.println("Requested data not found: " + e.getMessage());
-            System.err.println("Use --help for usage information.");
+            logger.error("Requested data not found: {}", e.getMessage());
+            logger.error("Use --help for usage information.");
             return 2;
         } catch (Exception e) {
-            System.err.println("Unexpected error: " + e.getMessage());
+            logger.error("Unexpected error: {}", e.getMessage(), e);
             return 1;
         }
     }
