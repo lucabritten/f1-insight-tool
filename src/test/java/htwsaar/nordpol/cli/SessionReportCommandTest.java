@@ -7,9 +7,7 @@ import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.report.SessionReportService;
 import htwsaar.nordpol.util.rendering.SessionReportRenderer;
 import me.tongfei.progressbar.ProgressBar;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import picocli.CommandLine;
@@ -31,7 +29,6 @@ public class SessionReportCommandTest {
     private ByteArrayOutputStream errorStream;
     private PrintStream originalOut;
     private PrintStream originalErr;
-    private ProgressBar progressBar;
     private MockedStatic<ApplicationContext> applicationContextMock;
 
     private static final int ILLEGAL_ARG_ERROR = 2;
@@ -42,7 +39,7 @@ public class SessionReportCommandTest {
     void setup() {
         sessionReportService = mock(SessionReportService.class);
         renderer = mock(SessionReportRenderer.class);
-        progressBar = mock(ProgressBar.class);
+        ProgressBar progressBar = mock(ProgressBar.class);
         applicationContextMock = mockStatic(ApplicationContext.class);
         applicationContextMock.when(ApplicationContext::progressBar).thenReturn(progressBar);
 
@@ -66,140 +63,158 @@ public class SessionReportCommandTest {
         }
     }
 
-    @Test
-    void sessionReport_buildsReportAndRendersPdf() {
+    @Nested
+    @DisplayName("Error Handling")
+    class ErrorHandling {
 
-        SessionReport report = mock(SessionReport.class);
-        when(sessionReportService.buildReport(eq("Monza"), eq(2024), eq(SessionName.RACE), isNull(), any()))
-                .thenReturn(report);
+        @Test
+        void serviceDataNotFound_causesExitCode2_andDoesNotRender() {
 
-        SessionReportCommand cmd = new SessionReportCommand(sessionReportService, renderer);
+            when(sessionReportService.buildReport(anyString(), anyInt(), any(), any(), any()))
+                    .thenThrow(new DataNotFoundException("no data"));
 
-
-        int exitCode = new CommandLine(cmd)
-                .execute("-l", "Monza", "-y", "2024", "-s", "Race", "-o", "reports/monza-race.pdf");
+            SessionReportCommand cmd = new SessionReportCommand(sessionReportService, renderer);
 
 
-        assertThat(exitCode).isZero();
-        assertThat(errorStream.toString()).isBlank();
+            int exitCode = new CommandLine(cmd)
+                    .execute("-l", "Monza", "-y", "2024", "-s", "Race");
 
-        ArgumentCaptor<Path> pathCaptor = ArgumentCaptor.forClass(Path.class);
-        verify(renderer, times(1)).render(eq(report), pathCaptor.capture());
-        assertThat(pathCaptor.getValue().toString()).endsWith("reports/monza-race.pdf");
+
+            assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
+            verifyNoInteractions(renderer);
+            assertThat(errorStream.toString())
+                    .contains("Requested data not found")
+                    .contains("Use --help");
+        }
+
+        @Test
+        void unexpectedServiceException_causesExitCode1_andDoesNotRender() {
+
+            when(sessionReportService.buildReport(anyString(), anyInt(), any(), any(), any()))
+                    .thenThrow(new RuntimeException("boom"));
+
+            SessionReportCommand cmd = new SessionReportCommand(sessionReportService, renderer);
+
+
+            int exitCode = new CommandLine(cmd)
+                    .execute("-l", "Monza", "-y", "2024", "-s", "Race");
+
+
+            assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+            verifyNoInteractions(renderer);
+            assertThat(errorStream.toString()).contains("Unexpected error: boom");
+        }
+
+        @Test
+        void missingRequiredLocation_causesUsageError() {
+
+            int exitCode = new CommandLine(new SessionReportCommand(sessionReportService, renderer))
+                    .execute("-y", "2024", "-s", "Race");
+
+
+            assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
+            assertThat(errorStream.toString()).containsIgnoringCase("Missing required option");
+            verifyNoInteractions(renderer);
+        }
+
+        @Test
+        void invalidSessionName_causesUsageError() {
+
+            int exitCode = new CommandLine(new SessionReportCommand(sessionReportService, renderer))
+                    .execute("-l", "Monza", "-y", "2024", "-s", "NOT_A_SESSION");
+
+
+            assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
+            assertThat(errorStream.toString()).isNotBlank();
+            verifyNoInteractions(renderer);
+        }
+
+        @Test
+        void helpOption_printsUsage_andExitCode0() {
+
+            int exitCode = new CommandLine(new SessionReportCommand(sessionReportService, renderer))
+                    .execute("--help");
+
+
+            assertThat(exitCode).isZero();
+            assertThat(outputStream.toString()).contains("session-report");
+        }
+
     }
 
-    @Test
-    void whenNoYearGiven_appliesDefaultYear() {
+    @Nested
+    @DisplayName("Output Validation")
+    class OutputValidation {
 
-        int currentYear = Year.now().getValue();
-        SessionReport report = mock(SessionReport.class);
-        when(sessionReportService.buildReport(eq("Austin"), eq(currentYear), eq(SessionName.QUALIFYING), isNull(), any()))
-                .thenReturn(report);
+        @Test
+        void sessionReport_buildsReportAndRendersPdf() {
 
-        SessionReportCommand cmd = new SessionReportCommand(sessionReportService, renderer);
+            SessionReport report = mock(SessionReport.class);
+            when(sessionReportService.buildReport(eq("Monza"), eq(2024), eq(SessionName.RACE), isNull(), any()))
+                    .thenReturn(report);
 
-
-        int exitCode = new CommandLine(cmd)
-                .execute("-l", "Austin", "-s", "Qualifying", "-o", "reports/austin-quali.pdf");
+            SessionReportCommand cmd = new SessionReportCommand(sessionReportService, renderer);
 
 
-        assertThat(exitCode).isZero();
-        verify(sessionReportService, times(1))
-                .buildReport(eq("Austin"), eq(currentYear), eq(SessionName.QUALIFYING), isNull(), any());
+            int exitCode = new CommandLine(cmd)
+                    .execute("-l", "Monza", "-y", "2024", "-s", "Race", "-o", "reports/monza-race.pdf");
+
+
+            assertThat(exitCode).isZero();
+            assertThat(errorStream.toString()).isBlank();
+
+            ArgumentCaptor<Path> pathCaptor = ArgumentCaptor.forClass(Path.class);
+            verify(renderer, times(1)).render(eq(report), pathCaptor.capture());
+            assertThat(pathCaptor.getValue().toString()).endsWith("reports\\monza-race.pdf");
+        }
+
     }
 
-    @Test
-    void whenNoOutputGiven_usesDefaultReportsPathWithSlugifiedName() {
+    @Nested
+    @DisplayName("Default Fallback")
+    class DefaultFallback {
 
-        SessionReport report = mock(SessionReport.class);
-        when(sessionReportService.buildReport(eq("Las Vegas"), eq(2024), eq(SessionName.QUALIFYING), isNull(), any()))
-                .thenReturn(report);
+        @Test
+        void whenNoYearGiven_appliesDefaultYear() {
 
-        SessionReportCommand cmd = new SessionReportCommand(sessionReportService, renderer);
+            int currentYear = Year.now().getValue();
+            SessionReport report = mock(SessionReport.class);
+            when(sessionReportService.buildReport(eq("Austin"), eq(currentYear), eq(SessionName.QUALIFYING), isNull(), any()))
+                    .thenReturn(report);
 
-
-        int exitCode = new CommandLine(cmd)
-                .execute("-l", "Las Vegas", "-y", "2024", "-s", "Qualifying");
-
-
-        assertThat(exitCode).isZero();
-
-        ArgumentCaptor<Path> pathCaptor = ArgumentCaptor.forClass(Path.class);
-        verify(renderer, times(1)).render(eq(report), pathCaptor.capture());
-        assertThat(pathCaptor.getValue().toString())
-                .endsWith("reports/session-report-las-vegas-2024-qualifying.pdf");
-    }
-
-    @Test
-    void serviceDataNotFound_causesExitCode2_andDoesNotRender() {
-
-        when(sessionReportService.buildReport(anyString(), anyInt(), any(), any(), any()))
-                .thenThrow(new DataNotFoundException("no data"));
-
-        SessionReportCommand cmd = new SessionReportCommand(sessionReportService, renderer);
+            SessionReportCommand cmd = new SessionReportCommand(sessionReportService, renderer);
 
 
-        int exitCode = new CommandLine(cmd)
-                .execute("-l", "Monza", "-y", "2024", "-s", "Race");
+            int exitCode = new CommandLine(cmd)
+                    .execute("-l", "Austin", "-s", "Qualifying", "-o", "reports/austin-quali.pdf");
 
 
-        assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
-        verifyNoInteractions(renderer);
-        assertThat(errorStream.toString())
-                .contains("Requested data not found")
-                .contains("Use --help");
-    }
+            assertThat(exitCode).isZero();
+            verify(sessionReportService, times(1))
+                    .buildReport(eq("Austin"), eq(currentYear), eq(SessionName.QUALIFYING), isNull(), any());
+        }
 
-    @Test
-    void unexpectedServiceException_causesExitCode1_andDoesNotRender() {
+        @Test
+        void whenNoOutputGiven_usesDefaultReportsPathWithSlugifiedName() {
 
-        when(sessionReportService.buildReport(anyString(), anyInt(), any(), any(), any()))
-                .thenThrow(new RuntimeException("boom"));
+            SessionReport report = mock(SessionReport.class);
+            when(sessionReportService.buildReport(eq("Las Vegas"), eq(2024), eq(SessionName.QUALIFYING), isNull(), any()))
+                    .thenReturn(report);
 
-        SessionReportCommand cmd = new SessionReportCommand(sessionReportService, renderer);
-
-
-        int exitCode = new CommandLine(cmd)
-                .execute("-l", "Monza", "-y", "2024", "-s", "Race");
+            SessionReportCommand cmd = new SessionReportCommand(sessionReportService, renderer);
 
 
-        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
-        verifyNoInteractions(renderer);
-        assertThat(errorStream.toString()).contains("Unexpected error: boom");
-    }
-
-    @Test
-    void missingRequiredLocation_causesUsageError() {
-
-        int exitCode = new CommandLine(new SessionReportCommand(sessionReportService, renderer))
-                .execute("-y", "2024", "-s", "Race");
+            int exitCode = new CommandLine(cmd)
+                    .execute("-l", "Las Vegas", "-y", "2024", "-s", "Qualifying");
 
 
-        assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
-        assertThat(errorStream.toString()).containsIgnoringCase("Missing required option");
-        verifyNoInteractions(renderer);
-    }
+            assertThat(exitCode).isZero();
 
-    @Test
-    void invalidSessionName_causesUsageError() {
+            ArgumentCaptor<Path> pathCaptor = ArgumentCaptor.forClass(Path.class);
+            verify(renderer, times(1)).render(eq(report), pathCaptor.capture());
+            assertThat(pathCaptor.getValue().toString())
+                    .endsWith("reports\\session-report-las-vegas-2024-qualifying.pdf");
+        }
 
-        int exitCode = new CommandLine(new SessionReportCommand(sessionReportService, renderer))
-                .execute("-l", "Monza", "-y", "2024", "-s", "NOT_A_SESSION");
-
-
-        assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
-        assertThat(errorStream.toString()).isNotBlank();
-        verifyNoInteractions(renderer);
-    }
-
-    @Test
-    void helpOption_printsUsage_andExitCode0() {
-
-        int exitCode = new CommandLine(new SessionReportCommand(sessionReportService, renderer))
-                .execute("--help");
-
-
-        assertThat(exitCode).isZero();
-        assertThat(outputStream.toString()).contains("session-report");
     }
 }
