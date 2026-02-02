@@ -6,9 +6,7 @@ import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.service.sessionResult.ISessionResultService;
 import org.assertj.core.api.AssertionsForClassTypes;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import picocli.CommandLine;
 
 import java.io.ByteArrayOutputStream;
@@ -60,59 +58,70 @@ public class SessionResultCommandTest {
         System.setErr(originalErr);
     }
 
-    @Test
-    void sessionResult_printsFormattedOutput_andReturnsZero() {
-        when(mockSessionResultService.getResultByLocationYearAndSessionType(
-                "Austin", 2024, SessionName.RACE
-        )).thenReturn(sampleContext);
+    @Nested
+    @DisplayName("Input Validation")
+    class InputValidation {
 
-        int exitCode = new CommandLine(new SessionResultCommand(mockSessionResultService))
-                .execute("-l", "Austin", "-y", "2024", "-s", "RACE");
+        @Test
+        void missingRequiredOptions_returnsError() {
+            int exitCode = new CommandLine(new SessionResultCommand(mockSessionResultService))
+                    .execute();
 
-        assertThat(exitCode).isZero();
-        assertThat(errorStream.toString()).isBlank();
-        assertThat(outputStream.toString()).isNotBlank();
+            assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
+            assertThat(errorStream.toString()).containsIgnoringCase("Missing required option");
+        }
 
-        verify(mockSessionResultService, times(1))
-                .getResultByLocationYearAndSessionType("Austin", 2024, SessionName.RACE);
+        @Test
+        void invalidParam_catchesDataNotFoundException() {
+            when(mockSessionResultService.getResultByLocationYearAndSessionType("Saarbrücken", 2024, RACE))
+                    .thenThrow(MeetingNotFoundException.class);
+
+            int exitCode = new CommandLine(
+                    new SessionResultCommand(mockSessionResultService)
+            ).execute("-l", "Saarbrücken", "-y", "2024", "-s", "RACE");
+
+            AssertionsForClassTypes.assertThat(errorStream.toString()).contains("Use --help");
+            AssertionsForClassTypes.assertThat(exitCode).isEqualTo(2);
+        }
+
     }
 
-    @Test
-    void missingRequiredOptions_returnsError() {
-        int exitCode = new CommandLine(new SessionResultCommand(mockSessionResultService))
-                .execute();
+    @Nested
+    @DisplayName("Output Validation")
+    class OutputValidation{
 
-        assertThat(exitCode).isEqualTo(ILLEGAL_ARG_ERROR);
-        assertThat(errorStream.toString()).containsIgnoringCase("Missing required option");
-    }
+        @Test
+        void sessionResult_printsFormattedOutput_andReturnsZero() {
+            when(mockSessionResultService.getResultByLocationYearAndSessionType(
+                    "Austin", 2024, SessionName.RACE
+            )).thenReturn(sampleContext);
 
-    @Test
-    void serviceThrowsException_printsMessage_andReturnsTwo() {
-        when(mockSessionResultService.getResultByLocationYearAndSessionType(
-                "Monza", 2024, SessionName.QUALIFYING
-        )).thenThrow(new RuntimeException("Database down"));
+            int exitCode = new CommandLine(new SessionResultCommand(mockSessionResultService))
+                    .execute("-l", "Austin", "-y", "2024", "-s", "RACE");
 
-        int exitCode = new CommandLine(new SessionResultCommand(mockSessionResultService))
-                .execute("-l", "Monza", "-y", "2024", "-s", "QUALIFYING");
+            assertThat(exitCode).isZero();
+            assertThat(errorStream.toString()).isBlank();
+            assertThat(outputStream.toString()).isNotBlank();
 
-        assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
-        assertThat(outputStream.toString()).isBlank();
-        assertThat(errorStream.toString()).contains("Database down");
+            verify(mockSessionResultService, times(1))
+                    .getResultByLocationYearAndSessionType("Austin", 2024, SessionName.RACE);
+        }
 
-        verify(mockSessionResultService, times(1))
-                .getResultByLocationYearAndSessionType("Monza", 2024, SessionName.QUALIFYING);
-    }
+        @Test
+        void serviceThrowsException_printsMessage_andReturnsTwo() {
+            when(mockSessionResultService.getResultByLocationYearAndSessionType(
+                    "Monza", 2024, SessionName.QUALIFYING
+            )).thenThrow(new RuntimeException("Database down"));
 
-    @Test
-    void invalidParam_catchesDataNotFoundException() {
-        when(mockSessionResultService.getResultByLocationYearAndSessionType("Saarbrücken", 2024, RACE))
-                .thenThrow(MeetingNotFoundException.class);
+            int exitCode = new CommandLine(new SessionResultCommand(mockSessionResultService))
+                    .execute("-l", "Monza", "-y", "2024", "-s", "QUALIFYING");
 
-        int exitCode = new CommandLine(
-                new SessionResultCommand(mockSessionResultService)
-        ).execute("-l", "Saarbrücken", "-y", "2024", "-s", "RACE");
+            assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
+            assertThat(outputStream.toString()).isBlank();
+            assertThat(errorStream.toString()).contains("Database down");
 
-        AssertionsForClassTypes.assertThat(errorStream.toString()).contains("Use --help");
-        AssertionsForClassTypes.assertThat(exitCode).isEqualTo(2);
+            verify(mockSessionResultService, times(1))
+                    .getResultByLocationYearAndSessionType("Monza", 2024, SessionName.QUALIFYING);
+        }
     }
 }

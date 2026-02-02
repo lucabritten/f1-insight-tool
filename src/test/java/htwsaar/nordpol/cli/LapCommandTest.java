@@ -3,7 +3,6 @@ package htwsaar.nordpol.cli;
 
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.domain.Lap;
-import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.service.lap.LapService;
 import org.junit.jupiter.api.Test;
