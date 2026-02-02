@@ -4,6 +4,7 @@ import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.dto.WeatherDto;
 import java.util.List;
 import java.util.Map;
+import static htwsaar.nordpol.api.OpenF1Param.*;
 
 public class WeatherClient extends BaseClient implements IWeatherClient{
 
@@ -21,8 +22,8 @@ public class WeatherClient extends BaseClient implements IWeatherClient{
         return fetchList(
                 OpenF1Endpoint.WEATHER,
                 Map.of(
-                        "meeting_key", meetingKey,
-                        "session_key", sessionKey
+                        MEETING_KEY, meetingKey,
+                        SESSION_KEY, sessionKey
                 ),
                 WeatherDto[].class
         );

@@ -4,6 +4,7 @@ import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.dto.SessionResultDto;
 import java.util.List;
 import java.util.Map;
+import static htwsaar.nordpol.api.OpenF1Param.*;
 
 public class SessionResultClient extends BaseClient implements ISessionResultClient {
 
@@ -19,7 +20,7 @@ public class SessionResultClient extends BaseClient implements ISessionResultCli
     public List<SessionResultDto> getSessionResultBySessionKey(int sessionKey) {
         return fetchList(
                 OpenF1Endpoint.SESSION_RESULTS,
-                Map.of("session_key", sessionKey),
+                Map.of(SESSION_KEY, sessionKey),
                 SessionResultDto[].class
         );
     }

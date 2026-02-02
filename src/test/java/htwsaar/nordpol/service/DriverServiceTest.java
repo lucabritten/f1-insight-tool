@@ -72,7 +72,7 @@ public class DriverServiceTest {
             Meeting meeting = new Meeting(1279, "AUS", "Australia",
                     "Melbourne", "Australia GP", 2025);
 
-            when(meetingService.getMeetingsForSessionReport(2025))
+            when(meetingService.getMeetingsByYear(2025))
                     .thenReturn(List.of(meeting));
             when(driverRepo.getDriverByFullNameForYear("Lewis", "Hamilton", 2025))
                     .thenReturn(Optional.of(dbDto));
@@ -95,7 +95,7 @@ public class DriverServiceTest {
 
             when(driverClient.getDriverByName(eq("Max"), eq("Verstappen"), anyInt()))
                     .thenReturn(Optional.of(apiDto));
-            when(meetingService.getMeetingsForSessionReport(anyInt()))
+            when(meetingService.getMeetingsByYear(anyInt()))
                     .thenReturn(List.of(meeting));
 
             Driver result = driverService.getDriverByNameAndYear("Max", "Verstappen", 2026);
@@ -110,7 +110,7 @@ public class DriverServiceTest {
 
             when(driverRepo.getDriverByFullNameForYear(anyString(), anyString(), anyInt()))
                     .thenReturn(Optional.empty());
-            when(meetingService.getMeetingsForSessionReport(anyInt()))
+            when(meetingService.getMeetingsByYear(anyInt()))
                     .thenReturn(List.of(meeting));
             when(driverClient.getDriverByName(anyString(), anyString(), anyInt()))
                     .thenReturn(Optional.empty());
@@ -130,7 +130,7 @@ public class DriverServiceTest {
             DriverDto dbDto = new DriverDto("Max", "Verstappen", 1, "NLD");
             Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
 
-            when(meetingService.getMeetingsForSessionReport(2025))
+            when(meetingService.getMeetingsByYear(2025))
                     .thenReturn(List.of(meeting));
             when(driverRepo.getDriverByStartNumberForYear(1, 2025))
                     .thenReturn(Optional.of(dbDto));
@@ -147,7 +147,7 @@ public class DriverServiceTest {
             Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
             DriverDto apiDto = new DriverDto("Charles", "Leclerc", 16, "MCO");
 
-            when(meetingService.getMeetingsForSessionReport(2025))
+            when(meetingService.getMeetingsByYear(2025))
                     .thenReturn(List.of(meeting));
             when(driverRepo.getDriverByStartNumberForYear(16, 2025))
                     .thenReturn(Optional.empty());
@@ -164,7 +164,7 @@ public class DriverServiceTest {
         void throwsException_whenDriverNotFound() {
             Meeting meeting = new Meeting(1279, "AUS", "Australia", "Melbourne", "Australia GP", 2025);
 
-            when(meetingService.getMeetingsForSessionReport(2025))
+            when(meetingService.getMeetingsByYear(2025))
                     .thenReturn(List.of(meeting));
             when(driverRepo.getDriverByStartNumberForYear(99, 2025))
                     .thenReturn(Optional.empty());
@@ -247,7 +247,7 @@ public class DriverServiceTest {
                     .thenReturn(Optional.empty());
             when(driverClient.getDriverByNumberAndMeetingKey(14, 1280))
                     .thenReturn(Optional.empty());
-            when(meetingService.getMeetingsForSessionReport(2025))
+            when(meetingService.getMeetingsByYear(2025))
                     .thenReturn(List.of(meeting1, meeting2));
             when(driverClient.getDriverByNumberAndMeetingKey(14, 1279))
                     .thenReturn(Optional.of(apiDto));
@@ -266,7 +266,7 @@ public class DriverServiceTest {
                     .thenReturn(Optional.empty());
             when(driverClient.getDriverByNumberAndMeetingKey(99, 1280))
                     .thenReturn(Optional.empty());
-            when(meetingService.getMeetingsForSessionReport(2025))
+            when(meetingService.getMeetingsByYear(2025))
                     .thenReturn(List.of(meeting));
             when(driverClient.getDriverByNumberAndMeetingKey(99, 1279))
                     .thenReturn(Optional.empty());
@@ -274,6 +274,7 @@ public class DriverServiceTest {
             assertThatThrownBy(() -> driverService.getDriverByNumberWithFallback(99, 2025, 1280))
                     .isInstanceOf(DriverNotFoundException.class);
         }
+
     }
 
     @Nested
@@ -302,6 +303,32 @@ public class DriverServiceTest {
             driverService.preloadMissingDriversForMeeting(2025, 1280, Arrays.asList(44, null));
 
             verify(driverRepo, times(1)).hasNamedDriverNumberForYear(anyInt(), anyInt());
+        }
+
+        @Test
+        void doesNotUseDriverFromDifferentYearDuringFallback() {
+            int year = 2026;
+            int number = 1;
+            int meetingKey = 3000;
+
+            Meeting meeting2026 = new Meeting(meetingKey, "AUS", "Australia",
+                    "Melbourne", "Australia GP", 2026);
+
+            when(driverRepo.getDriverByStartNumberForYear(number, year))
+                    .thenReturn(Optional.empty());
+
+            when(driverClient.getDriverByNumberAndMeetingKey(number, meetingKey))
+                    .thenReturn(Optional.empty());
+
+            when(meetingService.getMeetingsByYear(year))
+                    .thenReturn(List.of(meeting2026));
+
+            assertThatThrownBy(() ->
+                    driverService.getDriverByNumberWithFallback(number, year, meetingKey)
+            ).isInstanceOf(DriverNotFoundException.class);
+
+            verify(driverRepo, never())
+                    .saveOrUpdateDriverForYear(any(), anyInt(), anyInt());
         }
     }
 }

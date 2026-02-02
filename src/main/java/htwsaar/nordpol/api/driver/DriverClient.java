@@ -5,6 +5,7 @@ import htwsaar.nordpol.api.dto.DriverDto;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import static htwsaar.nordpol.api.OpenF1Param.*;
 
 
 public class DriverClient extends BaseClient implements IDriverClient {
@@ -22,9 +23,9 @@ public class DriverClient extends BaseClient implements IDriverClient {
         return fetchSingle(
                 OpenF1Endpoint.DRIVERS,
                 Map.of(
-                        "first_name", firstName,
-                        "last_name", lastName,
-                        "meeting_key", meetingKey
+                        FIRST_NAME, firstName,
+                        LAST_NAME, lastName,
+                        MEETING_KEY, meetingKey
                 ),
                 DriverDto[].class
         );
@@ -35,8 +36,8 @@ public class DriverClient extends BaseClient implements IDriverClient {
         return fetchSingle(
                 OpenF1Endpoint.DRIVERS,
                 Map.of(
-                        "driver_number", number,
-                        "meeting_key", meetingKey
+                        DRIVER_NUMBER, number,
+                        MEETING_KEY, meetingKey
                 ),
                 DriverDto[].class
         );

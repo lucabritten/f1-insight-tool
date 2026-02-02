@@ -46,15 +46,25 @@ public class MeetingService implements IMeetingService {
         return Mapper.toMeeting(dto);
     }
 
+    /**
+     * <p>
+     * This method differs from the usual cache procedure, due to the reason
+     * that there are a different number of race-weekends in a formula 1 season,
+     * therefore, we cannot check if every meeting is cached. As a reason, the cached
+     * values for a season are only as a fallback, if the OpenF1 API is not available.
+     * </p>
+     */
     @Override
-    public List<Meeting> getMeetingsForSessionReport(int year){
+    public List<Meeting> getMeetingsByYear(int year){
 
-        List<MeetingDto> dtoList = cacheService.getOrFetchList(
-                () -> meetingRepo.getMeetingsByYear(year),
-                () -> meetingClient.getMeetingsByYear(year),
-                meetingRepo::saveList,
-                () -> new MeetingNotFoundException(year, "")
-        );
+        List<MeetingDto> dtoList = meetingClient.getMeetingsByYear(year);
+
+        if(dtoList.isEmpty())
+            dtoList = meetingRepo.getMeetingsByYear(year);
+
+        if(dtoList.isEmpty())
+            throw new MeetingNotFoundException(year, "");
+
         return dtoList
                 .stream()
                 .map(Mapper::toMeeting)

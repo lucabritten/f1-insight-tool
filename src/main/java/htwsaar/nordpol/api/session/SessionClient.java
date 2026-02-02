@@ -4,6 +4,7 @@ import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.dto.SessionDto;
 import java.util.Map;
 import java.util.Optional;
+import static htwsaar.nordpol.api.OpenF1Param.*;
 
 public class SessionClient extends BaseClient implements ISessionClient {
 
@@ -20,8 +21,8 @@ public class SessionClient extends BaseClient implements ISessionClient {
         return fetchSingle(
                 OpenF1Endpoint.SESSIONS,
                 Map.of(
-                        "meeting_key", meetingKey,
-                        "session_name", sessionName
+                        MEETING_KEY, meetingKey,
+                        SESSION_NAME, sessionName
                 ),
                 SessionDto[].class
         );
