@@ -41,22 +41,4 @@ public class DriverClient extends BaseClient implements IDriverClient {
                 DriverDto[].class
         );
     }
-
-    @Override
-    public Optional<DriverDto> getDriverByNumber(int number) {
-        return fetchSingle(
-                OpenF1Endpoint.DRIVERS,
-                Map.of("driver_number", number),
-                DriverDto[].class
-        );
-    }
-
-    @Override
-    public List<DriverDto> getDriversByMeetingKey(int meetingKey) {
-        return fetchList(
-                OpenF1Endpoint.DRIVERS,
-                Map.of("meeting_key", meetingKey),
-                DriverDto[].class
-        );
-    }
 }
