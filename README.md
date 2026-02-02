@@ -159,7 +159,7 @@ Options:
 - `--location, -l` (required): event location (e.g., Monza)
 - `--year, -y` (optional, default: `current year`)
 - `--session-name, -s` (required): session name (e.g., `Race`, PRACTICE1)
-- `--top-drivers, -t` (optional): limit to the first N drivers in result order
+- `--limit -lim` (optional): limit to the first N drivers in result order
 - `--output, -o` (optional): output path for the PDF (default: `reports/session-report-<location>-<year>-<session>.pdf`)
 
 Examples:
