@@ -40,7 +40,7 @@ public abstract class BaseClient {
 
         String url = buildUrl(endpoint.path(), queryParameter);
 
-        log.info("URL: {}", url);
+        log.debug("URL: {}", url);
         Request request = new Request.Builder()
                 .url(url)
                 .build();

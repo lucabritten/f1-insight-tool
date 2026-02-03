@@ -1,6 +1,11 @@
 package htwsaar.nordpol.cli;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.ScopeType;
 
 /**
  * Exit codes:
@@ -21,4 +26,11 @@ import picocli.CommandLine.Command;
 )
 public class F1CLI {
 
+    @Option(names = "--debug", description = "Enable debug logging", scope = ScopeType.INHERIT)
+    public void setDebug(boolean debug) {
+        if (debug) {
+            ((Logger) LoggerFactory.getLogger("htwsaar.nordpol.api")).setLevel(Level.DEBUG);
+            ((Logger) LoggerFactory.getLogger("htwsaar.nordpol.cli")).setLevel(Level.DEBUG);
+        }
+    }
 }

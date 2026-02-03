@@ -13,6 +13,8 @@ import java.time.Duration;
 
 public class ApiClientConfig {
 
+    private ApiClientConfig() {}
+
     public static OkHttpClient openF1HttpClient() {
         return new OkHttpClient().newBuilder()
                 .callTimeout(Duration.ofSeconds(10))

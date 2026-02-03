@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <!-- Appender for INFO level messages (to stdout) -->
+    <!-- Appender for DEBUG/INFO level messages (to stdout) -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <target>System.out</target>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>INFO</level>
             <onMatch>ACCEPT</onMatch>
@@ -27,6 +32,12 @@
 
     <!-- CLI package logs at INFO level with proper stdout/stderr routing -->
     <logger name="htwsaar.nordpol.cli" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="STDERR"/>
+    </logger>
+
+    <!-- API package logs at INFO level -->
+    <logger name="htwsaar.nordpol.api" level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="STDERR"/>
     </logger>
