@@ -8,6 +8,7 @@ import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.util.formatting.GapFormatter;
 import htwsaar.nordpol.util.formatting.TimeFormatter;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import java.io.IOException;
@@ -25,6 +26,10 @@ public final class ResultsTableRenderer {
     private static final String QUALI_HEADER = "%-4s %-22s %-16s %-4s %-8s %-8s %-8s %-8s";
     private static final String RACE_HEADER  = "%-4s %-22s %-16s %-4s %-8s";
 
+    private static final PDType1Font HELVETICA = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+    private static final PDType1Font COURIER = new PDType1Font(Standard14Fonts.FontName.COURIER);
+    private static final PDType1Font COURIER_BOLD = new PDType1Font(Standard14Fonts.FontName.COURIER_BOLD);
+
     private final TimeFormatter timeFormatter;
     private final GapFormatter gapFormatter;
 
@@ -39,7 +44,7 @@ public final class ResultsTableRenderer {
                         SessionResultWithContext resultsContext,
                         Map<Driver, List<Lap>> lapSeriesByDriver) throws IOException {
         if (resultsContext == null || resultsContext.results().isEmpty()) {
-            return writeLine(contentStream, PDType1Font.HELVETICA, TEXT_SIZE, x, y, "No session results found.");
+            return writeLine(contentStream, HELVETICA, TEXT_SIZE, x, y, "No session results found.");
         }
 
         Map<Integer, Driver> driversByNumber = new HashMap<>();
@@ -50,7 +55,7 @@ public final class ResultsTableRenderer {
         boolean qualifying = isQualifying(resultsContext.sessionName());
         String headerFormat = qualifying ? QUALI_HEADER : RACE_HEADER;
 
-        y = writeLine(contentStream, PDType1Font.COURIER_BOLD, TEXT_SIZE, x, y,
+        y = writeLine(contentStream, COURIER_BOLD, TEXT_SIZE, x, y,
                 qualifying
                         ? String.format(headerFormat, "Pos", "Driver", "Team","No.", "Q1(s)", "Q2(s)", "Q3(s)", "Gap")
                         : String.format(headerFormat, "Pos", "Driver", "Team","No.", "Gap"));
@@ -66,7 +71,7 @@ public final class ResultsTableRenderer {
             rowIndex++;
 
             if (qualifying) {
-                y = writeLine(contentStream, PDType1Font.COURIER, TEXT_SIZE, x, y,
+                y = writeLine(contentStream, COURIER, TEXT_SIZE, x, y,
                         String.format(headerFormat,
                                 position,
                                 trim(driverName, 22),
@@ -77,7 +82,7 @@ public final class ResultsTableRenderer {
                                 timeFormatter.segment(result.duration(), 2),
                                 gapFormatter.gap(result.gapToLeader(), result.dsq(), result.dns(), result.dnf())));
             } else {
-                y = writeLine(contentStream, PDType1Font.COURIER, 10, x, y,
+                y = writeLine(contentStream, COURIER, 10, x, y,
                         String.format(headerFormat,
                                 position,
                                 trim(driverName, 22),

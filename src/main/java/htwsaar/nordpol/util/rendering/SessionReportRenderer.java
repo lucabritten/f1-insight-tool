@@ -9,6 +9,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
@@ -22,7 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class SessionReportRenderer {
-    
+
     private final static float MARGIN = 50f;
     private final static float NEW_PARAGRAPH = 5f;
     private final static float COLUMN_GAP = 20f;
@@ -38,6 +39,9 @@ public class SessionReportRenderer {
     private final static int FLAG_WIDTH = 64;
     private final static int FLAG_HEIGHT = 40;
     private final static float IMAGE_BORDER_WIDTH = 0.5f;
+
+    private final static PDType1Font HELVETICA = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+    private final static PDType1Font HELVETICA_BOLD = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
 
     private final ResultsTableRenderer resultsTableRenderer = new ResultsTableRenderer(new TimeFormatter(), new GapFormatter());
     private final LapChartBuilder chartBuilder = new XChartLapChartBuilder();
@@ -72,7 +76,7 @@ public class SessionReportRenderer {
             float rightX = MARGIN + leftColWidth + COLUMN_GAP;
 
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-                y = writeLine(contentStream, PDType1Font.HELVETICA_BOLD, HEADER_SIZE, leftX, y, "Auto-generated " + report.sessionName().displayName() + " Report");
+                y = writeLine(contentStream, HELVETICA_BOLD, HEADER_SIZE, leftX, y, "Auto-generated " + report.sessionName().displayName() + " Report");
 
                 float leftY = writeSessionDetails(contentStream,leftX, y, report);
                 float rightY = y;
@@ -85,7 +89,7 @@ public class SessionReportRenderer {
                 y = Math.min(leftY, rightY) - NEW_PARAGRAPH;
 
                 //Session-Table
-                y = writeLine(contentStream, PDType1Font.HELVETICA_BOLD, SUB_HEADER_SIZE, leftX, y, report.sessionName().displayName() + " Results");
+                y = writeLine(contentStream, HELVETICA_BOLD, SUB_HEADER_SIZE, leftX, y, report.sessionName().displayName() + " Results");
                 y = resultsTableRenderer.render(contentStream, MARGIN, y, report.sessionResults(), report.lapSeriesByDriver());
 
                 if (chartImage != null) {
@@ -95,7 +99,7 @@ public class SessionReportRenderer {
                     chartOnNewPage = chartY < MARGIN;
                     if (!chartOnNewPage) {
                         y -= CHART_SECTION_SPACING;
-                        y = writeLine(contentStream, PDType1Font.HELVETICA_BOLD, SUB_HEADER_SIZE, MARGIN, y, "Lap Time Comparison");
+                        y = writeLine(contentStream, HELVETICA_BOLD, SUB_HEADER_SIZE, MARGIN, y, "Lap Time Comparison");
                         drawImage(document, contentStream, chartImage, MARGIN, y - chartHeight + CHART_TITLE_OFFSET, chartWidth, chartHeight);
                     }
                 }
@@ -106,7 +110,7 @@ public class SessionReportRenderer {
                 document.addPage(page);
                 float newPageY = page.getMediaBox().getHeight() - MARGIN;
                 try (PDPageContentStream chartStream = new PDPageContentStream(document, page)) {
-                    writeLine(chartStream, PDType1Font.HELVETICA_BOLD, SUB_HEADER_SIZE, MARGIN, newPageY, "Lap Time Comparison");
+                    writeLine(chartStream, HELVETICA_BOLD, SUB_HEADER_SIZE, MARGIN, newPageY, "Lap Time Comparison");
                     drawImage(document, chartStream, chartImage, MARGIN, newPageY - chartHeight - CHART_TITLE_OFFSET, chartWidth, chartHeight);
                 }
             }
@@ -121,14 +125,14 @@ public class SessionReportRenderer {
         }
     }
     private float writeSessionDetails(PDPageContentStream contentStream, float leftX, float leftY, SessionReport report) throws IOException{
-        leftY = writeLine(contentStream, PDType1Font.HELVETICA_BOLD, SUB_HEADER_SIZE, leftX, leftY, "Session Details:");
-        leftY = writeLine(contentStream, PDType1Font.HELVETICA, TEXT_SIZE, leftX, leftY,
+        leftY = writeLine(contentStream, HELVETICA_BOLD, SUB_HEADER_SIZE, leftX, leftY, "Session Details:");
+        leftY = writeLine(contentStream, HELVETICA, TEXT_SIZE, leftX, leftY,
                 String.format("Meeting: %s", report.meetingName()));
-        leftY = writeLine(contentStream, PDType1Font.HELVETICA, TEXT_SIZE, leftX, leftY,
+        leftY = writeLine(contentStream, HELVETICA, TEXT_SIZE, leftX, leftY,
                 String.format("Session: %s", report.sessionName().displayName()));
-        leftY = writeLine(contentStream, PDType1Font.HELVETICA, TEXT_SIZE, leftX, leftY,
+        leftY = writeLine(contentStream, HELVETICA, TEXT_SIZE, leftX, leftY,
                 String.format("Year: %d", report.year()));
-        leftY = writeLine(contentStream, PDType1Font.HELVETICA, TEXT_SIZE, leftX, leftY,
+        leftY = writeLine(contentStream, HELVETICA, TEXT_SIZE, leftX, leftY,
                 String.format("Location: %s", report.location()));
 
         return leftY;
@@ -136,16 +140,16 @@ public class SessionReportRenderer {
 
     private float writeWeatherBlock(PDPageContentStream contentStream, float x, float y, WeatherWithContext weatherWithContext) throws IOException {
         if (weatherWithContext == null || weatherWithContext.weather() == null) {
-            return writeLine(contentStream, PDType1Font.HELVETICA, TEXT_SIZE, x, y, "Weather data not available.");
+            return writeLine(contentStream, HELVETICA, TEXT_SIZE, x, y, "Weather data not available.");
         }
         Weather weather = weatherWithContext.weather();
-        y = writeLine(contentStream, PDType1Font.HELVETICA_BOLD, SUB_HEADER_SIZE, x, y, "Weather Summary");
-        y = writeLine(contentStream, PDType1Font.HELVETICA, TEXT_SIZE, x, y,
+        y = writeLine(contentStream, HELVETICA_BOLD, SUB_HEADER_SIZE, x, y, "Weather Summary");
+        y = writeLine(contentStream, HELVETICA, TEXT_SIZE, x, y,
                 String.format("Air: %.1f C | Track: %.1f C | Humidity: %.1f%%",
                         weather.avgAirTemperature(),
                         weather.avgTrackTemperature(),
                         weather.avgHumidity()));
-        return writeLine(contentStream, PDType1Font.HELVETICA, TEXT_SIZE, x, y,
+        return writeLine(contentStream, HELVETICA, TEXT_SIZE, x, y,
                 String.format("Wind: %.1f km/h @ %.0f deg | Rain: %s",
                         weather.avgWindSpeed(),
                         weather.avgWindDirection(),

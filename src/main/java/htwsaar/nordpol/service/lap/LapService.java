@@ -96,7 +96,7 @@ public class LapService implements ILapService {
 
         List<Driver> drivers = new ArrayList<>();
 
-        fastestLaps.forEach((lap) -> drivers.add(driverService.getDriverByNumberAndYear(lap.driverNumber(), year)));
+        fastestLaps.forEach(lap -> drivers.add(driverService.getDriverByNumberAndYear(lap.driverNumber(), year)));
 
         return new FastestLapsWithContext(meeting.meetingName(),
                 session.sessionName(),
