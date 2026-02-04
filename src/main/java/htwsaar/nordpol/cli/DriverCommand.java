@@ -5,6 +5,7 @@ import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.config.ApplicationContext;
 
+import htwsaar.nordpol.service.driver.IDriverService;
 import htwsaar.nordpol.util.formatting.CliFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +51,9 @@ public class DriverCommand implements Callable<Integer> {
     )
     private int year = Year.now().getValue();
 
-    private final DriverService driverService;
+    private final IDriverService driverService;
 
-    public DriverCommand(DriverService driverService){
+    public DriverCommand(IDriverService driverService){
         this.driverService = driverService;
     }
 

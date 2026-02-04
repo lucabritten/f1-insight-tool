@@ -24,11 +24,16 @@ import htwsaar.nordpol.repository.weather.JooqWeatherRepo;
 import htwsaar.nordpol.service.CacheService;
 import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.driver.DriverService;
+import htwsaar.nordpol.service.lap.ILapService;
 import htwsaar.nordpol.service.lap.LapService;
+import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.service.report.SessionReportService;
+import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.service.session.SessionService;
+import htwsaar.nordpol.service.sessionResult.ISessionResultService;
 import htwsaar.nordpol.service.sessionResult.SessionResultService;
+import htwsaar.nordpol.service.weather.IWeatherService;
 import htwsaar.nordpol.service.weather.WeatherService;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
@@ -68,31 +73,31 @@ ApplicationContext {
         return new DriverService(driverRepo, driverClient, meetingService(), cacheService());
     }
 
-    public static MeetingService meetingService() {
+    public static IMeetingService meetingService() {
         IMeetingRepo meetingRepo = new JooqMeetingRepo(JooqConfig.createContext());
         MeetingClient meetingClient = new MeetingClient();
         return new MeetingService(meetingRepo, meetingClient, cacheService());
     }
 
-    public static SessionService sessionService() {
+    public static ISessionService sessionService() {
         ISessionRepo sessionRepo = new JooqSessionRepo(JooqConfig.createContext());
         SessionClient sessionClient = new SessionClient();
         return new SessionService(sessionRepo, sessionClient, cacheService());
     }
 
-    public static WeatherService weatherService() {
+    public static IWeatherService weatherService() {
         IWeatherRepo weatherRepo = new JooqWeatherRepo(JooqConfig.createContext());
         WeatherClient weatherClient = new WeatherClient();
         return new WeatherService(weatherClient, weatherRepo, sessionService(),meetingService());
     }
 
-    public static LapService lapService() {
+    public static ILapService lapService() {
         ILapRepo lapRepo = new JooqLapRepo(JooqConfig.createContext());
         LapClient lapClient = new LapClient();
         return new LapService(lapRepo, lapClient, meetingService(), sessionService(), driverService(), cacheService());
     }
 
-    public static SessionResultService sessionResultService() {
+    public static ISessionResultService sessionResultService() {
         ISessionResultClient client = new SessionResultClient();
         ISessionResultRepo repo = new JooqSessionResultRepo(JooqConfig.createContext());
         return new SessionResultService(meetingService(), sessionService(), client, repo, cacheService());

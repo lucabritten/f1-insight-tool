@@ -10,10 +10,16 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.domain.SessionReport;
 import htwsaar.nordpol.service.driver.DriverService;
+import htwsaar.nordpol.service.driver.IDriverService;
+import htwsaar.nordpol.service.lap.ILapService;
 import htwsaar.nordpol.service.lap.LapService;
+import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.meeting.MeetingService;
+import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.service.session.SessionService;
+import htwsaar.nordpol.service.sessionResult.ISessionResultService;
 import htwsaar.nordpol.service.sessionResult.SessionResultService;
+import htwsaar.nordpol.service.weather.IWeatherService;
 import htwsaar.nordpol.service.weather.WeatherService;
 
 import java.util.LinkedHashMap;
@@ -24,22 +30,22 @@ import static java.util.Objects.requireNonNull;
 
 public class SessionReportService implements ISessionReportService {
 
-    private final MeetingService meetingService;
-    private final SessionService sessionService;
-    private final SessionResultService sessionResultService;
-    private final WeatherService weatherService;
-    private final DriverService driverService;
+    private final IMeetingService meetingService;
+    private final ISessionService sessionService;
+    private final ISessionResultService sessionResultService;
+    private final IWeatherService weatherService;
+    private final IDriverService driverService;
 
     private final DriverResultFilter resultFilter;
     private final DriverResolver driverResolver;
     private final LapResolver lapResolver;
 
-    public SessionReportService(MeetingService meetingService,
-                                SessionService sessionService,
-                                SessionResultService sessionResultService,
-                                LapService lapService,
-                                WeatherService weatherService,
-                                DriverService driverService) {
+    public SessionReportService(IMeetingService meetingService,
+                                ISessionService sessionService,
+                                ISessionResultService sessionResultService,
+                                ILapService lapService,
+                                IWeatherService weatherService,
+                                IDriverService driverService) {
 
         this.meetingService = requireNonNull(meetingService, "meetingService must not be null");
         this.sessionService = requireNonNull(sessionService, "sessionService must not be null");

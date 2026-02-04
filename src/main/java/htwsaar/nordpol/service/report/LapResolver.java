@@ -2,6 +2,7 @@ package htwsaar.nordpol.service.report;
 
 import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.exception.LapNotFoundException;
+import htwsaar.nordpol.service.lap.ILapService;
 import htwsaar.nordpol.service.lap.LapService;
 
 import java.util.List;
@@ -10,9 +11,9 @@ import static java.util.Objects.requireNonNull;
 
 public class LapResolver {
 
-    private final LapService lapService;
+    private final ILapService lapService;
 
-    public LapResolver(LapService lapService) {
+    public LapResolver(ILapService lapService) {
         this.lapService = requireNonNull(lapService, "lapService must not be null");
     }
 

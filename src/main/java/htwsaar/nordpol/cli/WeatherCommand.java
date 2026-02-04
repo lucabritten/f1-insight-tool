@@ -5,6 +5,7 @@ import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.DataNotFoundException;
+import htwsaar.nordpol.service.weather.IWeatherService;
 import htwsaar.nordpol.service.weather.WeatherService;
 import htwsaar.nordpol.util.formatting.CliFormatter;
 import org.slf4j.Logger;
@@ -51,9 +52,9 @@ public class WeatherCommand implements Callable<Integer> {
     )
     private SessionName sessionName;
 
-    private final WeatherService weatherService;
+    private final IWeatherService weatherService;
 
-    public WeatherCommand(WeatherService weatherService) {
+    public WeatherCommand(IWeatherService weatherService) {
         this.weatherService = weatherService;
     }
 

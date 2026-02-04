@@ -5,6 +5,7 @@ import htwsaar.nordpol.cli.view.FastestLapsWithContext;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.DataNotFoundException;
+import htwsaar.nordpol.service.lap.ILapService;
 import htwsaar.nordpol.service.lap.LapService;
 import htwsaar.nordpol.util.formatting.CliFormatter;
 import org.slf4j.Logger;
@@ -66,13 +67,13 @@ public class FastestLapCommand implements Callable<Integer> {
     )
     private int limit;
 
-    private final LapService lapService;
+    private final ILapService lapService;
 
     public FastestLapCommand() {
         this(ApplicationContext.lapService());
     }
 
-    public FastestLapCommand(LapService lapService) {
+    public FastestLapCommand(ILapService lapService) {
         this.lapService = lapService;
     }
 

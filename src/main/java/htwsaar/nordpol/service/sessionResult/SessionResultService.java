@@ -74,9 +74,16 @@ public class SessionResultService implements ISessionResultService {
      * are ranked after classified drivers.</p>
      */
     private Comparator<SessionResult> CLASSIFICATION_ORDER() {
-        return Comparator.comparingInt((SessionResult result) -> (result.dnf() || result.dns() || result.dsq()) ? 1 : 0)
+        return Comparator.comparingInt(this::classificationRank)
                 .thenComparing(result -> result.position() > 0 ? result.position() : Integer.MAX_VALUE)
                 .thenComparing(SessionResult::driverNumber);
+    }
+
+    private int classificationRank(SessionResult result){
+        if(result.dns()) return 3;
+        if (result.dsq()) return 2;
+        if (result.dnf()) return 1;
+        return 0;
     }
 
     private List<SessionResult> getResultsBySessionKey(int sessionKey) {

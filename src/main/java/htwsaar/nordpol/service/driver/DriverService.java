@@ -7,7 +7,7 @@ import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.exception.DriverNotFoundException;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.service.ICacheService;
-import htwsaar.nordpol.service.meeting.MeetingService;
+import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.util.Mapper;
 
 import java.util.List;
@@ -33,11 +33,11 @@ public class DriverService implements IDriverService {
 
     private final IDriverRepo driverRepo;
     private final IDriverClient driverClient;
-    private final MeetingService meetingService;
+    private final IMeetingService meetingService;
     private final ICacheService cacheService;
 
 
-    public DriverService(IDriverRepo driverRepo, IDriverClient driverClient, MeetingService meetingService, ICacheService cacheService) {
+    public DriverService(IDriverRepo driverRepo, IDriverClient driverClient, IMeetingService meetingService, ICacheService cacheService) {
         requireNonNull(driverRepo, "driverRepo must not be null.");
         requireNonNull(driverClient, "driverClient must not be null.");
         requireNonNull(meetingService, "meetingService must not be null");

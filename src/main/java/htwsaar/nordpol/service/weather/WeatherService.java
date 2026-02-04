@@ -9,8 +9,8 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.exception.WeatherNotFoundException;
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
-import htwsaar.nordpol.service.meeting.MeetingService;
-import htwsaar.nordpol.service.session.SessionService;
+import htwsaar.nordpol.service.meeting.IMeetingService;
+import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.util.Mapper;
 
 import java.util.List;
@@ -32,10 +32,10 @@ public class WeatherService implements IWeatherService {
 
     private final IWeatherClient weatherClient;
     private final IWeatherRepo weatherRepo;
-    private final SessionService sessionService;
-    private final MeetingService meetingService;
+    private final ISessionService sessionService;
+    private final IMeetingService meetingService;
 
-    public WeatherService(IWeatherClient weatherClient, IWeatherRepo weatherRepo, SessionService sessionService, MeetingService meetingService){
+    public WeatherService(IWeatherClient weatherClient, IWeatherRepo weatherRepo, ISessionService sessionService, IMeetingService meetingService){
         requireNonNull(weatherClient, "weatherClient must not be null");
         requireNonNull(weatherRepo, "weatherRepo must not be null.");
         requireNonNull(sessionService, "sessionService must not be null.");

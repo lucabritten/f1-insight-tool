@@ -2,15 +2,16 @@ package htwsaar.nordpol.service.report;
 
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.service.driver.DriverService;
+import htwsaar.nordpol.service.driver.IDriverService;
 
 import static java.util.Objects.requireNonNull;
 
 
 public class DriverResolver {
 
-    private final DriverService driverService;
+    private final IDriverService driverService;
 
-    public DriverResolver(DriverService driverService) {
+    public DriverResolver(IDriverService driverService) {
         this.driverService = requireNonNull(driverService, "driverService must not be null");
     }
 

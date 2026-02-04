@@ -5,6 +5,7 @@ import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionReport;
 import htwsaar.nordpol.exception.DataNotFoundException;
+import htwsaar.nordpol.service.report.ISessionReportService;
 import htwsaar.nordpol.util.rendering.SessionReportRenderer;
 import htwsaar.nordpol.service.report.SessionReportService;
 import me.tongfei.progressbar.ProgressBar;
@@ -67,10 +68,10 @@ public class SessionReportCommand implements Callable<Integer> {
     )
     private String output;
 
-    private final SessionReportService sessionReportService;
+    private final ISessionReportService sessionReportService;
     private final SessionReportRenderer renderer;
 
-    public SessionReportCommand(SessionReportService sessionReportService, SessionReportRenderer renderer) {
+    public SessionReportCommand(ISessionReportService sessionReportService, SessionReportRenderer renderer) {
         this.sessionReportService = sessionReportService;
         this.renderer = renderer;
     }
