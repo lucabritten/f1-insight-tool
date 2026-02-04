@@ -1,7 +1,6 @@
 package htwsaar.nordpol.service.report;
 
 import htwsaar.nordpol.domain.Driver;
-import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.service.driver.IDriverService;
 
 import static java.util.Objects.requireNonNull;
