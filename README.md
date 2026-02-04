@@ -107,6 +107,8 @@ Examples:
 mvn -q exec:java -Dexec.args="driver --first-name Lewis --last-name Hamilton --year 2023"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar driver -fn Charles -ln Leclerc -y 2024
 ```
+Preview for command `driver --first-name Lewis --last-name Hamilton --year 2023`
+<img width="1068" height="148" alt="image" src="https://github.com/user-attachments/assets/c0d6d033-fa59-49af-946c-dfaff1f4177a" />
 
 ### weather
 Prints averaged weather information for a given event location, year, and session.
@@ -121,6 +123,8 @@ Examples:
 mvn -q exec:java -Dexec.args="weather --location Austin --year 2025 --session-name Qualifying"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar weather -l Monza -y 2023 -s Race
 ```
+Preview vor command `weather --location Austin --year 2025 --session-name Qualifying`
+<img width="1254" height="364" alt="image" src="https://github.com/user-attachments/assets/7c1b5e79-4724-4544-aed0-14706bb58cc0" />
 
 ### laps
 Prints all laps a driver has completed in a specified session of a race-weekend.
@@ -136,6 +140,8 @@ Examples:
 mvn -q exec:java -Dexec.args="laps --location Monza --session-name FP1 --driver-number 1"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar laps -l Monza -y 2024 -s RACE -d 44
 ```
+Preview for command `laps --location 'Spa-Francorchamps' --session-name sprint --driver-number 55 -y 2025`
+<img width="1486" height="800" alt="image" src="https://github.com/user-attachments/assets/5da49510-5ae1-4306-90eb-68589fc45119" />
 
 ### fastest-laps
 Prints the fastest lap for a given event location, year, and session. Optionally filter by driver number.
@@ -151,6 +157,8 @@ Options:
 mvn -q exec:java -Dexec.args="fastest-laps -l Austin -y 2025 -s Qualifying"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar fastest-laps -l Austin -s Race -d 81 --limit 3
 ```
+Preview for command `fastest-laps -l Austin -y 2025 -s Qualifying -lim 5`
+<img width="1300" height="404" alt="image" src="https://github.com/user-attachments/assets/6b42dd65-b5b7-4cc4-b56f-6def3f9c92a3" />
 
 ### session-report
 Generates a PDF report for a session including weather, results, and a lap time comparison chart.
