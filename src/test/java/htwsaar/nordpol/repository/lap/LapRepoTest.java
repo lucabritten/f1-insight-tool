@@ -1,6 +1,7 @@
 package htwsaar.nordpol.repository.lap;
 
 import htwsaar.nordpol.api.dto.LapDto;
+import htwsaar.nordpol.testutil.SqlSchemaLoader;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -26,19 +27,8 @@ public class LapRepoTest {
     void setUp() throws Exception {
         connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         create = DSL.using(connection, SQLDialect.SQLITE);
-        create.execute("""
-                CREATE TABLE Laps (
-                driver_number int NOT NULL,
-                lap_number int NOT NULL,
-                session_key int NOT NULL,
-                duration_sector_1 real NOT NULL,
-                duration_sector_2 real NOT NULL,
-                duration_sector_3 real NOT NULL,
-                lap_duration real NOT NULL,
-                is_pit_out_lap int NOT NULL,
-                PRIMARY KEY(driver_number, lap_number, session_key)
-                );
-                """);
+
+        SqlSchemaLoader.loadSchema(create, "schema.sql");
 
         create.execute("""
     INSERT INTO Laps (

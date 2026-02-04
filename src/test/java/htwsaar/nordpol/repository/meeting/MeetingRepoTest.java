@@ -1,6 +1,7 @@
 package htwsaar.nordpol.repository.meeting;
 
 import htwsaar.nordpol.api.dto.MeetingDto;
+import htwsaar.nordpol.testutil.SqlSchemaLoader;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -27,17 +28,8 @@ public class MeetingRepoTest {
     void setUp() throws Exception {
         connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         create = DSL.using(connection, SQLDialect.SQLITE);
-        create.execute("""
-                create table Meetings (
-                    meeting_key integer primary key,
-                    country_name text not null,
-                    country_code text not null,
-                    location text not null,
-                    meeting_name text not null,
-                    year int,
-                    country_flag text
-                );
-                """);
+
+        SqlSchemaLoader.loadSchema(create, "schema.sql");
 
         meetingRepo = new JooqMeetingRepo(create);
     }

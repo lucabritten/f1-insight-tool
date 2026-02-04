@@ -1,6 +1,7 @@
 package htwsaar.nordpol.repository.session;
 
 import htwsaar.nordpol.api.dto.SessionDto;
+import htwsaar.nordpol.testutil.SqlSchemaLoader;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -27,29 +28,12 @@ public class SessionRepoTest {
     void setUp() throws Exception {
         connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         create = DSL.using(connection, SQLDialect.SQLITE);
+
+        SqlSchemaLoader.loadSchema(create, "schema.sql");
+
         create.execute("""
-            create table Meetings (
-                meeting_key integer primary key not null,
-                country_name text not null,
-                country_code text not null,
-                location text not null,
-                meeting_name text not null,
-                year integer not null
-            );
-        """);
-        create.execute("""
-            create table Sessions (
-                session_key integer primary key not null,
-                meeting_key integer not null,
-                session_name text not null,
-                session_type text not null,
-                foreign key (meeting_key) references Meetings(meeting_key),
-                unique (meeting_key, session_name)
-            );
-        """);
-        create.execute("""
-            insert into Meetings (meeting_key, country_name, country_code, location, meeting_name, year)
-            values (1256, 'Japan', 'JPN', 'Suzuka', 'Japanese Grand Prix', 2025);
+            insert into Meetings (meeting_key, country_name, country_code, location, meeting_name, year, country_flag)
+            values (1256, 'Japan', 'JPN', 'Suzuka', 'Japanese Grand Prix', 2025, 'www.url.de');
         """);
 
         sessionRepo = new JooqSessionRepo(create);

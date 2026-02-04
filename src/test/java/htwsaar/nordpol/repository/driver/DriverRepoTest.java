@@ -1,6 +1,7 @@
 package htwsaar.nordpol.repository.driver;
 
 import htwsaar.nordpol.api.dto.DriverDto;
+import htwsaar.nordpol.testutil.SqlSchemaLoader;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -29,25 +30,7 @@ public class DriverRepoTest {
     void setUp() throws SQLException {
         connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         create = DSL.using(connection, SQLDialect.SQLITE);
-        create.execute("""
-            create table Drivers (
-                driver_id integer primary key autoincrement,
-                first_name text not null,
-                last_name text not null,
-                team_name text not null
-            );
-        """);
-        create.execute("""
-            create table Driver_numbers (
-                id integer primary key autoincrement,
-                driver_id integer not null,
-                start_number integer not null,
-                year integer not null,
-                meeting_key integer,
-                foreign key (driver_id) references Drivers(driver_id) on delete cascade,
-                unique (driver_id, year)
-            );
-        """);
+        SqlSchemaLoader.loadSchema(create, "schema.sql");
 
         driverRepo = new JooqDriverRepo(create);
     }
