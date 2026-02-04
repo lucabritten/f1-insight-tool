@@ -77,13 +77,13 @@ ApplicationContext {
     public static SessionService sessionService() {
         ISessionRepo sessionRepo = new JooqSessionRepo(JooqConfig.createContext());
         SessionClient sessionClient = new SessionClient();
-        return new SessionService(sessionRepo, sessionClient, meetingService(), cacheService());
+        return new SessionService(sessionRepo, sessionClient, cacheService());
     }
 
     public static WeatherService weatherService() {
         IWeatherRepo weatherRepo = new JooqWeatherRepo(JooqConfig.createContext());
         WeatherClient weatherClient = new WeatherClient();
-        return new WeatherService(weatherClient, weatherRepo, sessionService(),meetingService(), cacheService());
+        return new WeatherService(weatherClient, weatherRepo, sessionService(),meetingService());
     }
 
     public static LapService lapService() {

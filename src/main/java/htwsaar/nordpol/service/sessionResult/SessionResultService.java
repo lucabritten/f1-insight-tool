@@ -19,15 +19,21 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Application service for session result data.
+ *
+ * <p>This service resolves and orders session results according to
+ * Formula 1 classification rules.</p>
+ */
 public class SessionResultService implements ISessionResultService {
 
-    private IMeetingService meetingService;
-    private ISessionService sessionService;
+    private final IMeetingService meetingService;
+    private final ISessionService sessionService;
 
-    private ISessionResultClient sessionResultClient;
-    private ISessionResultRepo sessionResultRepo;
+    private final ISessionResultClient sessionResultClient;
+    private final ISessionResultRepo sessionResultRepo;
 
-    private ICacheService cacheService;
+    private final ICacheService cacheService;
 
     public SessionResultService(IMeetingService meetingService, ISessionService sessionService, ISessionResultClient sessionResultClient, ISessionResultRepo sessionResultRepo, ICacheService cacheService) {
         requireNonNull(meetingService, "meetingService must not be null");
@@ -61,6 +67,12 @@ public class SessionResultService implements ISessionResultService {
         );
     }
 
+    /**
+     * Defines the classification order for session results.
+     *
+     * <p>Drivers who did not finish, start, or were disqualified
+     * are ranked after classified drivers.</p>
+     */
     private Comparator<SessionResult> CLASSIFICATION_ORDER() {
         return Comparator.comparingInt((SessionResult result) -> (result.dnf() || result.dns() || result.dsq()) ? 1 : 0)
                 .thenComparing(result -> result.position() > 0 ? result.position() : Integer.MAX_VALUE)

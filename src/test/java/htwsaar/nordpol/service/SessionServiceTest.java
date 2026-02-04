@@ -41,7 +41,7 @@ public class SessionServiceTest {
 
     @BeforeEach
     void setup() {
-        sessionService = new SessionService(sessionRepo, sessionClient, meetingService, cacheService);
+        sessionService = new SessionService(sessionRepo, sessionClient,  cacheService);
     }
 
     @Nested

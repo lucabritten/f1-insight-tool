@@ -2,7 +2,7 @@ package htwsaar.nordpol.api.driver;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.dto.DriverDto;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Optional;
 import static htwsaar.nordpol.api.OpenF1Param.*;

@@ -16,19 +16,15 @@ public class SessionService implements ISessionService {
 
     private final ISessionRepo sessionRepo;
     private final ISessionClient sessionClient;
-
-    private final IMeetingService meetingService;
     private final ICacheService cacheService;
 
-    public SessionService(ISessionRepo sessionRepo, ISessionClient sessionClient, IMeetingService meetingService, ICacheService cacheService) {
+    public SessionService(ISessionRepo sessionRepo, ISessionClient sessionClient, ICacheService cacheService) {
         requireNonNull(sessionRepo, "sessionRepo must not be null.");
         requireNonNull(sessionClient, "sessionClient must not be null.");
-        requireNonNull(meetingService, "meetingService must not be null");
         requireNonNull(cacheService, "cacheService must not be null");
 
         this.sessionRepo = sessionRepo;
         this.sessionClient = sessionClient;
-        this.meetingService = meetingService;
         this.cacheService = cacheService;
     }
 
@@ -41,11 +37,5 @@ public class SessionService implements ISessionService {
                 () -> new SessionNotFoundException(meetingKey, sessionName.displayName())
         );
         return Mapper.toSession(dto);
-    }
-
-    @Override
-    public Session getSessionByLocationYearAndSessionType(String location, int year, SessionName sessionName) {
-        int meetingKey = meetingService.getMeetingByYearAndLocation(year, location).meetingKey();
-        return getSessionByMeetingKeyAndSessionName(meetingKey, sessionName);
     }
 }

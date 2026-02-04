@@ -9,7 +9,6 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.exception.WeatherNotFoundException;
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
-import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.service.session.SessionService;
 import htwsaar.nordpol.util.Mapper;
@@ -19,26 +18,33 @@ import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Application service for weather data.
+ *
+ * <p>This service aggregates weather information per session and meeting.
+ * Raw weather data is retrieved from the external API is averaged before being
+ * persisted and exposed as a domain object.</p>
+ *
+ * <p>For CLI use cases, this service can additionally enrich weather data
+ * with contextual information such as meeting and session names.</p>
+ */
 public class WeatherService implements IWeatherService {
 
     private final IWeatherClient weatherClient;
     private final IWeatherRepo weatherRepo;
     private final SessionService sessionService;
     private final MeetingService meetingService;
-    private final ICacheService cacheService;
 
-    public WeatherService(IWeatherClient weatherClient, IWeatherRepo weatherRepo, SessionService sessionService, MeetingService meetingService, ICacheService cacheService){
+    public WeatherService(IWeatherClient weatherClient, IWeatherRepo weatherRepo, SessionService sessionService, MeetingService meetingService){
         requireNonNull(weatherClient, "weatherClient must not be null");
         requireNonNull(weatherRepo, "weatherRepo must not be null.");
         requireNonNull(sessionService, "sessionService must not be null.");
         requireNonNull(meetingService, "meetingService must not be null");
-        requireNonNull(cacheService, "cacheService must not be null");
 
         this.weatherClient = weatherClient;
         this.weatherRepo = weatherRepo;
         this.sessionService = sessionService;
         this.meetingService = meetingService;
-        this.cacheService = cacheService;
     }
 
     @Override

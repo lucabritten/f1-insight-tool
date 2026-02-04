@@ -40,11 +40,9 @@ public class WeatherServiceTest {
 
     WeatherService weatherService;
 
-    ICacheService cacheService = new CacheService();
-
     @BeforeEach
     void setup() {
-        weatherService = new WeatherService(weatherClient, weatherRepo, sessionService, meetingService, cacheService);
+        weatherService = new WeatherService(weatherClient, weatherRepo, sessionService, meetingService);
     }
 
     @Nested
@@ -54,7 +52,7 @@ public class WeatherServiceTest {
         @Test
         void nullRepository_throwsException() {
             assertThatThrownBy(() ->
-                    new WeatherService(weatherClient, null, sessionService, meetingService, cacheService)
+                    new WeatherService(weatherClient, null, sessionService, meetingService)
             ).isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("weatherRepo");
         }
@@ -62,7 +60,7 @@ public class WeatherServiceTest {
         @Test
         void nullClient_throwsException() {
             assertThatThrownBy(() ->
-                    new WeatherService(null, weatherRepo, sessionService, meetingService, cacheService)
+                    new WeatherService(null, weatherRepo, sessionService, meetingService)
             ).isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("weatherClient");
         }

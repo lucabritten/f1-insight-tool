@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  * </p>
  * <p>
  *     This avoids duplicated cache orchestration logic in domain services
- *     and improves adherence to RP and DRY principles.
+ *     and improves adherence to SRP and DRY principles.
  * </p>
  * <p>
  *     The service is implemented using functional interfaces to stay
@@ -41,7 +41,7 @@ public class CacheService implements ICacheService{
     public <T> List<T> getOrFetchList(Supplier<List<T>> dbLookup,
                                              Supplier<List<T>> apiLookup,
                                              Consumer<List<T>> save,
-                                             Supplier<? extends RuntimeException> notFund) {
+                                             Supplier<? extends RuntimeException> notFound) {
         List<T> fromDb = dbLookup.get();
 
         if(!fromDb.isEmpty())
@@ -54,7 +54,7 @@ public class CacheService implements ICacheService{
             return fromApi;
         }
 
-        throw notFund.get();
+        throw notFound.get();
     }
 }
 
