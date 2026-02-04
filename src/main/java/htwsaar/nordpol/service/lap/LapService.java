@@ -10,10 +10,7 @@ import htwsaar.nordpol.repository.lap.ILapRepo;
 import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.driver.IDriverService;
 import htwsaar.nordpol.service.meeting.IMeetingService;
-import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
-import htwsaar.nordpol.service.session.SessionService;
-import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.util.Mapper;
 
 import java.util.ArrayList;

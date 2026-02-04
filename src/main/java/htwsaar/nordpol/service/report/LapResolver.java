@@ -3,7 +3,6 @@ package htwsaar.nordpol.service.report;
 import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.exception.LapNotFoundException;
 import htwsaar.nordpol.service.lap.ILapService;
-import htwsaar.nordpol.service.lap.LapService;
 
 import java.util.List;
 

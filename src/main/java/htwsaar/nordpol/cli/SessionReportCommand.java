@@ -7,7 +7,6 @@ import htwsaar.nordpol.domain.SessionReport;
 import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.report.ISessionReportService;
 import htwsaar.nordpol.util.rendering.SessionReportRenderer;
-import htwsaar.nordpol.service.report.SessionReportService;
 import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

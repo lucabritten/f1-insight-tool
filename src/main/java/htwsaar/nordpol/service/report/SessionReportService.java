@@ -9,18 +9,12 @@ import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.domain.SessionReport;
-import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.service.driver.IDriverService;
 import htwsaar.nordpol.service.lap.ILapService;
-import htwsaar.nordpol.service.lap.LapService;
 import htwsaar.nordpol.service.meeting.IMeetingService;
-import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
-import htwsaar.nordpol.service.session.SessionService;
 import htwsaar.nordpol.service.sessionResult.ISessionResultService;
-import htwsaar.nordpol.service.sessionResult.SessionResultService;
 import htwsaar.nordpol.service.weather.IWeatherService;
-import htwsaar.nordpol.service.weather.WeatherService;
 
 import java.util.LinkedHashMap;
 import java.util.List;

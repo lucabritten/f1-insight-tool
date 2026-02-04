@@ -6,7 +6,6 @@ import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.weather.IWeatherService;
-import htwsaar.nordpol.service.weather.WeatherService;
 import htwsaar.nordpol.util.formatting.CliFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -2,7 +2,6 @@ package htwsaar.nordpol.cli;
 
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.exception.DataNotFoundException;
-import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.config.ApplicationContext;
 
 import htwsaar.nordpol.service.driver.IDriverService;
