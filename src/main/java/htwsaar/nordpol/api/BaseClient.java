@@ -13,6 +13,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Base class for all OpenF1 API clients.
+ *
+ * <p>This class encapsulates HTTP communication, URL construction,
+ * and JSON deserialization for the OpenF1 API.</p>
+ *
+ * <p><strong>Design decision:</strong><br>
+ * API calls that return an unsuccessful HTTP status code do NOT throw
+ * an exception by default. Instead, an empty result is returned.</p>
+ *
+ * <p>This allows the service layer to decide whether missing or
+ * unavailable data is a valid state or should be treated as a
+ * business error (e.g. DriverNotFoundException).</p>
+ *
+ * <p>Only unexpected technical failures (e.g. I/O errors) are wrapped
+ * in an {@link htwsaar.nordpol.exception.ExternalApiException}.</p>
+ */
+
+
 public abstract class BaseClient {
 
     protected final OkHttpClient okHttpClient;
