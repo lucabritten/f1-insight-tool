@@ -8,7 +8,10 @@ import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.exception.LapNotFoundException;
 import htwsaar.nordpol.repository.lap.ILapRepo;
 import htwsaar.nordpol.service.ICacheService;
+import htwsaar.nordpol.service.driver.IDriverService;
+import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.meeting.MeetingService;
+import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.service.session.SessionService;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.util.Mapper;
@@ -24,12 +27,12 @@ public class LapService implements ILapService {
     private final ILapRepo lapRepo;
     private final ILapClient lapClient;
 
-    private final MeetingService meetingService;
-    private final SessionService sessionService;
-    private final DriverService driverService;
+    private final IMeetingService meetingService;
+    private final ISessionService sessionService;
+    private final IDriverService driverService;
     private final ICacheService cacheService;
 
-    public LapService(ILapRepo lapRepo, ILapClient lapsClient, MeetingService meetingService, SessionService sessionService, DriverService driverService, ICacheService cacheService) {
+    public LapService(ILapRepo lapRepo, ILapClient lapsClient, IMeetingService meetingService, ISessionService sessionService, IDriverService driverService, ICacheService cacheService) {
         validateLapConstructor(lapRepo, lapsClient, meetingService, sessionService, driverService, cacheService);
         this.lapRepo = lapRepo;
         this.lapClient = lapsClient;
@@ -39,7 +42,7 @@ public class LapService implements ILapService {
         this.cacheService = cacheService;
     }
 
-    private void validateLapConstructor(ILapRepo lapRepo, ILapClient lapsClient, MeetingService meetingService, SessionService sessionService, DriverService driverService, ICacheService cacheService){
+    private void validateLapConstructor(ILapRepo lapRepo, ILapClient lapsClient, IMeetingService meetingService, ISessionService sessionService, IDriverService driverService, ICacheService cacheService){
         requireNonNull(lapsClient, "lapClient");
         requireNonNull(lapRepo, "lapRepo");
         requireNonNull(meetingService, "meetingService");
