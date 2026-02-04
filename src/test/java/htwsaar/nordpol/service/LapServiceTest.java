@@ -116,6 +116,22 @@ public class LapServiceTest {
             assertThatThrownBy(() -> lapService.getLapsBySessionKeyAndDriverNumber(1011, 33))
                     .isInstanceOf(LapNotFoundException.class).hasMessageContaining("Laps not found with given parameters ");
         }
+
+        @Test
+        void filtersLapsWithZeroDuration() {
+            int sessionKey = 1234;
+            int driverNumber = 1;
+            LapDto lap1 = new LapDto(33, 1011, 1, 30.1, 29.8, 31.2, 0, true);
+            LapDto lap2 = new LapDto(33, 1011, 2, 30.1, 25.8, 30.2, 91.1, false);
+            LapDto lap3 = new LapDto(33, 1011, 3, 30.1, 29.8, 31.2, 90.1, true);
+
+            when(lapRepo.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber))
+                    .thenReturn(List.of(lap1, lap2, lap3));
+
+            List<Lap> result = lapService.getLapsBySessionKeyAndDriverNumber(sessionKey, driverNumber);
+
+            assertThat(result).hasSize(2);
+        }
     }
 
     @Nested
@@ -186,7 +202,7 @@ public class LapServiceTest {
             assertThat(result.sessionName().displayName()).isEqualTo(sessionName.displayName());
             assertThat(result.drivers()).hasSize(result.fastestLaps().size());
             assertThat(result.drivers().getFirst().lastName()).isEqualTo("Verstappen");
-            assertThat(result.fastestLaps()).hasSize(3);
+            assertThat(result.fastestLaps()).hasSize(2);
             assertThat(result.fastestLaps())
                     .anySatisfy(lap -> {
                         assertThat(lap.driverNumber()).isEqualTo(1);

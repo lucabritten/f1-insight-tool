@@ -78,10 +78,13 @@ public class LapService implements ILapService {
                 lapRepo::saveAll,
                 () -> new LapNotFoundException(sessionKey, driverNumber)
         );
-        return dtoList
+        return filterValidLaps(
+                dtoList
                 .stream()
+                .filter(lap -> lap.lap_duration() > 0)
                 .map(Mapper::toLap)
-                .toList();
+                .toList(),
+                true);
     }
 
     @Override
@@ -98,6 +101,8 @@ public class LapService implements ILapService {
 
         fastestLaps.forEach(lap -> drivers.add(driverService.getDriverByNumberAndYear(lap.driverNumber(), year)));
 
+
+
         return new FastestLapsWithContext(meeting.meetingName(),
                 session.sessionName(),
                 drivers,
@@ -113,10 +118,12 @@ public class LapService implements ILapService {
                 lapRepo::saveAll,
                 () -> new LapNotFoundException(sessionKey)
         );
-        return dtoList
+        return filterValidLaps(
+                dtoList
                 .stream()
                 .map(Mapper::toLap)
-                .toList();
+                .toList(),
+                true);
     }
 
     @Override
@@ -150,11 +157,21 @@ public class LapService implements ILapService {
             return List.of();
         }
 
-        return laps.stream()
-                .filter(l -> l.lapDuration() > 0)
-                .filter(l -> !l.isPitOutLap())
+        return filterValidLaps(
+                laps.stream()
                 .sorted(Comparator.comparingDouble(Lap::lapDuration))
                 .limit(count)
+                .toList(),
+                false);
+    }
+
+    private List<Lap> filterValidLaps(List<Lap> laps, boolean includePitOutLaps) {
+        if (laps == null)
+            return List.of();
+
+        return laps.stream()
+                .filter(lap -> lap.lapDuration() > 0)
+                .filter(lap -> includePitOutLaps || !lap.isPitOutLap())
                 .toList();
     }
 }
