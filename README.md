@@ -96,6 +96,14 @@ mvn -q exec:java -Dexec.args="--help"
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar --help
 ```
 
+### Debug Flag
+Show which api calls are being made during your use:
+```bash
+mvn -q exec:java -Dexec.args="--debug subcommand args"
+# or, if running the JAR
+java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar --debug subcommand args #driver, laps, etc.
+```
+
 ### driver
 Prints driver information for a given season.
 
