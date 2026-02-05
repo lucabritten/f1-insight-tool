@@ -22,6 +22,7 @@ A command-line tool to explore Formula 1 data such as drivers, weather, sessions
   - [session-report](#session-report)
 - [Exit Codes](#exit-codes)
 - [Caching Strategy](#caching-strategy)
+- [Database Initialization](#database-initialization)
 - [Configuration](#configuration)
 - [Data Sources](#data-sources)
 - [Limitations](#limitations)
