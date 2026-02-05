@@ -66,6 +66,7 @@ Main entry-point: `htwsaar.nordpol.App` (starts Picocli).
 ```bash
 git clone https://github.com/lucabritten/f1-insight-tool.git
 cd f1-insight-tool
+mvn clean package
 ```
 
 ## Quick Start
