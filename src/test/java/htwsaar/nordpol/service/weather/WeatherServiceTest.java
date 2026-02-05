@@ -1,4 +1,4 @@
-package htwsaar.nordpol.service;
+package htwsaar.nordpol.service.weather;
 
 import htwsaar.nordpol.dto.WeatherDto;
 import htwsaar.nordpol.api.weather.WeatherClient;
@@ -7,7 +7,6 @@ import htwsaar.nordpol.exception.WeatherNotFoundException;
 import htwsaar.nordpol.repository.weather.JooqWeatherRepo;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.service.session.SessionService;
-import htwsaar.nordpol.service.weather.WeatherService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

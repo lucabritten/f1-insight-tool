@@ -1,6 +1,7 @@
-package htwsaar.nordpol.service;
+package htwsaar.nordpol.service.cache;
 
 import htwsaar.nordpol.config.ApplicationContext;
+import htwsaar.nordpol.service.ICacheService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

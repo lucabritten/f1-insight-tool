@@ -1,4 +1,4 @@
-package htwsaar.nordpol.service;
+package htwsaar.nordpol.service.sessionresult;
 
 import htwsaar.nordpol.dto.SessionResultDto;
 import htwsaar.nordpol.api.sessionresult.ISessionResultClient;
@@ -7,6 +7,8 @@ import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.repository.sessionresult.ISessionResultRepo;
+import htwsaar.nordpol.service.CacheService;
+import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.service.sessionResult.SessionResultService;

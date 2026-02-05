@@ -1,4 +1,4 @@
-package htwsaar.nordpol.service;
+package htwsaar.nordpol.service.meeting;
 
 
 import htwsaar.nordpol.dto.MeetingDto;
@@ -7,7 +7,7 @@ import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.repository.meeting.IMeetingRepo;
-import htwsaar.nordpol.service.meeting.MeetingService;
+import htwsaar.nordpol.service.ICacheService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

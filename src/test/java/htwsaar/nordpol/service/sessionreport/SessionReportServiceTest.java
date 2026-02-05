@@ -1,4 +1,4 @@
-package htwsaar.nordpol.service;
+package htwsaar.nordpol.service.sessionreport;
 
 import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.cli.view.WeatherWithContext;

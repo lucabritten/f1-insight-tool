@@ -1,4 +1,4 @@
-package htwsaar.nordpol.service;
+package htwsaar.nordpol.service.session;
 
 import htwsaar.nordpol.dto.SessionDto;
 import htwsaar.nordpol.api.session.SessionClient;
@@ -6,7 +6,8 @@ import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.SessionNotFoundException;
 import htwsaar.nordpol.repository.session.ISessionRepo;
-import htwsaar.nordpol.service.session.SessionService;
+import htwsaar.nordpol.service.CacheService;
+import htwsaar.nordpol.service.ICacheService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
