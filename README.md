@@ -205,6 +205,15 @@ using a SQLite database.
 - If no data is found, the OpenF1 API is queried
 - Retrieved data is persisted and reused for later requests
 
+## Database Initialization
+On startup, the application automatically initializes the SQLite database using the schema defined in `src/main/resources/schema.sql`. The initialization process:
+
+1. **Checks for missing tables** – Compares tables defined in `schema.sql` against existing tables in `sqlite_master`
+2. **Creates missing tables** – If any expected table is absent, executes the DDL statements from `schema.sql`
+3. **Handles existing schema** – Skips "already exists" errors, allowing incremental schema updates
+
+This ensures the database is always ready without requiring manual setup.
+
 ## Configuration
 - Network: API calls go to the public OpenF1 API; no API key is required.
 
