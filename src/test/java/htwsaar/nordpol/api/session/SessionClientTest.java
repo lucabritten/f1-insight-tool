@@ -1,6 +1,7 @@
 package htwsaar.nordpol.api.session;
 
 import htwsaar.nordpol.api.dto.SessionDto;
+import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
@@ -24,7 +25,7 @@ public class SessionClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        sessionClient = new SessionClient(mockWebServer.url("/").toString());
+        sessionClient = new SessionClient(mockWebServer.url("/").toString(), ApplicationContext.getInstance().objectMapper());
     }
 
     @AfterEach

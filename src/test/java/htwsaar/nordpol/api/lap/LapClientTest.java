@@ -1,6 +1,7 @@
 package htwsaar.nordpol.api.lap;
 
 import htwsaar.nordpol.api.dto.LapDto;
+import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -25,7 +26,7 @@ class LapClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        lapClient = new LapClient(mockWebServer.url("/").toString());
+        lapClient = new LapClient(mockWebServer.url("/").toString(), ApplicationContext.getInstance().objectMapper());
     }
 
     @AfterEach
@@ -75,7 +76,7 @@ class LapClientTest {
 
             assertThat(result).hasSize(2);
 
-            LapDto lap = result.get(0);
+            LapDto lap = result.getFirst();
             assertThat(lap.driver_number()).isEqualTo(44);
             assertThat(lap.session_key()).isEqualTo(123);
             assertThat(lap.lap_number()).isEqualTo(1);

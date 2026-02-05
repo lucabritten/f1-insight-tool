@@ -38,7 +38,7 @@ public class MeetingServiceTest {
 
     @BeforeEach
     void setup() {
-        cacheService = ApplicationContext.cacheService();
+        cacheService = ApplicationContext.getInstance().cacheService();
         meetingService = new MeetingService(meetingRepo, meetingClient, cacheService);
     }
 

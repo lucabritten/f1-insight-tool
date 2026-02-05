@@ -1,4 +1,5 @@
 package htwsaar.nordpol.api.sessionresult;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.dto.SessionResultDto;
@@ -8,12 +9,12 @@ import static htwsaar.nordpol.api.OpenF1Param.*;
 
 public class SessionResultClient extends BaseClient implements ISessionResultClient {
 
-    public SessionResultClient(String baseUrl){
-        super(baseUrl);
+    public SessionResultClient(String baseUrl, ObjectMapper mapper){
+        super(baseUrl, mapper);
     }
 
-    public SessionResultClient() {
-        super();
+    public SessionResultClient(ObjectMapper mapper) {
+        super(mapper);
     }
 
     @Override

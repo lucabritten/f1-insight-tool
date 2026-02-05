@@ -57,7 +57,7 @@ public class DriverCommand implements Callable<Integer> {
     }
 
     public DriverCommand(){
-        this(ApplicationContext.driverService());
+        this(ApplicationContext.getInstance().driverService());
     }
 
     @Override

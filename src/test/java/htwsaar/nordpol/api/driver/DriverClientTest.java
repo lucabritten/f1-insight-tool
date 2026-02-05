@@ -2,6 +2,7 @@ package htwsaar.nordpol.api.driver;
 
 import htwsaar.nordpol.api.dto.DriverDto;
 
+import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.MockResponse;
 import org.junit.jupiter.api.AfterEach;
@@ -26,7 +27,7 @@ public class DriverClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        driverClient = new DriverClient(mockWebServer.url("/").toString());
+        driverClient = new DriverClient(mockWebServer.url("/").toString(), ApplicationContext.getInstance().objectMapper());
     }
 
     @AfterEach

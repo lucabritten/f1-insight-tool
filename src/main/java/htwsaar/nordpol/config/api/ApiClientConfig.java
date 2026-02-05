@@ -32,16 +32,16 @@ public class ApiClientConfig {
 
         @NotNull
         @Override
-        public Response intercept(@NotNull Chain chain) throws IOException {
+        public Response intercept( Chain chain) throws IOException {
             Request request = chain.request();
             Response response = chain.proceed(request);
 
             if (!response.isSuccessful() && response.code() == 429) {
-                log.warn("Rate limit hit: {}", response.message());
+                log.debug("Rate limit hit: {}", response.message());
                 response.close();
 
                 try {
-                    log.info("Waiting 1 second before retry...");
+                    log.debug("Waiting 1 second before retry...");
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

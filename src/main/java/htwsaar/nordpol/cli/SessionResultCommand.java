@@ -59,7 +59,7 @@ public class SessionResultCommand implements Callable<Integer> {
     }
 
     public SessionResultCommand () {
-        this(ApplicationContext.sessionResultService());
+        this(ApplicationContext.getInstance().sessionResultService());
     }
 
     @Override

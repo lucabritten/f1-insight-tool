@@ -38,83 +38,132 @@ import htwsaar.nordpol.service.weather.WeatherService;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
+import org.jooq.DSLContext;
 
 /**
- * Simple application context responsible for wiring application services.
+ * Application-wide context responsible for wiring and sharing services.
  *
- * <p>This class acts as a lightweight dependency container and is used
- * to create fully initialized service instances.</p>
+ * <p>This class acts as a lightweight dependency container and follows
+ * the Singleton pattern. All services, repositories and infrastructure
+ * components are created once and shared for the lifetime of the application</p>
  *
  * <p>It centralizes object creation and keeps CLI commands free from
  * infrastructure and configuration logic.</p>
  */
-public class
-ApplicationContext {
+public class ApplicationContext {
 
-    private ApplicationContext(){
+    private DSLContext dslContext;
 
-    }
-    /**
-     * Creates and returns a {@link DriverService} instance.
-     *
-     * <p>The service is composed of a repository backed by a local SQLite
-     * database and a client for accessing the OpenF1 API.</p>
-     *
-     * @return a fully initialized DriverService
-     */
+    private static ApplicationContext instance;
 
-    public static ICacheService cacheService() {
-        return new CacheService();
-    }
+    private final ICacheService cacheService;
+    private final IDriverRepo driverRepo;
+    private final IMeetingRepo meetingRepo;
+    private final ISessionRepo sessionRepo;
+    private final ILapRepo lapRepo;
+    private final ISessionResultRepo sessionResultRepo;
+    private final IWeatherRepo weatherRepo;
 
-    public static DriverService driverService() {
-        IDriverRepo driverRepo = new JooqDriverRepo(JooqConfig.createContext());
-        IDriverClient driverClient = new DriverClient();
-        return new DriverService(driverRepo, driverClient, meetingService(), cacheService());
-    }
+    private final IDriverClient driverClient;
+    private final MeetingClient meetingClient;
+    private final SessionClient sessionClient;
+    private final LapClient lapClient;
+    private final ISessionResultClient sessionResultClient;
+    private final WeatherClient weatherClient;
 
-    public static IMeetingService meetingService() {
-        IMeetingRepo meetingRepo = new JooqMeetingRepo(JooqConfig.createContext());
-        MeetingClient meetingClient = new MeetingClient();
-        return new MeetingService(meetingRepo, meetingClient, cacheService());
-    }
+    private final DriverService driverService;
+    private final IMeetingService meetingService;
+    private final ISessionService sessionService;
+    private final ILapService lapService;
+    private final ISessionResultService sessionResultService;
+    private final IWeatherService weatherService;
+    private final SessionReportService sessionReportService;
 
-    public static ISessionService sessionService() {
-        ISessionRepo sessionRepo = new JooqSessionRepo(JooqConfig.createContext());
-        SessionClient sessionClient = new SessionClient();
-        return new SessionService(sessionRepo, sessionClient, cacheService());
-    }
+    private final ObjectMapper objectMapper;
 
-    public static IWeatherService weatherService() {
-        IWeatherRepo weatherRepo = new JooqWeatherRepo(JooqConfig.createContext());
-        WeatherClient weatherClient = new WeatherClient();
-        return new WeatherService(weatherClient, weatherRepo, sessionService(),meetingService());
-    }
+    private ApplicationContext() {
+        this.cacheService = new CacheService();
+        this.objectMapper = new ObjectMapper();
 
-    public static ILapService lapService() {
-        ILapRepo lapRepo = new JooqLapRepo(JooqConfig.createContext());
-        LapClient lapClient = new LapClient();
-        return new LapService(lapRepo, lapClient, meetingService(), sessionService(), driverService(), cacheService());
-    }
+        this.driverRepo = new JooqDriverRepo(dslContext());
+        this.meetingRepo = new JooqMeetingRepo(dslContext());
+        this.sessionRepo = new JooqSessionRepo(dslContext());
+        this.lapRepo = new JooqLapRepo(dslContext());
+        this.sessionResultRepo = new JooqSessionResultRepo(dslContext());
+        this.weatherRepo = new JooqWeatherRepo(dslContext());
 
-    public static ISessionResultService sessionResultService() {
-        ISessionResultClient client = new SessionResultClient();
-        ISessionResultRepo repo = new JooqSessionResultRepo(JooqConfig.createContext());
-        return new SessionResultService(meetingService(), sessionService(), client, repo, cacheService());
-    }
+        this.driverClient = new DriverClient(objectMapper());
+        this.meetingClient = new MeetingClient(objectMapper());
+        this.sessionClient = new SessionClient(objectMapper());
+        this.lapClient = new LapClient(objectMapper());
+        this.sessionResultClient = new SessionResultClient(objectMapper());
+        this.weatherClient = new WeatherClient(objectMapper());
 
-    public static SessionReportService sessionReportService() {
-        return new SessionReportService(
-                meetingService(),
-                sessionService(),
-                sessionResultService(),
-                lapService(),
-                weatherService(),
-                driverService()
+        this.meetingService = new MeetingService(meetingRepo, meetingClient, cacheService);
+        this.sessionService = new SessionService(sessionRepo, sessionClient, cacheService);
+        this.driverService = new DriverService(driverRepo, driverClient, meetingService, cacheService);
+        this.weatherService = new WeatherService(weatherClient, weatherRepo, sessionService, meetingService);
+        this.lapService = new LapService(lapRepo, lapClient, meetingService, sessionService, driverService, cacheService);
+        this.sessionResultService =
+                new SessionResultService(meetingService, sessionService, sessionResultClient, sessionResultRepo, cacheService);
+
+        this.sessionReportService = new SessionReportService(
+                meetingService,
+                sessionService,
+                sessionResultService,
+                lapService,
+                weatherService,
+                driverService
         );
     }
 
-    public static ProgressBar progressBar() {
+    private DSLContext dslContext() {
+        if (this.dslContext == null) {
+            this.dslContext = JooqConfig.createContext();
+        }
+        return this.dslContext;
+    }
+
+    public static ApplicationContext getInstance() {
+        if (instance == null) {
+            instance = new ApplicationContext();
+        }
+        return instance;
+    }
+
+    public ICacheService cacheService() {
+        return cacheService;
+    }
+
+    public DriverService driverService() {
+        return driverService;
+    }
+
+    public IMeetingService meetingService() {
+        return meetingService;
+    }
+
+    public ISessionService sessionService() {
+        return sessionService;
+    }
+
+    public IWeatherService weatherService() {
+        return weatherService;
+    }
+
+    public ILapService lapService() {
+        return lapService;
+    }
+
+    public ISessionResultService sessionResultService() {
+        return sessionResultService;
+    }
+
+    public SessionReportService sessionReportService() {
+        return sessionReportService;
+    }
+
+    public ProgressBar progressBar() {
         return new ProgressBarBuilder()
                 .setTaskName("Generating session report")
                 .setInitialMax(9)
@@ -124,7 +173,7 @@ ApplicationContext {
                 .build();
     }
 
-    public static ObjectMapper objectMapper() {
-        return new ObjectMapper();
+    public ObjectMapper objectMapper() {
+        return objectMapper;
     }
 }

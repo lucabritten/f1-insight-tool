@@ -69,7 +69,7 @@ public class FastestLapCommand implements Callable<Integer> {
     private final ILapService lapService;
 
     public FastestLapCommand() {
-        this(ApplicationContext.lapService());
+        this(ApplicationContext.getInstance().lapService());
     }
 
     public FastestLapCommand(ILapService lapService) {

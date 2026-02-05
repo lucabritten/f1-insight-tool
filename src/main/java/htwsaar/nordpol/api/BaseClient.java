@@ -1,6 +1,5 @@
 package htwsaar.nordpol.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.config.api.ApiClientConfig;
 import htwsaar.nordpol.exception.ExternalApiException;
 import okhttp3.*;
@@ -30,8 +29,6 @@ import java.util.Optional;
  * <p>Only unexpected technical failures (e.g. I/O errors) are wrapped
  * in an {@link htwsaar.nordpol.exception.ExternalApiException}.</p>
  */
-
-
 public abstract class BaseClient {
 
     protected final OkHttpClient okHttpClient;
@@ -40,14 +37,14 @@ public abstract class BaseClient {
 
     private static final Logger log = LoggerFactory.getLogger(BaseClient.class);
 
-    protected BaseClient(String baseUrl){
+    protected BaseClient(String baseUrl, ObjectMapper objectMapper){
         this.baseUrl = baseUrl;
         this.okHttpClient = ApiClientConfig.openF1HttpClient();
-        this.objectMapper = ApplicationContext.objectMapper();
+        this.objectMapper = objectMapper;
     }
 
-    protected BaseClient(){
-        this("https://api.openf1.org/v1");
+    protected BaseClient(ObjectMapper objectMapper){
+        this("https://api.openf1.org/v1", objectMapper);
     }
 
     protected <T> Optional<T> fetchSingle(OpenF1Endpoint endpoint, Map<OpenF1Param, ?> queryParameter, Class<T[]> responseType) {

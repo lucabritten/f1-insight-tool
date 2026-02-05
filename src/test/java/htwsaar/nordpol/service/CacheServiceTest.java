@@ -31,7 +31,7 @@ public class CacheServiceTest {
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setup() {
-        cacheService = ApplicationContext.cacheService();
+        cacheService = ApplicationContext.getInstance().cacheService();
         optionalDbLookup = mock(Supplier.class);
         optionalApiLookup = mock(Supplier.class);
         optionalSave = mock(Consumer.class);

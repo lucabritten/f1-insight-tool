@@ -49,7 +49,7 @@ public class LapServiceTest {
 
     @BeforeEach
     void setup() {
-        cacheService = ApplicationContext.cacheService();
+        cacheService = ApplicationContext.getInstance().cacheService();
         lapService = new LapService(lapRepo, lapClient, meetingService, sessionService, driverService, cacheService);
     }
 

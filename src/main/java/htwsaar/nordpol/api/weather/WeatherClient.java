@@ -1,4 +1,5 @@
 package htwsaar.nordpol.api.weather;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.dto.WeatherDto;
@@ -8,12 +9,12 @@ import static htwsaar.nordpol.api.OpenF1Param.*;
 
 public class WeatherClient extends BaseClient implements IWeatherClient{
 
-    public WeatherClient(String baseUrl){
-        super(baseUrl);
+    public WeatherClient(String baseUrl, ObjectMapper mapper){
+        super(baseUrl, mapper);
     }
 
-    public WeatherClient() {
-        super();
+    public WeatherClient(ObjectMapper mapper) {
+        super(mapper);
     }
 
     @Override

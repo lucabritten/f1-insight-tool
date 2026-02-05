@@ -41,8 +41,6 @@ public class SessionReportCommandTest {
         sessionReportService = mock(SessionReportService.class);
         renderer = mock(SessionReportRenderer.class);
         ProgressBar progressBar = mock(ProgressBar.class);
-        applicationContextMock = mockStatic(ApplicationContext.class);
-        applicationContextMock.when(ApplicationContext::progressBar).thenReturn(progressBar);
 
         outputStream = new ByteArrayOutputStream();
         errorStream = new ByteArrayOutputStream();

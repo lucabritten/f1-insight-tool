@@ -76,12 +76,12 @@ public class SessionReportCommand implements Callable<Integer> {
     }
 
     public SessionReportCommand() {
-        this(ApplicationContext.sessionReportService(), new SessionReportRenderer());
+        this(ApplicationContext.getInstance().sessionReportService(), new SessionReportRenderer());
     }
 
     @Override
     public Integer call() {
-        try(ProgressBar progressBar = ApplicationContext.progressBar()) {
+        try(ProgressBar progressBar = ApplicationContext.getInstance().progressBar()) {
 
             SessionReport report = sessionReportService.buildReport(location,
                     year,

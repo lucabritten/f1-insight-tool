@@ -3,6 +3,7 @@ package htwsaar.nordpol.repository;
 
 import htwsaar.nordpol.api.dto.SessionResultDto;
 import htwsaar.nordpol.repository.sessionresult.JooqSessionResultRepo;
+import htwsaar.nordpol.testutil.SqlSchemaLoader;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -19,37 +20,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SessionResultRepoTest {
 
-    private DSLContext dsl;
+    private DSLContext create;
     private JooqSessionResultRepo repo;
 
     @BeforeEach
     void setup() throws Exception {
         Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
-        dsl = DSL.using(connection, SQLDialect.SQLITE);
+        create = DSL.using(connection, SQLDialect.SQLITE);
 
-        dsl.execute("""
-            CREATE TABLE session_results (
-                session_key        INTEGER NOT NULL,
-                driver_number      INTEGER NOT NULL,
+        SqlSchemaLoader.loadSchema(create, "schema.sql");
 
-                position           INTEGER,
-                dnf                INTEGER NOT NULL,
-                dns                INTEGER NOT NULL,
-                dsq                INTEGER NOT NULL,
-
-                gap_to_leader_q1   TEXT,
-                gap_to_leader_q2   TEXT,
-                gap_to_leader_q3   TEXT,
-
-                duration_q1        REAL,
-                duration_q2        REAL,
-                duration_q3        REAL,
-
-                PRIMARY KEY (session_key, driver_number)
-            );
-        """);
-
-        repo = new JooqSessionResultRepo(dsl);
+        repo = new JooqSessionResultRepo(create);
     }
 
     @Nested
@@ -74,7 +55,7 @@ class SessionResultRepoTest {
 
             assertThat(results).hasSize(1);
 
-            SessionResultDto stored = results.get(0);
+            SessionResultDto stored = results.getFirst();
             assertThat(stored.session_key()).isEqualTo(9640);
             assertThat(stored.driver_number()).isEqualTo(16);
             assertThat(stored.position()).isEqualTo(3);
@@ -114,7 +95,7 @@ class SessionResultRepoTest {
             List<SessionResultDto> results = repo.getSessionResultBySessionKey(9641);
 
             assertThat(results).hasSize(1);
-            SessionResultDto stored = results.get(0);
+            SessionResultDto stored = results.getFirst();
 
             assertThat(stored.dnf()).isTrue();
             assertThat(stored.gap_to_leader()).containsExactly(null, null, null);

@@ -1,8 +1,10 @@
 package htwsaar.nordpol.api.baseclient;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.OpenF1Param;
+import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.exception.ExternalApiException;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -26,8 +28,8 @@ class BaseClientTest {
     private TestBaseClient baseClient;
 
     static class TestBaseClient extends BaseClient {
-        TestBaseClient(String baseUrl) {
-            super(baseUrl);
+        TestBaseClient(String baseUrl, ObjectMapper mapper) {
+            super(baseUrl, mapper);
         }
 
         <T> List<T> fetchListTest(OpenF1Endpoint endpoint, Map<OpenF1Param, ?> queryParameter, Class<T[]> responseType) {
@@ -45,7 +47,7 @@ class BaseClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        baseClient = new TestBaseClient(mockWebServer.url("/v1").toString());
+        baseClient = new TestBaseClient(mockWebServer.url("/v1").toString(), ApplicationContext.getInstance().objectMapper());
     }
 
     @AfterEach

@@ -60,7 +60,7 @@ public class LapCommand implements Callable<Integer> {
     }
 
     public LapCommand(){
-        this(ApplicationContext.lapService());
+        this(ApplicationContext.getInstance().lapService());
     }
 
     @Override

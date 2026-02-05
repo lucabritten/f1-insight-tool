@@ -1,6 +1,7 @@
 package htwsaar.nordpol.api.meeting;
 
 import htwsaar.nordpol.api.dto.MeetingDto;
+import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
@@ -25,7 +26,7 @@ public class MeetingClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        meetingClient = new MeetingClient(mockWebServer.url("/").toString());
+        meetingClient = new MeetingClient(mockWebServer.url("/").toString(), ApplicationContext.getInstance().objectMapper());
     }
 
     @AfterEach

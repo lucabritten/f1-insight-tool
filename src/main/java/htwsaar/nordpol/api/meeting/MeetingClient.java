@@ -1,4 +1,5 @@
 package htwsaar.nordpol.api.meeting;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.dto.MeetingDto;
@@ -9,12 +10,12 @@ import static htwsaar.nordpol.api.OpenF1Param.*;
 
 public class MeetingClient extends BaseClient implements IMeetingClient {
 
-    public MeetingClient(String baseUrl){
-        super(baseUrl);
+    public MeetingClient(String baseUrl, ObjectMapper mapper){
+        super(baseUrl, mapper);
     }
 
-    public MeetingClient() {
-        super();
+    public MeetingClient(ObjectMapper mapper) {
+        super(mapper);
     }
 
     @Override

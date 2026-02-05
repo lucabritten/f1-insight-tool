@@ -58,7 +58,7 @@ public class WeatherCommand implements Callable<Integer> {
     }
 
     public WeatherCommand() {
-        this(ApplicationContext.weatherService());
+        this(ApplicationContext.getInstance().weatherService());
     }
 
     @Override

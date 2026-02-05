@@ -1,4 +1,5 @@
 package htwsaar.nordpol.api.lap;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.dto.LapDto;
@@ -9,11 +10,11 @@ import static htwsaar.nordpol.api.OpenF1Param.*;
 
 public class LapClient extends BaseClient implements ILapClient{
 
-    public LapClient(String baseUrl) {
-        super(baseUrl);
+    public LapClient(String baseUrl, ObjectMapper mapper) {
+        super(baseUrl, mapper);
     }
-    public LapClient(){
-        super();
+    public LapClient(ObjectMapper mapper){
+        super(mapper);
     }
 
     @Override

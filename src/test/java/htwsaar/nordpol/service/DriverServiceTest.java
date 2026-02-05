@@ -45,7 +45,7 @@ public class DriverServiceTest {
 
     @BeforeEach
     void setup() {
-        cacheService = ApplicationContext.cacheService();
+        cacheService = ApplicationContext.getInstance().cacheService();
         driverService = new DriverService(driverRepo, driverClient, meetingService, cacheService);
     }
 
