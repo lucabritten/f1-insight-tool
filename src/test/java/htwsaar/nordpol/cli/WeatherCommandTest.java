@@ -27,7 +27,6 @@ public class WeatherCommandTest {
     private ByteArrayOutputStream errorStream;
     private WeatherWithContext sampleWeatherContext;
 
-    private static final int ILLEGAL_ARG_ERROR = 1;
     private static final int BUSINESS_LOGIC_ERROR = 2;
 
     @BeforeEach
@@ -74,7 +73,7 @@ public class WeatherCommandTest {
 
             int exitCode = new CommandLine(
                     new WeatherCommand(mockWeatherService)
-            ).execute("-l", "Austin", "-y", "2024", "-sn", "Race");
+            ).execute("-l", "Austin", "-y", "2024", "-s", "Race");
 
             assertThat(exitCode).isZero();
             assertThat(outputStream.toString()).contains("WEATHER");
@@ -113,7 +112,7 @@ public class WeatherCommandTest {
 
             int exitCode = new CommandLine(
                     new WeatherCommand(mockWeatherService)
-            ).execute("-l", "Austin", "-sn", "Race");
+            ).execute("-l", "Austin", "-s", "Race");
 
             assertThat(exitCode).isZero();
             assertThat(outputStream.toString()).contains("Austin");
@@ -143,7 +142,7 @@ public class WeatherCommandTest {
 
             int exitCode = new CommandLine(
                     new WeatherCommand(mockWeatherService)
-            ).execute("-l", "Saarbrücken", "-y", "2024", "-sn", "Race");
+            ).execute("-l", "Saarbrücken", "-y", "2024", "-s", "Race");
 
             assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
             assertThat(errorStream.toString())
@@ -154,7 +153,7 @@ public class WeatherCommandTest {
         void invalidSessionName_printsErrorMessage() {
             int exitCode = new CommandLine(
                     new WeatherCommand(mockWeatherService)
-            ).execute("-l", "Austin", "-y", "2024", "-sn", "Cruising");
+            ).execute("-l", "Austin", "-y", "2024", "-s", "Cruising");
 
             assertThat(exitCode).isEqualTo(BUSINESS_LOGIC_ERROR);
             assertThat(errorStream.toString())
@@ -173,7 +172,7 @@ public class WeatherCommandTest {
                     .thenReturn(sampleWeatherContext);
 
             int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
-                    .execute("-l", "Austin", "-y", "2024", "-sn", "GP");
+                    .execute("-l", "Austin", "-y", "2024", "-s", "GP");
 
             assertThat(exitCode).isZero();
             assertThat(outputStream.toString()).contains("Austin");
@@ -201,7 +200,7 @@ public class WeatherCommandTest {
                     .thenReturn(sample);
 
             int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
-                    .execute("-l", "Austin", "-y", "2024", "-sn", "Quali");
+                    .execute("-l", "Austin", "-y", "2024", "-s", "Quali");
 
             assertThat(exitCode).isZero();
             assertThat(outputStream.toString()).contains("Austin");
@@ -229,7 +228,7 @@ public class WeatherCommandTest {
                     .thenReturn(sample);
 
             int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
-                    .execute("-l", "Austin", "-y", "2024", "-sn", "FP1");
+                    .execute("-l", "Austin", "-y", "2024", "-s", "FP1");
 
             assertThat(exitCode).isZero();
             assertThat(outputStream.toString()).contains("Austin");
@@ -242,7 +241,7 @@ public class WeatherCommandTest {
                     .thenReturn(sampleWeatherContext);
 
             int exitCode = new CommandLine(new WeatherCommand(mockWeatherService))
-                    .execute("-l", "Austin", "-y", "2024", "-sn", "rAcE");
+                    .execute("-l", "Austin", "-y", "2024", "-s", "rAcE");
 
             assertThat(exitCode).isZero();
             assertThat(outputStream.toString()).contains("Austin");
