@@ -1,6 +1,6 @@
 package htwsaar.nordpol.repository.lap;
 
-import htwsaar.nordpol.api.dto.LapDto;
+import htwsaar.nordpol.dto.LapDto;
 import htwsaar.nordpol.testutil.SqlSchemaLoader;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;

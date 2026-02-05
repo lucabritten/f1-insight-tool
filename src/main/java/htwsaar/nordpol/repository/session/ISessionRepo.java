@@ -1,6 +1,6 @@
 package htwsaar.nordpol.repository.session;
 
-import htwsaar.nordpol.api.dto.SessionDto;
+import htwsaar.nordpol.dto.SessionDto;
 
 import java.util.Optional;
 

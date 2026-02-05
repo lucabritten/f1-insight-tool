@@ -1,6 +1,6 @@
 package htwsaar.nordpol.service.weather;
 
-import htwsaar.nordpol.api.dto.WeatherDto;
+import htwsaar.nordpol.dto.WeatherDto;
 import htwsaar.nordpol.api.weather.IWeatherClient;
 import htwsaar.nordpol.cli.view.WeatherWithContext;
 import htwsaar.nordpol.domain.Meeting;

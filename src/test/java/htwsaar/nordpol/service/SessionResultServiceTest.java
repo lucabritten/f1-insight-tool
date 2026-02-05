@@ -1,6 +1,6 @@
 package htwsaar.nordpol.service;
 
-import htwsaar.nordpol.api.dto.SessionResultDto;
+import htwsaar.nordpol.dto.SessionResultDto;
 import htwsaar.nordpol.api.sessionresult.ISessionResultClient;
 import htwsaar.nordpol.cli.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.Meeting;

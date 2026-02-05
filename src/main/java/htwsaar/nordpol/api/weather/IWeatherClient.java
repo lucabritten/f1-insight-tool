@@ -1,6 +1,6 @@
 package htwsaar.nordpol.api.weather;
 
-import htwsaar.nordpol.api.dto.WeatherDto;
+import htwsaar.nordpol.dto.WeatherDto;
 
 import java.util.List;
 

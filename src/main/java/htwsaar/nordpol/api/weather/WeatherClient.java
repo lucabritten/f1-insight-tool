@@ -2,7 +2,7 @@ package htwsaar.nordpol.api.weather;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
-import htwsaar.nordpol.api.dto.WeatherDto;
+import htwsaar.nordpol.dto.WeatherDto;
 import java.util.List;
 import java.util.Map;
 import static htwsaar.nordpol.api.OpenF1Param.*;

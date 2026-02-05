@@ -1,4 +1,4 @@
-package htwsaar.nordpol.api.dto;
+package htwsaar.nordpol.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

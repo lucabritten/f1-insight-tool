@@ -1,6 +1,6 @@
 package htwsaar.nordpol.api.lap;
 
-import htwsaar.nordpol.api.dto.LapDto;
+import htwsaar.nordpol.dto.LapDto;
 import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;

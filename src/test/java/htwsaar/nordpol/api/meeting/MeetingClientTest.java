@@ -1,6 +1,6 @@
 package htwsaar.nordpol.api.meeting;
 
-import htwsaar.nordpol.api.dto.MeetingDto;
+import htwsaar.nordpol.dto.MeetingDto;
 import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;

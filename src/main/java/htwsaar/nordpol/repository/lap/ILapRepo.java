@@ -1,6 +1,6 @@
 package htwsaar.nordpol.repository.lap;
 
-import htwsaar.nordpol.api.dto.LapDto;
+import htwsaar.nordpol.dto.LapDto;
 
 import java.util.List;
 

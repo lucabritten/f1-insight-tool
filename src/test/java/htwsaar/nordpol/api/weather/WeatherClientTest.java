@@ -1,6 +1,6 @@
 package htwsaar.nordpol.api.weather;
 
-import htwsaar.nordpol.api.dto.WeatherDto;
+import htwsaar.nordpol.dto.WeatherDto;
 import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;

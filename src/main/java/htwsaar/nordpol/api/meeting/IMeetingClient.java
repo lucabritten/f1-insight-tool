@@ -1,6 +1,6 @@
 package htwsaar.nordpol.api.meeting;
 
-import htwsaar.nordpol.api.dto.MeetingDto;
+import htwsaar.nordpol.dto.MeetingDto;
 
 import java.util.List;
 import java.util.Optional;

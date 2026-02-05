@@ -1,6 +1,6 @@
 package htwsaar.nordpol.repository.weather;
 
-import htwsaar.nordpol.api.dto.WeatherDto;
+import htwsaar.nordpol.dto.WeatherDto;
 import org.jooq.DSLContext;
 
 import static com.nordpol.jooq.tables.Weather.*;

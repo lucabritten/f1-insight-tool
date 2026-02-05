@@ -2,7 +2,7 @@ package htwsaar.nordpol.api.session;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
-import htwsaar.nordpol.api.dto.SessionDto;
+import htwsaar.nordpol.dto.SessionDto;
 import java.util.Map;
 import java.util.Optional;
 import static htwsaar.nordpol.api.OpenF1Param.*;

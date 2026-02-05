@@ -1,6 +1,6 @@
 package htwsaar.nordpol.repository.meeting;
 
-import htwsaar.nordpol.api.dto.MeetingDto;
+import htwsaar.nordpol.dto.MeetingDto;
 import htwsaar.nordpol.testutil.SqlSchemaLoader;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;

@@ -1,7 +1,7 @@
 package htwsaar.nordpol.service.lap;
 
 import htwsaar.nordpol.api.lap.ILapClient;
-import htwsaar.nordpol.api.dto.LapDto;
+import htwsaar.nordpol.dto.LapDto;
 import htwsaar.nordpol.cli.view.FastestLapsWithContext;
 import htwsaar.nordpol.cli.view.LapsWithContext;
 import htwsaar.nordpol.domain.*;

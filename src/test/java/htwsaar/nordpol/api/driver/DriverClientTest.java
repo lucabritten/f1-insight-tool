@@ -1,6 +1,6 @@
 package htwsaar.nordpol.api.driver;
 
-import htwsaar.nordpol.api.dto.DriverDto;
+import htwsaar.nordpol.dto.DriverDto;
 
 import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockWebServer;

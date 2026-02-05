@@ -1,6 +1,6 @@
 package htwsaar.nordpol.service;
 
-import htwsaar.nordpol.api.dto.WeatherDto;
+import htwsaar.nordpol.dto.WeatherDto;
 import htwsaar.nordpol.api.weather.WeatherClient;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.exception.WeatherNotFoundException;

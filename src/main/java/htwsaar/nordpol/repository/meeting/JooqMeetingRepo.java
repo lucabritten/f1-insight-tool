@@ -1,6 +1,6 @@
 package htwsaar.nordpol.repository.meeting;
 
-import htwsaar.nordpol.api.dto.MeetingDto;
+import htwsaar.nordpol.dto.MeetingDto;
 import org.jooq.DSLContext;
 
 import java.util.List;

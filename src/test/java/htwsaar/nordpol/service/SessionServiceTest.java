@@ -1,6 +1,6 @@
 package htwsaar.nordpol.service;
 
-import htwsaar.nordpol.api.dto.SessionDto;
+import htwsaar.nordpol.dto.SessionDto;
 import htwsaar.nordpol.api.session.SessionClient;
 import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;

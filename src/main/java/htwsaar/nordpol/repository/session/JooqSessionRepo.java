@@ -1,6 +1,6 @@
 package htwsaar.nordpol.repository.session;
 
-import htwsaar.nordpol.api.dto.SessionDto;
+import htwsaar.nordpol.dto.SessionDto;
 import org.jooq.DSLContext;
 
 import static com.nordpol.jooq.tables.Sessions.*;

@@ -1,6 +1,6 @@
 package htwsaar.nordpol.repository.session;
 
-import htwsaar.nordpol.api.dto.SessionDto;
+import htwsaar.nordpol.dto.SessionDto;
 import htwsaar.nordpol.testutil.SqlSchemaLoader;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;

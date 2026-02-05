@@ -1,7 +1,7 @@
 package htwsaar.nordpol.util;
 
-import htwsaar.nordpol.api.dto.*;
 import htwsaar.nordpol.domain.*;
+import htwsaar.nordpol.dto.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

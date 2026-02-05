@@ -1,7 +1,7 @@
 package htwsaar.nordpol.util;
 
-import htwsaar.nordpol.api.dto.*;
 import htwsaar.nordpol.domain.*;
+import htwsaar.nordpol.dto.*;
 
 public class Mapper {
 

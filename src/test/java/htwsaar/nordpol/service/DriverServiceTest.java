@@ -1,7 +1,7 @@
 package htwsaar.nordpol.service;
 
 
-import htwsaar.nordpol.api.dto.DriverDto;
+import htwsaar.nordpol.dto.DriverDto;
 import htwsaar.nordpol.api.driver.IDriverClient;
 import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.domain.Driver;

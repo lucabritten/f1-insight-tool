@@ -2,7 +2,7 @@ package htwsaar.nordpol.api.driver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
-import htwsaar.nordpol.api.dto.DriverDto;
+import htwsaar.nordpol.dto.DriverDto;
 
 import java.util.Map;
 import java.util.Optional;
