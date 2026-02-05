@@ -1,3 +1,4 @@
+<img alt="CI Status" src="https://github.com/lucabritten/f1-insight-tool/actions/workflows/maven.yml/badge.svg?branch=main" />
 # F1 Insight CLI Tool 🏎️
 
 A command-line tool to explore Formula 1 data such as drivers, weather, sessions, and meetings. The tool queries the public OpenF1 API and can cache/query data locally via SQLite and jOOQ. Data is supported from season 2023 onwards.
