@@ -8,7 +8,6 @@ import htwsaar.nordpol.api.meeting.IMeetingClient;
 import htwsaar.nordpol.api.meeting.MeetingClient;
 import htwsaar.nordpol.cli.DriverCommand;
 import htwsaar.nordpol.config.ApplicationContext;
-import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.repository.driver.JooqDriverRepo;
 import htwsaar.nordpol.repository.meeting.JooqMeetingRepo;
@@ -129,7 +128,7 @@ public class DriverCommandE2ETest {
                 "--year", "2040"
         );
 
-        assertThat(exitCode).isNotZero();
+        assertThat(exitCode).isEqualTo(2);
         assertThat(err.toString())
                 .contains("Driver not found");
 
