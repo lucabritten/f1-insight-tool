@@ -1,5 +1,6 @@
 package htwsaar.nordpol.api.weather;
 
+import htwsaar.nordpol.config.api.ApiClientConfig;
 import htwsaar.nordpol.dto.WeatherDto;
 import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockResponse;
@@ -25,7 +26,7 @@ public class WeatherClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        weatherClient = new WeatherClient(mockWebServer.url("/").toString(), ApplicationContext.getInstance().objectMapper());
+        weatherClient = new WeatherClient(mockWebServer.url("/").toString(), ApiClientConfig.openF1HttpClient(), ApplicationContext.getInstance().objectMapper());
     }
 
     @AfterEach

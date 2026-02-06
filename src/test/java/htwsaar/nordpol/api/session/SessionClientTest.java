@@ -1,5 +1,6 @@
 package htwsaar.nordpol.api.session;
 
+import htwsaar.nordpol.config.api.ApiClientConfig;
 import htwsaar.nordpol.dto.SessionDto;
 import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockResponse;
@@ -25,7 +26,7 @@ public class SessionClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        sessionClient = new SessionClient(mockWebServer.url("/").toString(), ApplicationContext.getInstance().objectMapper());
+        sessionClient = new SessionClient(mockWebServer.url("/").toString(), ApiClientConfig.openF1HttpClient(), ApplicationContext.getInstance().objectMapper());
     }
 
     @AfterEach

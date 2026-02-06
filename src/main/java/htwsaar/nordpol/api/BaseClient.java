@@ -1,6 +1,5 @@
 package htwsaar.nordpol.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import htwsaar.nordpol.config.api.ApiClientConfig;
 import htwsaar.nordpol.exception.ExternalApiException;
 import okhttp3.*;
 import org.slf4j.Logger;
@@ -37,14 +36,14 @@ public abstract class BaseClient {
 
     private static final Logger log = LoggerFactory.getLogger(BaseClient.class);
 
-    protected BaseClient(String baseUrl, ObjectMapper objectMapper){
+    protected BaseClient(OkHttpClient okHttpClient, String baseUrl,ObjectMapper objectMapper){
         this.baseUrl = baseUrl;
-        this.okHttpClient = ApiClientConfig.openF1HttpClient();
+        this.okHttpClient = okHttpClient;
         this.objectMapper = objectMapper;
     }
 
-    protected BaseClient(ObjectMapper objectMapper){
-        this("https://api.openf1.org/v1", objectMapper);
+    protected BaseClient(OkHttpClient okHttpClient, ObjectMapper objectMapper){
+        this(okHttpClient, "https://api.openf1.org/v1",objectMapper);
     }
 
     protected <T> Optional<T> fetchSingle(OpenF1Endpoint endpoint, Map<OpenF1Param, ?> queryParameter, Class<T[]> responseType) {
@@ -62,7 +61,7 @@ public abstract class BaseClient {
                 .build();
 
         try (Response response = okHttpClient.newCall(request).execute()) {
-            String bodyString = response.body() != null ? response.body().string() : "";
+            String bodyString = response.body().string();
             if (!response.isSuccessful()) {
                 log.error("OpenF1 request failed: {} {} body={}",response.code(), response.message(), bodyString);
                 return List.of();
@@ -78,9 +77,9 @@ public abstract class BaseClient {
         HttpUrl.Builder builder = HttpUrl.parse(baseUrl + path).newBuilder();
 
         if(queryParameter != null) {
-            queryParameter.forEach((k, v) -> {
-                if (v != null) {
-                    builder.addQueryParameter(k.apiName(), String.valueOf(v));
+            queryParameter.forEach((key, value) -> {
+                if (value != null) {
+                    builder.addQueryParameter(key.apiName(), String.valueOf(value));
                 }
             });
         }

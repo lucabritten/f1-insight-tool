@@ -3,18 +3,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.dto.WeatherDto;
+import okhttp3.OkHttpClient;
+
 import java.util.List;
 import java.util.Map;
 import static htwsaar.nordpol.api.OpenF1Param.*;
 
 public class WeatherClient extends BaseClient implements IWeatherClient{
 
-    public WeatherClient(String baseUrl, ObjectMapper mapper){
-        super(baseUrl, mapper);
+    public WeatherClient(String baseUrl, OkHttpClient okHttpClient, ObjectMapper mapper){
+        super(okHttpClient, baseUrl, mapper);
     }
 
-    public WeatherClient(ObjectMapper mapper) {
-        super(mapper);
+    public WeatherClient(OkHttpClient okHttpClient, ObjectMapper mapper) {
+        super(okHttpClient, mapper);
     }
 
     @Override

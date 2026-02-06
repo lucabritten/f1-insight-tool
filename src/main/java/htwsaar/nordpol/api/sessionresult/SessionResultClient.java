@@ -3,18 +3,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.dto.SessionResultDto;
+import okhttp3.OkHttpClient;
+
 import java.util.List;
 import java.util.Map;
 import static htwsaar.nordpol.api.OpenF1Param.*;
 
 public class SessionResultClient extends BaseClient implements ISessionResultClient {
 
-    public SessionResultClient(String baseUrl, ObjectMapper mapper){
-        super(baseUrl, mapper);
+    public SessionResultClient(String baseUrl, OkHttpClient okHttpClient, ObjectMapper mapper){
+        super(okHttpClient, baseUrl, mapper);
     }
 
-    public SessionResultClient(ObjectMapper mapper) {
-        super(mapper);
+    public SessionResultClient(OkHttpClient okHttpClient, ObjectMapper mapper) {
+        super(okHttpClient, mapper);
     }
 
     @Override

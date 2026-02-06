@@ -1,5 +1,6 @@
 package htwsaar.nordpol.api.lap;
 
+import htwsaar.nordpol.config.api.ApiClientConfig;
 import htwsaar.nordpol.dto.LapDto;
 import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockResponse;
@@ -26,7 +27,7 @@ class LapClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        lapClient = new LapClient(mockWebServer.url("/").toString(), ApplicationContext.getInstance().objectMapper());
+        lapClient = new LapClient(mockWebServer.url("/").toString(), ApiClientConfig.openF1HttpClient(), ApplicationContext.getInstance().objectMapper());
     }
 
     @AfterEach

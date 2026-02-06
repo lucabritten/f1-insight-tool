@@ -1,5 +1,6 @@
 package htwsaar.nordpol.api.driver;
 
+import htwsaar.nordpol.config.api.ApiClientConfig;
 import htwsaar.nordpol.dto.DriverDto;
 
 import htwsaar.nordpol.config.ApplicationContext;
@@ -27,7 +28,7 @@ public class DriverClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        driverClient = new DriverClient(mockWebServer.url("/").toString(), ApplicationContext.getInstance().objectMapper());
+        driverClient = new DriverClient(mockWebServer.url("/").toString(), ApiClientConfig.openF1HttpClient(),ApplicationContext.getInstance().objectMapper());
     }
 
     @AfterEach

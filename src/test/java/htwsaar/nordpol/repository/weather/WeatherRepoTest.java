@@ -3,6 +3,7 @@ package htwsaar.nordpol.repository.weather;
 
 import htwsaar.nordpol.dto.WeatherDto;
 
+import htwsaar.nordpol.testutil.SqlSchemaLoader;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -30,19 +31,7 @@ public class WeatherRepoTest {
     void setUp() throws Exception {
         connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         create = DSL.using(connection, SQLDialect.SQLITE);
-        create.execute("""
-                CREATE TABLE Weather (
-                    session_key integer not null,
-                    meeting_key integer not null,
-                    avg_air_temperature real not null,
-                    avg_humidity real not null ,
-                    is_rainfall integer not null ,
-                    avg_track_temperature real not null,
-                    avg_wind_direction real not null ,
-                    avg_wind_speed real not null,
-                    PRIMARY KEY (session_key, meeting_key)
-                                     );
-        """);
+        SqlSchemaLoader.loadSchema(create, "schema.sql");
 
         weatherRepo = new JooqWeatherRepo(create);
     }

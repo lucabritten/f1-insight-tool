@@ -9,6 +9,7 @@ import htwsaar.nordpol.api.session.SessionClient;
 import htwsaar.nordpol.api.sessionresult.ISessionResultClient;
 import htwsaar.nordpol.api.sessionresult.SessionResultClient;
 import htwsaar.nordpol.api.weather.WeatherClient;
+import htwsaar.nordpol.config.api.ApiClientConfig;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.repository.driver.JooqDriverRepo;
 import htwsaar.nordpol.repository.lap.ILapRepo;
@@ -92,12 +93,12 @@ public class ApplicationContext {
         this.sessionResultRepo = new JooqSessionResultRepo(dslContext());
         this.weatherRepo = new JooqWeatherRepo(dslContext());
 
-        this.driverClient = new DriverClient(objectMapper());
-        this.meetingClient = new MeetingClient(objectMapper());
-        this.sessionClient = new SessionClient(objectMapper());
-        this.lapClient = new LapClient(objectMapper());
-        this.sessionResultClient = new SessionResultClient(objectMapper());
-        this.weatherClient = new WeatherClient(objectMapper());
+        this.driverClient = new DriverClient(ApiClientConfig.openF1HttpClient(), objectMapper());
+        this.meetingClient = new MeetingClient(ApiClientConfig.openF1HttpClient(), objectMapper());
+        this.sessionClient = new SessionClient(ApiClientConfig.openF1HttpClient(), objectMapper());
+        this.lapClient = new LapClient(ApiClientConfig.openF1HttpClient(), objectMapper());
+        this.sessionResultClient = new SessionResultClient(ApiClientConfig.openF1HttpClient(), objectMapper());
+        this.weatherClient = new WeatherClient(ApiClientConfig.openF1HttpClient(), objectMapper());
 
         this.meetingService = new MeetingService(meetingRepo, meetingClient, cacheService);
         this.sessionService = new SessionService(sessionRepo, sessionClient, cacheService);

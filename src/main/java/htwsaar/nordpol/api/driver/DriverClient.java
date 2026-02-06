@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.dto.DriverDto;
+import okhttp3.OkHttpClient;
 
 import java.util.Map;
 import java.util.Optional;
@@ -11,12 +12,12 @@ import static htwsaar.nordpol.api.OpenF1Param.*;
 
 public class DriverClient extends BaseClient implements IDriverClient {
 
-    public DriverClient(String baseUrl, ObjectMapper mapper) {
-        super(baseUrl, mapper);
+    public DriverClient(String baseUrl, OkHttpClient okHttpClient, ObjectMapper mapper) {
+        super(okHttpClient, baseUrl, mapper);
     }
 
-    public DriverClient(ObjectMapper mapper) {
-        super(mapper);
+    public DriverClient(OkHttpClient okHttpClient, ObjectMapper mapper) {
+        super(okHttpClient, mapper);
     }
 
     @Override

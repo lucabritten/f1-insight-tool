@@ -5,7 +5,9 @@ import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.OpenF1Param;
 import htwsaar.nordpol.config.ApplicationContext;
+import htwsaar.nordpol.config.api.ApiClientConfig;
 import htwsaar.nordpol.exception.ExternalApiException;
+import okhttp3.OkHttpClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
@@ -28,8 +30,8 @@ class BaseClientTest {
     private TestBaseClient baseClient;
 
     static class TestBaseClient extends BaseClient {
-        TestBaseClient(String baseUrl, ObjectMapper mapper) {
-            super(baseUrl, mapper);
+        TestBaseClient(OkHttpClient okHttpClient, String baseUrl, ObjectMapper mapper) {
+            super(okHttpClient, baseUrl, mapper);
         }
 
         <T> List<T> fetchListTest(OpenF1Endpoint endpoint, Map<OpenF1Param, ?> queryParameter, Class<T[]> responseType) {
@@ -47,7 +49,7 @@ class BaseClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        baseClient = new TestBaseClient(mockWebServer.url("/v1").toString(), ApplicationContext.getInstance().objectMapper());
+        baseClient = new TestBaseClient(ApiClientConfig.openF1HttpClient(), mockWebServer.url("/v1").toString(), ApplicationContext.getInstance().objectMapper());
     }
 
     @AfterEach

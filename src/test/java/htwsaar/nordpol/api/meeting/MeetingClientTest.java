@@ -1,5 +1,6 @@
 package htwsaar.nordpol.api.meeting;
 
+import htwsaar.nordpol.config.api.ApiClientConfig;
 import htwsaar.nordpol.dto.MeetingDto;
 import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockResponse;
@@ -26,7 +27,7 @@ public class MeetingClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        meetingClient = new MeetingClient(mockWebServer.url("/").toString(), ApplicationContext.getInstance().objectMapper());
+        meetingClient = new MeetingClient(mockWebServer.url("/").toString(), ApiClientConfig.openF1HttpClient(), ApplicationContext.getInstance().objectMapper());
     }
 
     @AfterEach
