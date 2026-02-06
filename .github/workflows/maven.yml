@@ -27,7 +27,5 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-    - name: Generate jOOQ sources
-      run: mvn -B jooq-codegen:generate --file pom.xml
     - name: Build with Maven
       run: mvn -B package --file pom.xml
