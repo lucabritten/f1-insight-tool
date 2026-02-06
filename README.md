@@ -22,6 +22,7 @@ A command-line tool to explore Formula 1 data such as drivers, weather, sessions
   - [session-report](#session-report)
 - [Exit Codes](#exit-codes)
 - [Caching Strategy](#caching-strategy)
+- [Database Initialization](#database-initialization)
 - [Configuration](#configuration)
 - [Data Sources](#data-sources)
 - [Limitations](#limitations)
@@ -94,6 +95,14 @@ Show global help and the list of subcommands:
 mvn -q exec:java -Dexec.args="--help"
 # or, if running the JAR
 java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar --help
+```
+
+### Debug Flag
+Show which api calls are being made during your use:
+```bash
+mvn -q exec:java -Dexec.args="--debug subcommand args"
+# or, if running the JAR
+java -jar target/f1-insight-tool-1.0-SNAPSHOT.jar --debug subcommand args #driver, laps, etc.
 ```
 
 ### driver
@@ -196,6 +205,15 @@ using a SQLite database.
 - On each request, the local database is queried first
 - If no data is found, the OpenF1 API is queried
 - Retrieved data is persisted and reused for later requests
+
+## Database Initialization
+On startup, the application automatically initializes the SQLite database using the schema defined in `src/main/resources/schema.sql`. The initialization process:
+
+1. **Checks for missing tables** – Compares tables defined in `schema.sql` against existing tables in `sqlite_master`
+2. **Creates missing tables** – If any expected table is absent, executes the DDL statements from `schema.sql`
+3. **Handles existing schema** – Skips "already exists" errors, allowing incremental schema updates
+
+This ensures the database is always ready without requiring manual setup.
 
 ## Configuration
 - Network: API calls go to the public OpenF1 API; no API key is required.
