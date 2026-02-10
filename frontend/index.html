@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <form id="driverForm">
+        <div>
+            <label>First name:</label><br>
+            <input type="text" id="firstName" required>
+        </div>
+        <div>
+            <label>Last name:</label><br>
+            <input type="text" id="lastName" required>
+        </div>
+        <div>
+            <label>Year:</label><br>
+            <input type="number" id="year" required>
+        </div>
+
+        <button type="submit">Search</button>
+    </form>
+
+    <div id="result" class="result hidden">
+        <h2>Driver</h2>
+        <p><strong>Name:</strong> <span id="res-name"></span></p>
+        <p><strong>Team:</strong> <span id="res-team"></span></p>
+        <p><strong>Nationality:</strong> <span id="res-nationality"></span></p>
+        <p><strong>Year:</strong> <span id="res-year"></span></p>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
