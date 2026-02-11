@@ -1,8 +1,7 @@
-package htwsaar.nordpol.cli;
+package htwsaar.nordpol.presentation.cli;
 
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.exception.DataNotFoundException;
-import htwsaar.nordpol.config.ApplicationContext;
 
 import htwsaar.nordpol.service.driver.IDriverService;
 import htwsaar.nordpol.util.formatting.CliFormatter;
@@ -13,6 +12,7 @@ import picocli.CommandLine.Option;
 
 import java.time.Year;
 import java.util.concurrent.Callable;
+import org.springframework.stereotype.Component;
 
 @Command(name = "driver",
         description = {
@@ -24,6 +24,7 @@ import java.util.concurrent.Callable;
         },
         mixinStandardHelpOptions = true
 )
+@Component
 public class DriverCommand implements Callable<Integer> {
 
     private static final Logger logger = LoggerFactory.getLogger(DriverCommand.class);
@@ -56,23 +57,19 @@ public class DriverCommand implements Callable<Integer> {
         this.driverService = driverService;
     }
 
-    public DriverCommand(){
-        this(ApplicationContext.getInstance().driverService());
-    }
-
     @Override
     public Integer call() {
         try {
             Driver driver = driverService.getDriverByNameAndYear(firstName, lastName, year);
             String output = CliFormatter.formatDriver(driver);
-            logger.info(output);
+            System.out.println(output);
             return 0;
         } catch (DataNotFoundException e) {
             logger.error("Requested data not found: {}", e.getMessage());
             logger.error("Use --help for usage information.");
             return 2;
         } catch (Exception e) {
-            logger.error("Unexpected error: {}", e.getMessage(), e);
+            System.err.println("Unexpected error: " +  e.getMessage());
             return 1;
         }
     }

@@ -2,6 +2,7 @@ package htwsaar.nordpol.repository.driver;
 
 import htwsaar.nordpol.dto.DriverDto;
 import org.jooq.DSLContext;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import static com.nordpol.jooq.tables.DriverNumbers.*;
  * jOOQ-based repository for persisting and retrieving drivers
  * from the local SQLite database.
  */
+@Repository
 public class JooqDriverRepo implements IDriverRepo {
 
     private final DSLContext create;

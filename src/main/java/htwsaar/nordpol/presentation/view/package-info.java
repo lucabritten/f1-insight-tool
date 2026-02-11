@@ -21,4 +21,4 @@
  *
  */
 
-package htwsaar.nordpol.cli.view;
+package htwsaar.nordpol.presentation.view;

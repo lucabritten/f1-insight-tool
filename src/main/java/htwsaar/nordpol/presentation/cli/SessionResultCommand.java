@@ -1,13 +1,13 @@
-package htwsaar.nordpol.cli;
-import htwsaar.nordpol.cli.converter.SessionNameConverter;
-import htwsaar.nordpol.cli.view.SessionResultWithContext;
+package htwsaar.nordpol.presentation.cli;
+import htwsaar.nordpol.presentation.cli.converter.SessionNameConverter;
+import htwsaar.nordpol.presentation.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.sessionResult.ISessionResultService;
-import htwsaar.nordpol.config.ApplicationContext;
 import htwsaar.nordpol.util.formatting.CliFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -25,7 +25,7 @@ import java.util.concurrent.Callable;
         },
         mixinStandardHelpOptions = true
 )
-
+@Component
 public class SessionResultCommand implements Callable<Integer> {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionResultCommand.class);
@@ -58,23 +58,19 @@ public class SessionResultCommand implements Callable<Integer> {
         this.sessionResultService = sessionResultService;
     }
 
-    public SessionResultCommand () {
-        this(ApplicationContext.getInstance().sessionResultService());
-    }
-
     @Override
     public Integer call() {
         try {
             SessionResultWithContext result = sessionResultService.getResultByLocationYearAndSessionType(location, year, sessionName);
             String output = CliFormatter.formatSessionResults(result);
-            logger.info(output);
+            System.out.println(output);
             return 0;
         } catch (DataNotFoundException e) {
-            logger.error("Requested data not found: {}", e.getMessage());
-            logger.error("Use --help for usage information.");
+            System.err.println("Requested data not found: " + e.getMessage());
+            System.err.println("Use --help for usage information.");
             return 2;
         } catch (Exception e) {
-            logger.error("Unexpected error: {}", e.getMessage(), e);
+            System.err.println("Unexpected error: " + e.getMessage());
             return 1;
         }
     }

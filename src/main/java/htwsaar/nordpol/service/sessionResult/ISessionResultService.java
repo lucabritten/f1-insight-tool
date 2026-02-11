@@ -1,6 +1,6 @@
 package htwsaar.nordpol.service.sessionResult;
 
-import htwsaar.nordpol.cli.view.SessionResultWithContext;
+import htwsaar.nordpol.presentation.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.SessionNotFoundException;
 

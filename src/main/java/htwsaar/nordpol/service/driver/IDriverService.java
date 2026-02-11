@@ -1,6 +1,7 @@
 package htwsaar.nordpol.service.driver;
 
 import htwsaar.nordpol.domain.Driver;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 

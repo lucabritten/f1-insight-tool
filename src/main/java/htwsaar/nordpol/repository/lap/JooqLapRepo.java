@@ -2,11 +2,13 @@ package htwsaar.nordpol.repository.lap;
 
 import htwsaar.nordpol.dto.LapDto;
 import org.jooq.DSLContext;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 import static com.nordpol.jooq.tables.Laps.LAPS;
 
+@Repository
 public class JooqLapRepo implements ILapRepo {
 
     private final DSLContext create;

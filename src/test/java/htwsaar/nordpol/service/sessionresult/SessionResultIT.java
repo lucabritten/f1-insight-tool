@@ -3,14 +3,15 @@ package htwsaar.nordpol.service.sessionresult;
 import htwsaar.nordpol.dto.SessionResultDto;
 import htwsaar.nordpol.api.sessionresult.ISessionResultClient;
 import htwsaar.nordpol.api.sessionresult.SessionResultClient;
-import htwsaar.nordpol.cli.view.SessionResultWithContext;
-import htwsaar.nordpol.config.ApplicationContext;
+import htwsaar.nordpol.presentation.view.SessionResultWithContext;
+
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.repository.sessionresult.ISessionResultRepo;
 import htwsaar.nordpol.repository.sessionresult.JooqSessionResultRepo;
+import htwsaar.nordpol.service.CacheService;
 import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.meeting.MeetingService;
@@ -58,7 +59,7 @@ public class SessionResultIT {
 
         meetingService = mock(MeetingService.class);
         sessionService = mock(SessionService.class);
-        cacheService = ApplicationContext.getInstance().cacheService();
+        cacheService = new CacheService();
 
         sessionResultService = new SessionResultService(
                 meetingService,

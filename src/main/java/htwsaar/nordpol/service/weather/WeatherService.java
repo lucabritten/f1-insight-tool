@@ -2,7 +2,7 @@ package htwsaar.nordpol.service.weather;
 
 import htwsaar.nordpol.dto.WeatherDto;
 import htwsaar.nordpol.api.weather.IWeatherClient;
-import htwsaar.nordpol.cli.view.WeatherWithContext;
+import htwsaar.nordpol.presentation.view.WeatherWithContext;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;
@@ -12,6 +12,7 @@ import htwsaar.nordpol.repository.weather.IWeatherRepo;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.util.Mapper;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ import static java.util.Objects.requireNonNull;
  * <p>For CLI use cases, this service can additionally enrich weather data
  * with contextual information such as meeting and session names.</p>
  */
+@Service
 public class WeatherService implements IWeatherService {
 
     private final IWeatherClient weatherClient;

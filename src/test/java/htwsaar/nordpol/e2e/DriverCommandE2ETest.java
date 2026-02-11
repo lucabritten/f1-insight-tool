@@ -6,11 +6,12 @@ import htwsaar.nordpol.dto.DriverDto;
 import htwsaar.nordpol.dto.MeetingDto;
 import htwsaar.nordpol.api.meeting.IMeetingClient;
 import htwsaar.nordpol.api.meeting.MeetingClient;
-import htwsaar.nordpol.cli.DriverCommand;
-import htwsaar.nordpol.config.ApplicationContext;
+import htwsaar.nordpol.presentation.cli.DriverCommand;
+
 import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.repository.driver.JooqDriverRepo;
 import htwsaar.nordpol.repository.meeting.JooqMeetingRepo;
+import htwsaar.nordpol.service.CacheService;
 import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.service.driver.IDriverService;
@@ -60,7 +61,7 @@ public class DriverCommandE2ETest {
         meetingClient = mock(MeetingClient.class);
 
         driverRepo = new JooqDriverRepo(create);
-        cacheService = ApplicationContext.getInstance().cacheService();
+        cacheService = new CacheService();
         meetingService = new MeetingService(mock(JooqMeetingRepo.class), meetingClient, cacheService);
 
 

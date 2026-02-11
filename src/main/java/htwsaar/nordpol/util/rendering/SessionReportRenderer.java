@@ -1,6 +1,6 @@
 package htwsaar.nordpol.util.rendering;
 
-import htwsaar.nordpol.cli.view.WeatherWithContext;
+import htwsaar.nordpol.presentation.view.WeatherWithContext;
 import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.util.formatting.GapFormatter;
 import htwsaar.nordpol.util.formatting.TimeFormatter;
@@ -12,6 +12,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -22,6 +23,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+@Service
 public class SessionReportRenderer {
 
     private final static float MARGIN = 50f;

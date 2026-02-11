@@ -1,7 +1,7 @@
 package htwsaar.nordpol.service.sessionreport;
 
-import htwsaar.nordpol.cli.view.SessionResultWithContext;
-import htwsaar.nordpol.cli.view.WeatherWithContext;
+import htwsaar.nordpol.presentation.view.SessionResultWithContext;
+import htwsaar.nordpol.presentation.view.WeatherWithContext;
 import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.exception.DriverNotFoundException;
 import htwsaar.nordpol.exception.LapNotFoundException;

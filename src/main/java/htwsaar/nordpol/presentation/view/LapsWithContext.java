@@ -1,4 +1,4 @@
-package htwsaar.nordpol.cli.view;
+package htwsaar.nordpol.presentation.view;
 
 import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.domain.SessionName;

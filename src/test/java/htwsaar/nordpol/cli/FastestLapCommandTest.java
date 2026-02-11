@@ -1,6 +1,7 @@
 package htwsaar.nordpol.cli;
 
-import htwsaar.nordpol.cli.view.FastestLapsWithContext;
+import htwsaar.nordpol.presentation.cli.FastestLapCommand;
+import htwsaar.nordpol.presentation.view.FastestLapsWithContext;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.exception.MeetingNotFoundException;

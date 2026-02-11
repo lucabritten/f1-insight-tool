@@ -1,7 +1,7 @@
 package htwsaar.nordpol.service.report;
 
-import htwsaar.nordpol.cli.view.SessionResultWithContext;
-import htwsaar.nordpol.cli.view.WeatherWithContext;
+import htwsaar.nordpol.presentation.view.SessionResultWithContext;
+import htwsaar.nordpol.presentation.view.WeatherWithContext;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.domain.Meeting;
@@ -15,6 +15,7 @@ import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.service.sessionResult.ISessionResultService;
 import htwsaar.nordpol.service.weather.IWeatherService;
+import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
+@Service
 public class SessionReportService implements ISessionReportService {
 
     private final IMeetingService meetingService;

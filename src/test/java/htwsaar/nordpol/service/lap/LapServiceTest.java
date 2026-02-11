@@ -2,11 +2,12 @@ package htwsaar.nordpol.service.lap;
 
 import htwsaar.nordpol.dto.LapDto;
 import htwsaar.nordpol.api.lap.ILapClient;
-import htwsaar.nordpol.cli.view.FastestLapsWithContext;
-import htwsaar.nordpol.config.ApplicationContext;
+import htwsaar.nordpol.presentation.view.FastestLapsWithContext;
+
 import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.exception.LapNotFoundException;
 import htwsaar.nordpol.repository.lap.ILapRepo;
+import htwsaar.nordpol.service.CacheService;
 import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.service.meeting.MeetingService;
@@ -49,7 +50,7 @@ public class LapServiceTest {
 
     @BeforeEach
     void setup() {
-        cacheService = ApplicationContext.getInstance().cacheService();
+        cacheService = new CacheService();
         lapService = new LapService(lapRepo, lapClient, meetingService, sessionService, driverService, cacheService);
     }
 

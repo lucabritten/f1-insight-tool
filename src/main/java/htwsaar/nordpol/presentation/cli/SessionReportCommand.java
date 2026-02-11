@@ -1,15 +1,17 @@
-package htwsaar.nordpol.cli;
+package htwsaar.nordpol.presentation.cli;
 
-import htwsaar.nordpol.cli.converter.SessionNameConverter;
-import htwsaar.nordpol.config.ApplicationContext;
+import htwsaar.nordpol.presentation.cli.converter.SessionNameConverter;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionReport;
 import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.report.ISessionReportService;
 import htwsaar.nordpol.util.rendering.SessionReportRenderer;
 import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
+import me.tongfei.progressbar.ProgressBarStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -30,6 +32,7 @@ import java.util.concurrent.Callable;
     },
     mixinStandardHelpOptions = true
 )
+@Component
 public class SessionReportCommand implements Callable<Integer> {
 
     public static final Logger logger = LoggerFactory.getLogger(SessionReportCommand.class);
@@ -75,13 +78,15 @@ public class SessionReportCommand implements Callable<Integer> {
         this.renderer = renderer;
     }
 
-    public SessionReportCommand() {
-        this(ApplicationContext.getInstance().sessionReportService(), new SessionReportRenderer());
-    }
-
     @Override
     public Integer call() {
-        try(ProgressBar progressBar = ApplicationContext.getInstance().progressBar()) {
+        try(ProgressBar progressBar = new ProgressBarBuilder()
+                .setTaskName("Generating session report")
+                .setInitialMax(9)
+                .setStyle(ProgressBarStyle.ASCII)
+                .setMaxRenderedLength(100)
+                .setUpdateIntervalMillis(100)
+                .build()) {
 
             SessionReport report = sessionReportService.buildReport(location,
                     year,
@@ -94,14 +99,14 @@ public class SessionReportCommand implements Callable<Integer> {
             );
             Path outputPath = Paths.get(resolveOutputPath());
             renderer.render(report, outputPath);
-            logger.info("Report written to: {}", outputPath.toAbsolutePath());
+            System.out.println("Report written to: " + outputPath.toAbsolutePath());
             return 0;
         } catch (DataNotFoundException e) {
-            logger.error("Requested data not found: {}", e.getMessage());
-            logger.error("Use --help for usage information.");
+            System.err.println("Requested data not found: " + e.getMessage());
+            System.err.println("Use --help for usage information.");
             return 2;
         } catch (Exception e) {
-            logger.error("Unexpected error: {}", e.getMessage(), e);
+            System.err.println("Unexpected error: " + e.getMessage());
             return 1;
         }
     }

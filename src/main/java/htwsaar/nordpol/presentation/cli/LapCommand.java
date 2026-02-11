@@ -1,13 +1,13 @@
-package htwsaar.nordpol.cli;
-import htwsaar.nordpol.cli.converter.SessionNameConverter;
-import htwsaar.nordpol.cli.view.LapsWithContext;
-import htwsaar.nordpol.config.ApplicationContext;
+package htwsaar.nordpol.presentation.cli;
+import htwsaar.nordpol.presentation.cli.converter.SessionNameConverter;
+import htwsaar.nordpol.presentation.view.LapsWithContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.lap.ILapService;
 import htwsaar.nordpol.util.formatting.CliFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -24,6 +24,7 @@ import java.util.concurrent.Callable;
         },
         mixinStandardHelpOptions = true
 )
+@Component
 public class LapCommand implements Callable<Integer> {
 
     private static final Logger logger = LoggerFactory.getLogger(LapCommand.class);
@@ -59,23 +60,19 @@ public class LapCommand implements Callable<Integer> {
         this.lapService = lapService;
     }
 
-    public LapCommand(){
-        this(ApplicationContext.getInstance().lapService());
-    }
-
     @Override
     public Integer call() {
         try {
             LapsWithContext lap = lapService.getLapsByLocationYearSessionNameAndDriverNumber(location, year, sessionName, driverNumber);
             String output = CliFormatter.formatLaps(lap);
-            logger.info(output);
+            System.out.println(output);
             return 0;
         } catch (DataNotFoundException e) {
-            logger.error("Requested data not found: {}", e.getMessage());
-            logger.error("Use --help for usage information.");
+            System.err.println("Requested data not found: " + e.getMessage());
+            System.err.println("Use --help for usage information.");
             return 2;
         } catch (Exception e) {
-            logger.error("Unexpected error: {}", e.getMessage(), e);
+            System.err.println("Unexpected error: " + e.getMessage());
             return 1;
         }
     }

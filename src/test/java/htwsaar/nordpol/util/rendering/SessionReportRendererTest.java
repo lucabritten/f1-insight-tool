@@ -1,7 +1,7 @@
 package htwsaar.nordpol.util.rendering;
 
-import htwsaar.nordpol.cli.view.SessionResultWithContext;
-import htwsaar.nordpol.cli.view.WeatherWithContext;
+import htwsaar.nordpol.presentation.view.SessionResultWithContext;
+import htwsaar.nordpol.presentation.view.WeatherWithContext;
 import htwsaar.nordpol.domain.*;
 import org.junit.jupiter.api.Test;
 

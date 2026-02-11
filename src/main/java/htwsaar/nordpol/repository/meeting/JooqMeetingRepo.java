@@ -2,13 +2,14 @@ package htwsaar.nordpol.repository.meeting;
 
 import htwsaar.nordpol.dto.MeetingDto;
 import org.jooq.DSLContext;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.nordpol.jooq.tables.Meetings.MEETINGS;
 
-
+@Repository
 public class JooqMeetingRepo implements IMeetingRepo {
 
     private final DSLContext create;

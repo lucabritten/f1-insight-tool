@@ -2,7 +2,7 @@ package htwsaar.nordpol.service.sessionresult;
 
 import htwsaar.nordpol.dto.SessionResultDto;
 import htwsaar.nordpol.api.sessionresult.ISessionResultClient;
-import htwsaar.nordpol.cli.view.SessionResultWithContext;
+import htwsaar.nordpol.presentation.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;

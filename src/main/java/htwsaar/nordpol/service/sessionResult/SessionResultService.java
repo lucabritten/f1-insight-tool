@@ -2,7 +2,7 @@ package htwsaar.nordpol.service.sessionResult;
 
 import htwsaar.nordpol.dto.SessionResultDto;
 import htwsaar.nordpol.api.sessionresult.ISessionResultClient;
-import htwsaar.nordpol.cli.view.SessionResultWithContext;
+import htwsaar.nordpol.presentation.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.domain.Session;
 import htwsaar.nordpol.domain.SessionName;
@@ -13,6 +13,7 @@ import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.util.Mapper;
+import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
@@ -25,6 +26,7 @@ import static java.util.Objects.requireNonNull;
  * <p>This service resolves and orders session results according to
  * Formula 1 classification rules.</p>
  */
+@Service
 public class SessionResultService implements ISessionResultService {
 
     private final IMeetingService meetingService;

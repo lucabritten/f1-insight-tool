@@ -1,6 +1,7 @@
 package htwsaar.nordpol.cli;
 
 import htwsaar.nordpol.domain.Driver;
+import htwsaar.nordpol.presentation.cli.DriverCommand;
 import htwsaar.nordpol.service.driver.DriverService;
 import htwsaar.nordpol.exception.DriverNotFoundException;
 import org.junit.jupiter.api.AfterEach;

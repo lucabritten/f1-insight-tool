@@ -1,4 +1,4 @@
-package htwsaar.nordpol.cli.converter;
+package htwsaar.nordpol.presentation.cli.converter;
 
 import htwsaar.nordpol.domain.SessionName;
 import picocli.CommandLine;

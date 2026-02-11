@@ -1,5 +1,5 @@
 package htwsaar.nordpol.api.driver;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.dto.DriverDto;
@@ -8,7 +8,6 @@ import okhttp3.OkHttpClient;
 import java.util.Map;
 import java.util.Optional;
 import static htwsaar.nordpol.api.OpenF1Param.*;
-
 
 public class DriverClient extends BaseClient implements IDriverClient {
 

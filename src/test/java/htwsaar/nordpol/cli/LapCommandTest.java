@@ -1,7 +1,8 @@
 package htwsaar.nordpol.cli;
 
 
-import htwsaar.nordpol.cli.view.LapsWithContext;
+import htwsaar.nordpol.presentation.cli.LapCommand;
+import htwsaar.nordpol.presentation.view.LapsWithContext;
 import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.service.lap.LapService;

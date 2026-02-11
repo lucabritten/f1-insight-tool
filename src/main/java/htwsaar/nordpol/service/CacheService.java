@@ -1,5 +1,7 @@
 package htwsaar.nordpol.service;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -21,6 +23,7 @@ import java.util.function.Supplier;
  *     independent of concrete repositories and API clients.
  * </p>
  */
+@Service
 public class CacheService implements ICacheService{
 
     @Override

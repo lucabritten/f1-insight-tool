@@ -2,11 +2,13 @@ package htwsaar.nordpol.repository.session;
 
 import htwsaar.nordpol.dto.SessionDto;
 import org.jooq.DSLContext;
+import org.springframework.stereotype.Repository;
 
 import static com.nordpol.jooq.tables.Sessions.*;
 
 import java.util.Optional;
 
+@Repository
 public class JooqSessionRepo implements ISessionRepo{
 
     private final DSLContext create;

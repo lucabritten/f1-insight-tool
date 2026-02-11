@@ -8,9 +8,11 @@ import htwsaar.nordpol.exception.SessionNotFoundException;
 import htwsaar.nordpol.repository.session.ISessionRepo;
 import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.util.Mapper;
+import org.springframework.stereotype.Service;
 
 import static java.util.Objects.requireNonNull;
 
+@Service
 public class SessionService implements ISessionService {
 
     private final ISessionRepo sessionRepo;

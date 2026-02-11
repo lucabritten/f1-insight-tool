@@ -1,6 +1,7 @@
 package htwsaar.nordpol.cli;
 
-import htwsaar.nordpol.cli.view.WeatherWithContext;
+import htwsaar.nordpol.presentation.cli.WeatherCommand;
+import htwsaar.nordpol.presentation.view.WeatherWithContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.exception.MeetingNotFoundException;

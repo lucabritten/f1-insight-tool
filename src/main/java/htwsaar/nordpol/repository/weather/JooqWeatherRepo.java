@@ -2,12 +2,14 @@ package htwsaar.nordpol.repository.weather;
 
 import htwsaar.nordpol.dto.WeatherDto;
 import org.jooq.DSLContext;
+import org.springframework.stereotype.Repository;
 
 import static com.nordpol.jooq.tables.Weather.*;
 import static org.jooq.impl.DSL.asterisk;
 
 import java.util.Optional;
 
+@Repository
 public class JooqWeatherRepo implements IWeatherRepo{
 
     private final DSLContext create;

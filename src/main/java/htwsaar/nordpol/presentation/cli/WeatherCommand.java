@@ -1,14 +1,14 @@
-package htwsaar.nordpol.cli;
+package htwsaar.nordpol.presentation.cli;
 
-import htwsaar.nordpol.cli.converter.SessionNameConverter;
-import htwsaar.nordpol.cli.view.WeatherWithContext;
-import htwsaar.nordpol.config.ApplicationContext;
+import htwsaar.nordpol.presentation.cli.converter.SessionNameConverter;
+import htwsaar.nordpol.presentation.view.WeatherWithContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.weather.IWeatherService;
 import htwsaar.nordpol.util.formatting.CliFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -26,6 +26,7 @@ import java.util.concurrent.Callable;
         },
         mixinStandardHelpOptions = true
 )
+@Component
 public class WeatherCommand implements Callable<Integer> {
 
     private static final Logger logger = LoggerFactory.getLogger(WeatherCommand.class);
@@ -57,9 +58,6 @@ public class WeatherCommand implements Callable<Integer> {
         this.weatherService = weatherService;
     }
 
-    public WeatherCommand() {
-        this(ApplicationContext.getInstance().weatherService());
-    }
 
     @Override
     public Integer call() {
@@ -72,14 +70,14 @@ public class WeatherCommand implements Callable<Integer> {
                     );
 
             String output = CliFormatter.formatWeather(weatherWithContext);
-            logger.info(output);
+            System.out.println(output);
             return 0;
         } catch (DataNotFoundException e) {
-            logger.error("Requested data not found: {}", e.getMessage());
-            logger.error("Use --help for usage information.");
+            System.err.println("Requested data not found: " + e.getMessage());
+            System.err.println("Use --help for usage information.");
             return 2;
         } catch (Exception e) {
-            logger.error("Unexpected error: {}", e.getMessage(), e);
+            System.err.println("Unexpected error: " + e.getMessage());
             return 1;
         }
     }

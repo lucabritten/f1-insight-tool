@@ -8,9 +8,11 @@ import htwsaar.nordpol.exception.MeetingNotFoundException;
 import htwsaar.nordpol.repository.meeting.IMeetingRepo;
 import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.util.Mapper;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class MeetingService implements IMeetingService {
 
 

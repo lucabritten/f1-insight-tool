@@ -1,6 +1,6 @@
 package htwsaar.nordpol.util;
 
-import htwsaar.nordpol.cli.view.SessionResultWithContext;
+import htwsaar.nordpol.presentation.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.util.formatting.CliFormatter;

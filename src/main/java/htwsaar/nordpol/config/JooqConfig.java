@@ -2,6 +2,8 @@ package htwsaar.nordpol.config;
 
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -20,11 +22,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Configuration
 public class JooqConfig {
-
-    private JooqConfig(){
-
-    }
 
     /**
      * Creates and returns a jOOQ {@link DSLContext}.
@@ -32,7 +31,8 @@ public class JooqConfig {
      * @return a configured DSLContext connected to the local SQLite database
      * @throws RuntimeException if the database connection cannot be established
      */
-    public static DSLContext createContext(){
+    @Bean
+    public DSLContext createContext(){
         try{
             Path dbPath = Path.of("f1data.db");
             Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);

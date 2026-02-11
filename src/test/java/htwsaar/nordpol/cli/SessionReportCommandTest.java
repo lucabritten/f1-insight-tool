@@ -1,9 +1,10 @@
 package htwsaar.nordpol.cli;
 
-import htwsaar.nordpol.config.ApplicationContext;
+
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionReport;
 import htwsaar.nordpol.exception.DataNotFoundException;
+import htwsaar.nordpol.presentation.cli.SessionReportCommand;
 import htwsaar.nordpol.service.report.SessionReportService;
 import htwsaar.nordpol.util.rendering.SessionReportRenderer;
 import me.tongfei.progressbar.ProgressBar;
@@ -30,7 +31,6 @@ public class SessionReportCommandTest {
     private ByteArrayOutputStream errorStream;
     private PrintStream originalOut;
     private PrintStream originalErr;
-    private MockedStatic<ApplicationContext> applicationContextMock;
 
     private static final int ILLEGAL_ARG_ERROR = 2;
     private static final int BUSINESS_LOGIC_ERROR = 1;
@@ -56,10 +56,6 @@ public class SessionReportCommandTest {
     void tearDown() {
         System.setOut(originalOut);
         System.setErr(originalErr);
-
-        if (applicationContextMock != null) {
-            applicationContextMock.close();
-        }
     }
 
     @Nested

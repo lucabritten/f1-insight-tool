@@ -1,13 +1,13 @@
 package htwsaar.nordpol.util.formatting;
 
-import htwsaar.nordpol.cli.view.LapsWithContext;
-import htwsaar.nordpol.cli.view.SessionResultWithContext;
-import htwsaar.nordpol.cli.view.WeatherWithContext;
+import htwsaar.nordpol.presentation.view.LapsWithContext;
+import htwsaar.nordpol.presentation.view.SessionResultWithContext;
+import htwsaar.nordpol.presentation.view.WeatherWithContext;
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.domain.Weather;
-import htwsaar.nordpol.cli.view.FastestLapsWithContext;
+import htwsaar.nordpol.presentation.view.FastestLapsWithContext;
 
 public class CliFormatter {
 

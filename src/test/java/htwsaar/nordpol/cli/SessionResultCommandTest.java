@@ -1,6 +1,7 @@
 package htwsaar.nordpol.cli;
 
-import htwsaar.nordpol.cli.view.SessionResultWithContext;
+import htwsaar.nordpol.presentation.cli.SessionResultCommand;
+import htwsaar.nordpol.presentation.view.SessionResultWithContext;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.exception.MeetingNotFoundException;

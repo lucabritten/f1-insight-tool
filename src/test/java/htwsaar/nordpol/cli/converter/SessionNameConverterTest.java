@@ -1,6 +1,7 @@
 package htwsaar.nordpol.cli.converter;
 
 import htwsaar.nordpol.domain.SessionName;
+import htwsaar.nordpol.presentation.cli.converter.SessionNameConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

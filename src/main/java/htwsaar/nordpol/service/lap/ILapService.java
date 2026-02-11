@@ -1,7 +1,7 @@
 package htwsaar.nordpol.service.lap;
 
-import htwsaar.nordpol.cli.view.FastestLapsWithContext;
-import htwsaar.nordpol.cli.view.LapsWithContext;
+import htwsaar.nordpol.presentation.view.FastestLapsWithContext;
+import htwsaar.nordpol.presentation.view.LapsWithContext;
 import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.LapNotFoundException;

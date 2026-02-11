@@ -3,34 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>F1-Insight-Tool</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <form id="driverForm">
-        <div>
-            <label>First name:</label><br>
-            <input type="text" id="firstName" required>
-        </div>
-        <div>
-            <label>Last name:</label><br>
-            <input type="text" id="lastName" required>
-        </div>
-        <div>
-            <label>Year:</label><br>
-            <input type="number" id="year" required>
-        </div>
-
-        <button type="submit">Search</button>
-    </form>
-
-    <div id="result" class="result hidden">
-        <h2>Driver</h2>
-        <p><strong>Name:</strong> <span id="res-name"></span></p>
-        <p><strong>Team:</strong> <span id="res-team"></span></p>
-        <p><strong>Nationality:</strong> <span id="res-nationality"></span></p>
-        <p><strong>Year:</strong> <span id="res-year"></span></p>
+    <div>
+        <nav>
+            <ul>
+                <li>
+                    <a href="./index.html">Home</a>
+                </li>
+                <li>
+                    <a href="./driver.html">Driver</a>
+                </li>
+                <li>
+                    <a href="./laps.html">Laps</a>
+                </li>
+                <li>
+                    <a href="">Session-Results</a>
+                </li>
+            </ul>
+        </nav>
     </div>
-    <script src="main.js"></script>
+    <div class="container">
+        <h1>Welcome to F1 Insight Tool</h1>
+        <p>
+            F1 Insight Tool is a lightweight data exploration application that provides structured insights into Formula 1 drivers 
+            and seasons. Built with a Java Spring Boot backend and a simple web-based frontend, the tool retrieves and presents driver 
+            statistics based on user input such as name and season year. It demonstrates a clean REST architecture, separation of 
+            concerns, and modern web communication between frontend and backend. The project focuses on clarity, maintainability, 
+            and practical application of dependency injection and API-driven design principles.
+        </p>
+    </div>
+
 </body>
 </html>

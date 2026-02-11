@@ -2,8 +2,8 @@ package htwsaar.nordpol.service.lap;
 
 import htwsaar.nordpol.api.lap.ILapClient;
 import htwsaar.nordpol.dto.LapDto;
-import htwsaar.nordpol.cli.view.FastestLapsWithContext;
-import htwsaar.nordpol.cli.view.LapsWithContext;
+import htwsaar.nordpol.presentation.view.FastestLapsWithContext;
+import htwsaar.nordpol.presentation.view.LapsWithContext;
 import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.exception.LapNotFoundException;
 import htwsaar.nordpol.repository.lap.ILapRepo;
@@ -12,6 +12,7 @@ import htwsaar.nordpol.service.driver.IDriverService;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.util.Mapper;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+@Service
 public class LapService implements ILapService {
 
     private final ILapRepo lapRepo;

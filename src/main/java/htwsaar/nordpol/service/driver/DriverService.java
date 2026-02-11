@@ -9,6 +9,7 @@ import htwsaar.nordpol.repository.driver.IDriverRepo;
 import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.util.Mapper;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ import static java.util.Objects.requireNonNull;
  *
  * <p>This class serves as a template for other domain services.</p>
  */
+@Service
 public class DriverService implements IDriverService {
 
     private static final int MIN_YEAR = 2023;

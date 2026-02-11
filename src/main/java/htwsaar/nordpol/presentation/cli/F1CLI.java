@@ -1,4 +1,4 @@
-package htwsaar.nordpol.cli;
+package htwsaar.nordpol.presentation.cli;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
