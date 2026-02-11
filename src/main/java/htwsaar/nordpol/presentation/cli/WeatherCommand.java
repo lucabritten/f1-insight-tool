@@ -6,8 +6,6 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.weather.IWeatherService;
 import htwsaar.nordpol.util.formatting.CliFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -28,8 +26,6 @@ import java.util.concurrent.Callable;
 )
 @Component
 public class WeatherCommand implements Callable<Integer> {
-
-    private static final Logger logger = LoggerFactory.getLogger(WeatherCommand.class);
 
     @Option(
             names = {"--location", "-l"},

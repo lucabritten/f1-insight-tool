@@ -78,7 +78,7 @@ public class FastestLapCommand implements Callable<Integer> {
 
             String output = CliFormatter.formatFastestLaps(fastestLaps);
 
-            System.out.println(output);;
+            System.out.println(output);
             return 0;
         } catch (DataNotFoundException e) {
             System.err.println("Requested data not found: " + e.getMessage());

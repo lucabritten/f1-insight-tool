@@ -10,7 +10,6 @@ import htwsaar.nordpol.util.rendering.SessionReportRenderer;
 import me.tongfei.progressbar.ProgressBar;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
-import org.mockito.MockedStatic;
 import picocli.CommandLine;
 
 import java.io.ByteArrayOutputStream;

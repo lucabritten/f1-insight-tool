@@ -3,11 +3,13 @@ package htwsaar.nordpol.service.weather;
 import htwsaar.nordpol.dto.WeatherDto;
 import htwsaar.nordpol.api.weather.IWeatherClient;
 import htwsaar.nordpol.api.weather.WeatherClient;
-import htwsaar.nordpol.config.ApplicationContext;
+
 import htwsaar.nordpol.repository.weather.IWeatherRepo;
 import htwsaar.nordpol.repository.weather.JooqWeatherRepo;
 import htwsaar.nordpol.service.meeting.IMeetingService;
+import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
+import htwsaar.nordpol.service.session.SessionService;
 import htwsaar.nordpol.testutil.SqlSchemaLoader;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -42,8 +44,8 @@ public class WeatherServiceIT {
 
         weatherClient = mock(WeatherClient.class);
         weatherRepo = new JooqWeatherRepo(create);
-        sessionService = ApplicationContext.getInstance().sessionService();
-        meetingService = ApplicationContext.getInstance().meetingService();
+        sessionService = mock(SessionService.class);
+        meetingService = mock(MeetingService.class);
 
 
         weatherService = new WeatherService(

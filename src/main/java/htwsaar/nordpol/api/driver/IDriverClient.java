@@ -1,7 +1,6 @@
 package htwsaar.nordpol.api.driver;
 
 import htwsaar.nordpol.dto.DriverDto;
-import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 

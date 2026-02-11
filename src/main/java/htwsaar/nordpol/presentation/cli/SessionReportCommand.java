@@ -9,8 +9,6 @@ import htwsaar.nordpol.util.rendering.SessionReportRenderer;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -34,8 +32,6 @@ import java.util.concurrent.Callable;
 )
 @Component
 public class SessionReportCommand implements Callable<Integer> {
-
-    public static final Logger logger = LoggerFactory.getLogger(SessionReportCommand.class);
 
     @Option(names = {"--location", "-l"},
             description = "The meeting location (e.g., \"Monza\")",

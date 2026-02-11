@@ -3,12 +3,13 @@ package htwsaar.nordpol.service.driver;
 
 import htwsaar.nordpol.dto.DriverDto;
 import htwsaar.nordpol.api.driver.IDriverClient;
-import htwsaar.nordpol.config.ApplicationContext;
+
 import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.domain.Meeting;
 import htwsaar.nordpol.repository.driver.IDriverRepo;
 
 import htwsaar.nordpol.exception.DriverNotFoundException;
+import htwsaar.nordpol.service.CacheService;
 import htwsaar.nordpol.service.ICacheService;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +46,7 @@ public class DriverServiceTest {
 
     @BeforeEach
     void setup() {
-        cacheService = ApplicationContext.getInstance().cacheService();
+        cacheService = new CacheService();
         driverService = new DriverService(driverRepo, driverClient, meetingService, cacheService);
     }
 

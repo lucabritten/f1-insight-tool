@@ -1,6 +1,7 @@
 package htwsaar.nordpol.service.cache;
 
-import htwsaar.nordpol.config.ApplicationContext;
+
+import htwsaar.nordpol.service.CacheService;
 import htwsaar.nordpol.service.ICacheService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +33,7 @@ public class CacheServiceTest {
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setup() {
-        cacheService = ApplicationContext.getInstance().cacheService();
+        cacheService = new CacheService();
         optionalDbLookup = mock(Supplier.class);
         optionalApiLookup = mock(Supplier.class);
         optionalSave = mock(Consumer.class);

@@ -1,11 +1,12 @@
 package htwsaar.nordpol.api.sessionresult;
 
-import htwsaar.nordpol.config.ApplicationContext;
+
 import htwsaar.nordpol.config.api.ApiClientConfig;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.*;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ public class SessionResultClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        client = new SessionResultClient(mockWebServer.url("/v1").toString(), ApiClientConfig.openF1HttpClient(), ApplicationContext.getInstance().objectMapper());
+        client = new SessionResultClient(mockWebServer.url("/v1").toString(), ApiClientConfig.openF1HttpClient(), new ObjectMapper());
     }
 
     @AfterEach

@@ -5,8 +5,6 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.exception.DataNotFoundException;
 import htwsaar.nordpol.service.sessionResult.ISessionResultService;
 import htwsaar.nordpol.util.formatting.CliFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -27,8 +25,6 @@ import java.util.concurrent.Callable;
 )
 @Component
 public class SessionResultCommand implements Callable<Integer> {
-
-    private static final Logger logger = LoggerFactory.getLogger(SessionResultCommand.class);
 
     @Option(
             names = {"--location", "-l"},

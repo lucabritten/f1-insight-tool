@@ -2,7 +2,6 @@ package htwsaar.nordpol.api.lap;
 
 import htwsaar.nordpol.config.api.ApiClientConfig;
 import htwsaar.nordpol.dto.LapDto;
-import htwsaar.nordpol.config.ApplicationContext;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,7 +27,7 @@ class LapClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        lapClient = new LapClient(mockWebServer.url("/").toString(), ApiClientConfig.openF1HttpClient(), ApplicationContext.getInstance().objectMapper());
+        lapClient = new LapClient(mockWebServer.url("/").toString(), ApiClientConfig.openF1HttpClient(), new ObjectMapper());
     }
 
     @AfterEach

@@ -2,7 +2,7 @@ package htwsaar.nordpol.api.weather;
 
 import htwsaar.nordpol.config.api.ApiClientConfig;
 import htwsaar.nordpol.dto.WeatherDto;
-import htwsaar.nordpol.config.ApplicationContext;
+
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,7 +27,7 @@ public class WeatherClientTest {
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        weatherClient = new WeatherClient(mockWebServer.url("/").toString(), ApiClientConfig.openF1HttpClient(), ApplicationContext.getInstance().objectMapper());
+        weatherClient = new WeatherClient(mockWebServer.url("/").toString(), ApiClientConfig.openF1HttpClient(), new ObjectMapper());
     }
 
     @AfterEach
