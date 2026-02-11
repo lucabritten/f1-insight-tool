@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div>
+        <nav>
+            <ul>
+                <li id="nav-icon">
+                    <a href="./index.html">Home</a>
+                </li>
+                <li>
+                    <a href="./driver.html">Driver</a>
+                </li>
+                <li>
+                    <a href="./laps.html">Laps</a>
+                </li>
+                <li>
+                    <a href="">Session-Results</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div class="container">
+    <form id="lapsForm">
+        <div>
+            <label>Location:</label><br>
+            <input type="text" id="location" required>
+        </div>
+        <div>
+            <label>Session:</label><br>
+            <input type="text" id="session" required>
+        </div>
+        <div>
+            <label>Year:</label><br>
+            <input type="number" id="results-year" required>
+        </div>
+
+        <button type="submit">Search</button>
+    </form>
+
+    <div id="result" class="result hidden">
+        <h2 id="res-title"></h2>
+    
+        <table id="laps-table">
+            <thead>
+                <tr>
+                    <th>Results</th>
+                    <th></th>
+                    <th>S2</th>
+                    <th>S3</th>
+                    <th>Lap Time</th>
+                    <th>Pit Out</th>
+                </tr>
+            </thead>
+            <tbody id="laps-body">
+            </tbody>
+        </table>
+    </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

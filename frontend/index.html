@@ -10,7 +10,7 @@
     <div>
         <nav>
             <ul>
-                <li>
+                <li id="nav-icon">
                     <a href="./index.html">Home</a>
                 </li>
                 <li>
@@ -20,20 +20,48 @@
                     <a href="./laps.html">Laps</a>
                 </li>
                 <li>
-                    <a href="">Session-Results</a>
+                    <a href="./session-result.html">Session-Results</a>
                 </li>
             </ul>
         </nav>
     </div>
     <div class="container">
-        <h1>Welcome to F1 Insight Tool</h1>
-        <p>
-            F1 Insight Tool is a lightweight data exploration application that provides structured insights into Formula 1 drivers 
-            and seasons. Built with a Java Spring Boot backend and a simple web-based frontend, the tool retrieves and presents driver 
-            statistics based on user input such as name and season year. It demonstrates a clean REST architecture, separation of 
-            concerns, and modern web communication between frontend and backend. The project focuses on clarity, maintainability, 
-            and practical application of dependency injection and API-driven design principles.
-        </p>
+        <div class="hero-container">
+            <h1>Welcome to F1 Insight Tool</h1>
+            <p class="hero-subtitle">
+                Explore Formula 1 performance data across drivers, sessions and lap times - powered by real OpenF1 data.
+            </p>
+        </div>
+        <section class="features">
+            <h2>Capabilities</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <h3>Driver Data</h3>
+                    <p>Access detailed driver information by season.</p>
+                </div>
+                <div class="feature">
+                    <h3>Lap Analysis</h3>
+                    <p>Highlight fastest laps, sector times and pit-out laps.</p>
+                </div>
+                <div class="feature">
+                    <h3>Session Results</h3>
+                    <p>Explore structured race results and performance comparisons.</p>
+                </div>
+            </div>
+        </section>
+        <section class="tech-stack">
+            <h2>Built With</h2>
+            <ul>
+                <li>Vanilla JS</li>
+                <li>Spring Boot</li>
+                <li>SQLite</li>
+                <li>OpenF1 API</li>
+                <li>jOOQ</li>
+            </ul>
+        </section>
+        <footer>
+            <p>F1 Insight Tool · Built for data-driven Formula 1 performance analysis.</p>
+        </footer>
     </div>
 
 </body>
