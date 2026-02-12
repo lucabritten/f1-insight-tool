@@ -219,14 +219,14 @@ function renderSessionResults(data) {
                     <td>${r.duration?.[0] ?? "-"}</td>
                     <td>${r.duration?.[1] ?? "-"}</td>
                     <td>${r.duration?.[2] ?? "-"}</td>
-                    <td>${formatGap(r)}</td>
+                    <td>+${formatGap(r)}</td>
                 `;
             } else {
                 row.innerHTML = `
                     <td>${position}</td>
                     <td>${r.driverNumber}</td>
                     <td>${r.driverName}</td>
-                    <td>${formatGap(r)}</td>
+                    <td>+${formatGap(r)}</td>
                 `;
             }
 
