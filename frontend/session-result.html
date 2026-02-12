@@ -20,46 +20,54 @@
                     <a href="./laps.html">Laps</a>
                 </li>
                 <li>
-                    <a href="">Session-Results</a>
+                    <a href="./session-result.html">Session-Results</a>
                 </li>
             </ul>
         </nav>
     </div>
+
     <div class="container">
-    <form id="lapsForm">
-        <div>
-            <label>Location:</label><br>
-            <input type="text" id="location" required>
-        </div>
-        <div>
-            <label>Session:</label><br>
-            <input type="text" id="session" required>
-        </div>
-        <div>
-            <label>Year:</label><br>
-            <input type="number" id="results-year" required>
-        </div>
+        <section class="page-header">
+            <h1>Session-Result Lookup</h1>
+            <p class="page-subtitle">
+                Display session results for a specified session!
+            </p>
+        </section>
 
-        <button type="submit">Search</button>
-    </form>
+        <section>
+            <form id="results-form">
+                <div class="form-grid">
+                    <div>
+                        <label>Location:</label><br>
+                        <input type="text" id="results-location" placeholder="e.g. Austin" required>
+                    </div>
+                    <div>
+                        <label>Session:</label><br>
+                        <input type="text" id="results-session" placeholder="e.g. Race, Qualifiying" required>
+                    </div>
+                    <div>
+                        <label>Year:</label><br>
+                        <input type="number" id="results-year" placeholder="e.g. 2024" required>
+                    </div>
+                </div>
+                <button type="submit">Search</button>
+            </form>
+        </section>
 
-    <div id="result" class="result hidden">
-        <h2 id="res-title"></h2>
+    <div id="session-result-result" class="result hidden">
+        <h2>Session Results:</h2>
+        <h3 id="result-title"></h3>
     
-        <table id="laps-table">
+        <div class="table-wrapper">
+        <table id="results-table">
             <thead>
-                <tr>
-                    <th>Results</th>
-                    <th></th>
-                    <th>S2</th>
-                    <th>S3</th>
-                    <th>Lap Time</th>
-                    <th>Pit Out</th>
+                <tr id="results-table-head">
                 </tr>
             </thead>
-            <tbody id="laps-body">
+            <tbody id="results-table-body">
             </tbody>
         </table>
+        </div>
     </div>
     </div>
     <script src="main.js"></script>

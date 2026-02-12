@@ -20,36 +20,47 @@
                     <a href="./laps.html">Laps</a>
                 </li>
                 <li>
-                    <a href="">Session-Results</a>
+                    <a href="./session-result.html">Session-Results</a>
                 </li>
             </ul>
         </nav>
     </div>
+
     <div class="container">
-    <form id="lapsForm">
-        <div>
-            <label>Location:</label><br>
-            <input type="text" id="location" required>
-        </div>
-        <div>
-            <label>Session:</label><br>
-            <input type="text" id="session" required>
-        </div>
-        <div>
-            <label>Year:</label><br>
-            <input type="number" id="laps-year" required>
-        </div>
-        <div>
-            <label>Driver-number:</label><br>
-            <input type="number" id="driver_number" required>
-        </div>
+        <section class="page-header">
+            <h1>Laps Lookup</h1>
+            <p class="page-subtitle">
+                List Laps details, like sector times, for a Formula 1 Driver and a specified session.
+            </p>
+        </section>
 
-        <button type="submit">Search</button>
-    </form>
+        <section>
+            <form id="laps-form">
+                <div class="form-grid">
+                    <div>
+                        <label>Location:</label><br>
+                        <input type="text" id="laps-location" placeholder="e.g. Austin" required>
+                    </div>
+                    <div>
+                        <label>Session:</label><br>
+                        <input type="text" id="laps-session" placeholder="e.g. Race, Qualifiying" required>
+                    </div>
+                    <div>
+                        <label>Year:</label><br>
+                        <input type="number" id="laps-year" placeholder="e.g. 2024" required>
+                    </div>
+                    <div>
+                        <label>Driver-number:</label><br>
+                        <input type="number" id="driver-number" placeholder="e.g. 44 for Lewis Hamilton" required>
+                    </div>
+                </div>
+                <button type="submit">Search</button>
+            </form>
+        </section>
 
-    <div id="result" class="result hidden">
-        <h2 id="res-title"></h2>
-    
+    <div id="laps-result" class="result hidden">
+        <h2>Lap Details:</h2>
+        <h3 id="laps-title"></h3>
         <div class="table-wrapper">
         <table id="laps-table">
             <thead>

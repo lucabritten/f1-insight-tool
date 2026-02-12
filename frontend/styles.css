@@ -99,7 +99,7 @@ nav ul {
     margin: 0;
     padding: 0;
     display: flex;
-    gap: 1.5rem;
+    gap: 1.7rem;
     align-items: center;
     justify-content: flex-end;
     height: 60px;
@@ -160,7 +160,10 @@ nav a:hover {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .form-grid div:last-child {
+    #driver-form .form-grid div:last-child {
+        grid-column: span 2;
+    }
+    #results-form .form-grid div:last-child {
         grid-column: span 2;
     }
 }

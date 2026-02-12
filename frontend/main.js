@@ -1,13 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const driverForm = document.getElementById("driverForm");
-    if (driverForm) {
-        driverForm.addEventListener("submit", handleDriverSubmit);
+    const driverform = document.getElementById("driver-form");
+    if (driverform) {
+        driverform.addEventListener("submit", handleDriverSubmit);
     }
 
-    const lapsForm = document.getElementById("lapsForm");
-    if (lapsForm) {
-        lapsForm.addEventListener("submit", handleLapsSubmit);
+    const lapsform = document.getElementById("laps-form");
+    if (lapsform) {
+        lapsform.addEventListener("submit", handleLapsSubmit);
     }
+
+    const resultsform = document.getElementById("results-form");
+    if(resultsform) {
+        resultsform.addEventListener("submit", handleResultsSubmit);
+    }
+
+
 });
 
 async function handleDriverSubmit(event) {
@@ -22,8 +29,9 @@ async function handleDriverSubmit(event) {
     url.searchParams.append("lastName", lastName);
     url.searchParams.append("year", year);
 
-    const resultBox = document.getElementById("result");
+    const resultBox = document.getElementById("driver-result");
     resultBox.classList.add("hidden");
+    console.log(url);
 
     try {
         const response = await fetch(url);
@@ -43,10 +51,10 @@ async function handleDriverSubmit(event) {
 async function handleLapsSubmit(event) {
     event.preventDefault();
 
-    const location = document.getElementById("location").value;
-    const session = document.getElementById("session").value;
+    const location = document.getElementById("laps-location").value;
+    const session = document.getElementById("laps-session").value;
     const year = document.getElementById("laps-year").value;
-    const driver_number = document.getElementById("driver_number").value;
+    const driver_number = document.getElementById("driver-number").value;
 
     const url = new URL("http://localhost:8080/laps");
     url.searchParams.append("location", location);
@@ -54,7 +62,7 @@ async function handleLapsSubmit(event) {
     url.searchParams.append("year", year);
     url.searchParams.append("driver_number", driver_number);
 
-    const resultBox = document.getElementById("result");
+    const resultBox = document.getElementById("laps-result");
     if (resultBox) {
         resultBox.classList.add("hidden");
     }
@@ -63,7 +71,7 @@ async function handleLapsSubmit(event) {
         const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error("HTTP error " + response.status);
+            throw new Error("HTTP error " ,response.status);
         }
 
         const data = await response.json();
@@ -75,6 +83,40 @@ async function handleLapsSubmit(event) {
     } catch (error) {
         showError(error.message);
     }
+}
+
+async function handleResultsSubmit(event) {
+    event.preventDefault();
+
+    const location = document.getElementById("results-location").value;
+    const session = document.getElementById("results-session").value;
+    const year = document.getElementById("results-year").value;
+
+    const url = new URL("http://localhost:8080/session-result");
+    url.searchParams.append("location", location);
+    url.searchParams.append("session", session);
+    url.searchParams.append("year", year);
+
+    const resultBox = document.getElementById("session-result-result");
+    if (resultBox) {
+        resultBox.classList.add("hidden");
+    }
+
+    try {
+        const response = await fetch(url);
+
+        if(!response.ok) {
+            throw new Error("HTTP error ", response.status);
+        }
+
+        const data = await response.json();
+        renderSessionResults(data);
+        if (resultBox) {
+            resultBox.classList.remove("hidden");
+        }
+    } catch (error) {
+        showError(error.message);
+    }    
 }
 
 function renderDriver(data, year) {
@@ -92,7 +134,7 @@ function showError(message) {
 }
 
 function renderLaps(data) {
-    const title = document.getElementById("res-title");
+    const title = document.getElementById("laps-title");
     const tbody = document.getElementById("laps-body");
 
     title.textContent =
@@ -133,4 +175,69 @@ function renderLaps(data) {
 
         tbody.appendChild(row);
     });
+}
+
+function renderSessionResults(data) {
+    const headRow = document.getElementById("results-table-head");
+    const tbody = document.getElementById("results-table-body");
+
+    const isQualifying =
+        data.sessionName.toLowerCase().includes("quali");
+
+        headRow.innerHTML = "";
+        tbody.innerHTML = "";
+
+        if(isQualifying) {
+            headRow.innerHTML = `
+                <th>Pos</th>
+                <th>No</th>
+                <th>Number</th>
+                <th>Q1</th>
+                <th>Q2</th>
+                <th>Q3</th>
+                <th>Gap</th>
+            `;
+        } else {
+            headRow.innerHTML = `
+                <th>Pos</th>
+                <th>No</th>
+                <th>Name</th>
+                <th>Gap</th>
+            `;
+        }
+
+        data.results.forEach((r, index) => {
+            const row = document.createElement("tr");
+
+            const position = r.position > 0 ? r.position : index + 1;
+
+            if (isQualifying) {
+                row.innerHTML = `
+                    <td>${position}</td>
+                    <td>${r.driverNumber}</td>
+                    <td>${r.driverName}</td>
+                    <td>${r.duration?.[0] ?? "-"}</td>
+                    <td>${r.duration?.[1] ?? "-"}</td>
+                    <td>${r.duration?.[2] ?? "-"}</td>
+                    <td>${formatGap(r)}</td>
+                `;
+            } else {
+                row.innerHTML = `
+                    <td>${position}</td>
+                    <td>${r.driverNumber}</td>
+                    <td>${r.driverName}</td>
+                    <td>${formatGap(r)}</td>
+                `;
+            }
+
+            tbody.appendChild(row);
+        })
+}
+
+function formatGap(r) {
+    if (r.dsq) return "DSQ";
+    if (r.dns) return "DNS";
+    if (r.dnf) return "DNF";
+
+    return r.gapToLeader?.[0] ?? "-";
 }
