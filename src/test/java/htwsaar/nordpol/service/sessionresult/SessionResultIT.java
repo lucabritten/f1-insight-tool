@@ -13,6 +13,8 @@ import htwsaar.nordpol.repository.sessionresult.ISessionResultRepo;
 import htwsaar.nordpol.repository.sessionresult.JooqSessionResultRepo;
 import htwsaar.nordpol.service.CacheService;
 import htwsaar.nordpol.service.ICacheService;
+import htwsaar.nordpol.service.driver.DriverService;
+import htwsaar.nordpol.service.driver.IDriverService;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.meeting.MeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
@@ -45,6 +47,7 @@ public class SessionResultIT {
 
     private IMeetingService meetingService;
     private ISessionService sessionService;
+    private IDriverService driverService;
     private ICacheService cacheService;
 
     @BeforeEach
@@ -59,6 +62,7 @@ public class SessionResultIT {
 
         meetingService = mock(MeetingService.class);
         sessionService = mock(SessionService.class);
+        driverService = mock(DriverService.class);
         cacheService = new CacheService();
 
         sessionResultService = new SessionResultService(
@@ -66,7 +70,8 @@ public class SessionResultIT {
                 sessionService,
                 sessionResultClient,
                 sessionResultRepo,
-                cacheService
+                cacheService,
+                driverService
         );
     }
 

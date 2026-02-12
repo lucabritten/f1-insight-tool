@@ -9,5 +9,6 @@ public interface IDriverService {
     Driver getDriverByNumberAndYear(int number, int year);
     Driver getDriverByNumberAndMeetingKey(int number, int year, int meetingKey);
     Driver getDriverByNumberWithFallback(int number, int year, int meetingKey);
+    List<Driver> getDriversBySessionKey(int sessionKey);
     void preloadMissingDriversForMeeting(int year, int meetingKey, List<Integer> driverNumbers);
 }

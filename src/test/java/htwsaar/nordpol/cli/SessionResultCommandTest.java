@@ -38,8 +38,8 @@ public class SessionResultCommandTest {
                 "Austin",
                 SessionName.RACE,
                 List.of(
-                        new SessionResult(44, 1, List.of("+0.000"), List.of(5400.0), false, false, false),
-                        new SessionResult(1, 2, List.of("+1.234"), List.of(5401.234), false, false, false)
+                        new SessionResult(44, "Hamilton",1, List.of("+0.000"), List.of(5400.0), false, false, false),
+                        new SessionResult(1, "Verstappen",2, List.of("+1.234"), List.of(5401.234), false, false, false)
                 )
         );
 

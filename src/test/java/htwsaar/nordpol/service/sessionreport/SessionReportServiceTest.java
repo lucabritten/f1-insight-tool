@@ -110,8 +110,8 @@ class SessionReportServiceTest {
             Driver driver1 = new Driver("Charles", "Leclerc", 16, "Ferrari");
             Driver driver2 = new Driver("Carlos", "Sainz", 55, "Ferrari");
             List<SessionResult> results = List.of(
-                    new SessionResult(16, 1, List.of("+0.000"), List.of(82.5), false, false, false),
-                    new SessionResult(55, 2, List.of("+3.456"), List.of(83.0), false, false, false)
+                    new SessionResult(16, "Lecler",1, List.of("+0.000"), List.of(82.5), false, false, false),
+                    new SessionResult(55, "Sainz",2, List.of("+3.456"), List.of(83.0), false, false, false)
             );
             Lap lap1 = new Lap(16, 1, SESSION_KEY, 28.1, 21.2, 32.0, 81.3, false);
             Lap lap2 = new Lap(55, 1, SESSION_KEY, 28.5, 21.8, 32.5, 82.8, false);
@@ -139,9 +139,9 @@ class SessionReportServiceTest {
         void filtersResults_toTopNDrivers() {
             Driver driver55 = new Driver("Carlos", "Sainz", 55, "Ferrari");
             List<SessionResult> results = List.of(
-                    new SessionResult(55, 1, List.of("+0.000"), List.of(82.5), false, false, false),
-                    new SessionResult(16, 2, List.of("+5.123"), List.of(83.0), false, false, false),
-                    new SessionResult(1, 3, List.of("+10.456"), List.of(84.0), false, false, false)
+                    new SessionResult(55, "Sainz",1, List.of("+0.000"), List.of(82.5), false, false, false),
+                    new SessionResult(16, "Leclerc",2, List.of("+5.123"), List.of(83.0), false, false, false),
+                    new SessionResult(1, "Verstappen",3, List.of("+10.456"), List.of(84.0), false, false, false)
             );
             Lap lap = new Lap(55, 1, SESSION_KEY, 28.1, 21.2, 32.0, 81.3, false);
 
@@ -181,7 +181,7 @@ class SessionReportServiceTest {
         void preloadsDrivers_forMeetingBeforeResolving() {
             Driver driver = new Driver("Max", "Verstappen", 1, "Red Bull Racing");
             List<SessionResult> results = List.of(
-                    new SessionResult(1, 1, List.of("+0.000"), List.of(82.5), false, false, false)
+                    new SessionResult(1, "Verstappen",1, List.of("+0.000"), List.of(82.5), false, false, false)
             );
 
             setupMocksForReport(results);
@@ -196,7 +196,7 @@ class SessionReportServiceTest {
         @Test
         void createsUnknownDriver_whenDriverLookupFails() {
             List<SessionResult> results = List.of(
-                    new SessionResult(99, 1, List.of("+0.000"), List.of(82.5), false, false, false)
+                    new SessionResult(99, "Unknown",1, List.of("+0.000"), List.of(82.5), false, false, false)
             );
 
             setupMocksForReport(results);
@@ -218,7 +218,7 @@ class SessionReportServiceTest {
         void returnsEmptyLapList_whenLapLookupFails() {
             Driver driver = new Driver("Lewis", "Hamilton", 44, "Mercedes");
             List<SessionResult> results = List.of(
-                    new SessionResult(44, 1, List.of("+0.000"), List.of(82.5), false, false, false)
+                    new SessionResult(44, "Hamilton",1, List.of("+0.000"), List.of(82.5), false, false, false)
             );
 
             setupMocksForReport(results);
@@ -238,7 +238,7 @@ class SessionReportServiceTest {
                     MEETING_NAME, COUNTRY_NAME, SessionName.QUALIFYING, defaultWeather);
             Driver driver = new Driver("Max", "Verstappen", 1, "Red Bull Racing");
             List<SessionResult> results = List.of(
-                    new SessionResult(1, 1, List.of("+0.000", "+0.100", "+0.050"),
+                    new SessionResult(1, "Verstappen",1, List.of("+0.000", "+0.100", "+0.050"),
                             List.of(91.5, 90.8, 90.2), false, false, false)
             );
 

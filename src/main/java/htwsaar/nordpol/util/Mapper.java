@@ -66,7 +66,7 @@ public class Mapper {
         );
     }
 
-    public static SessionResult toSessionResult(SessionResultDto dto) {
+    public static SessionResult toSessionResult(SessionResultDto dto, String name) {
         // Normalize null lists from API/DB into empty lists to avoid NPEs downstream
         var gapToLeader = dto.gap_to_leader() != null ? dto.gap_to_leader() : java.util.List.<String>of();
         var duration = dto.duration() != null ? dto.duration() : java.util.List.<Double>of();
@@ -75,6 +75,7 @@ public class Mapper {
 
         return new SessionResult(
                 dto.driver_number(),
+                name,
                 position,
                 gapToLeader,
                 duration,

@@ -16,7 +16,7 @@ public class SessionResultController {
         this.sessionResultService = sessionResultService;
     }
 
-
+    @GetMapping
     public SessionResultWithContext getSessionResultsBySession(
             @RequestParam(name = "location") String location,
             @RequestParam(name = "year") int year,

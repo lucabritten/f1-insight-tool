@@ -41,7 +41,7 @@ public class SessionReportRendererTest {
         Weather weather = new Weather(1234, 4321, 10, 50, false, 30, 2, 1);
         WeatherWithContext weatherWithContext = new WeatherWithContext(meetingName, "Austria", sessionName, weather);
 
-        SessionResult sessionResult = new SessionResult(1,1,List.of("0"), List.of(10.0), false, false, false);
+        SessionResult sessionResult = new SessionResult(1,"Verstappen",1,List.of("0"), List.of(10.0), false, false, false);
         SessionResultWithContext sessionResultWithContext = new SessionResultWithContext(meetingName, sessionName, List.of(sessionResult));
 
         Driver driver = new Driver("Max", "Verstappen", 1, "Racing Cats");

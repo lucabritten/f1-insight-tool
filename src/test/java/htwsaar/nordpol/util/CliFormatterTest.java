@@ -22,6 +22,7 @@ class CliFormatterTest {
         void formatsQualifyingWithQ1Q2Q3AndGap() {
             SessionResult r1 = new SessionResult(
                     1,
+                    "Verstappen",
                     1,
                     List.of("0.0", "0.0", "0.0"),
                     List.of(93.2, 92.7, 92.5),
@@ -32,6 +33,7 @@ class CliFormatterTest {
 
             SessionResult r2 = new SessionResult(
                     16,
+                    "Leclerc",
                     2,
                     List.of("0.3", "0.3"),
                     List.of(93.5, 92.9),
@@ -59,6 +61,7 @@ class CliFormatterTest {
         void qualifyingGapFallsBackFromQ3ToQ2ToQ1() {
             SessionResult r1 = new SessionResult(
                     1,
+                    "Verstappen",
                     1,
                     List.of("0.0", "0.0", "0.0"),
                     List.of(93.2, 92.7, 92.5),
@@ -87,6 +90,7 @@ class CliFormatterTest {
         void formatsRaceWithSingleGapColumn() {
             SessionResult r1 = new SessionResult(
                     1,
+                    "Verstappen",
                     1,
                     List.of("0.0", "0.0", "0.0"),
                     List.of(93.2, 92.7, 92.5),
@@ -117,6 +121,7 @@ class CliFormatterTest {
         void formatsDnfAsLastPositionWithStatus() {
             SessionResult r1 = new SessionResult(
                     1,
+                    "Verstappen",
                     1,
                     List.of("0.0"),
                     List.of(92.1),
@@ -127,6 +132,7 @@ class CliFormatterTest {
 
             SessionResult r2 = new SessionResult(
                     0,
+                    "Unknown",
                     6,
                     List.of(),
                     List.of(),

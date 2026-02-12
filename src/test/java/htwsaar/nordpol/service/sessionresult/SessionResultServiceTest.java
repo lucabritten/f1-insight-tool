@@ -1,5 +1,6 @@
 package htwsaar.nordpol.service.sessionresult;
 
+import htwsaar.nordpol.domain.Driver;
 import htwsaar.nordpol.dto.SessionResultDto;
 import htwsaar.nordpol.api.sessionresult.ISessionResultClient;
 import htwsaar.nordpol.presentation.view.SessionResultWithContext;
@@ -9,6 +10,7 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.repository.sessionresult.ISessionResultRepo;
 import htwsaar.nordpol.service.CacheService;
 import htwsaar.nordpol.service.ICacheService;
+import htwsaar.nordpol.service.driver.IDriverService;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.service.sessionResult.SessionResultService;
@@ -35,6 +37,9 @@ class SessionResultServiceTest {
     private ISessionService sessionService;
 
     @Mock
+    private IDriverService driverService;
+
+    @Mock
     private ISessionResultClient sessionResultClient;
 
     @Mock
@@ -46,7 +51,7 @@ class SessionResultServiceTest {
 
     @BeforeEach
     void setup() {
-        sessionResultService = new SessionResultService(meetingService, sessionService, sessionResultClient, sessionResultRepo, cacheService);
+        sessionResultService = new SessionResultService(meetingService, sessionService, sessionResultClient, sessionResultRepo, cacheService, driverService);
     }
 
     @Nested
@@ -80,12 +85,18 @@ class SessionResultServiceTest {
                     2
             );
 
+            Driver max = new Driver("Max", "Verstappen", 1, "RB");
+            Driver lando = new Driver("Lando", "Norris", 4, "RB");
+
+
             when(meetingService.getMeetingByYearAndLocation(2025, "Austin"))
                     .thenReturn(meeting);
             when(sessionService.getSessionByMeetingKeyAndSessionName(1250, SessionName.RACE))
                     .thenReturn(session);
             when(sessionResultRepo.getSessionResultBySessionKey(9640))
                     .thenReturn(List.of(r1, r2));
+            when(driverService.getDriversBySessionKey(9640))
+                    .thenReturn(List.of(max, lando));
 
             SessionResultWithContext result =
                     sessionResultService.getResultByLocationYearAndSessionType(
@@ -116,6 +127,8 @@ class SessionResultServiceTest {
                     1
             );
 
+            Driver max = new Driver("Max", "Verstappen", 1, "RB");
+
             when(meetingService.getMeetingByYearAndLocation(2025, "Austin"))
                     .thenReturn(meeting);
             when(sessionService.getSessionByMeetingKeyAndSessionName(1250, SessionName.QUALIFYING))
@@ -124,6 +137,8 @@ class SessionResultServiceTest {
                     .thenReturn(List.of());
             when(sessionResultClient.getSessionResultBySessionKey(9640))
                     .thenReturn(List.of(apiResult));
+            when(driverService.getDriversBySessionKey(9640))
+                    .thenReturn(List.of(max));
 
             SessionResultWithContext result =
                     sessionResultService.getResultByLocationYearAndSessionType(
@@ -166,12 +181,17 @@ class SessionResultServiceTest {
                     0
             );
 
+            Driver max = new Driver("Max", "Verstappen", 1, "RB");
+            Driver lewis = new Driver("Lewis", "Hamilton", 44, "RB");
+
             when(meetingService.getMeetingByYearAndLocation(2025, "Austin"))
                     .thenReturn(meeting);
             when(sessionService.getSessionByMeetingKeyAndSessionName(1250, SessionName.RACE))
                     .thenReturn(session);
             when(sessionResultRepo.getSessionResultBySessionKey(9640))
                     .thenReturn(List.of(dnf, finished));
+            when(driverService.getDriversBySessionKey(9640))
+                    .thenReturn(List.of(max, lewis));
 
             SessionResultWithContext result =
                     sessionResultService.getResultByLocationYearAndSessionType(
@@ -221,12 +241,18 @@ class SessionResultServiceTest {
                 0
         );
 
+        Driver alice = new Driver("Alice", "Wonderland", 16, "RB");
+        Driver bob = new Driver("Bob", "Dylan", 22, "RB");
+        Driver carol = new Driver("Carol", "Catfish", 10, "CC");
+
         when(meetingService.getMeetingByYearAndLocation(2025, "Austin"))
                 .thenReturn(meeting);
         when(sessionService.getSessionByMeetingKeyAndSessionName(1250, SessionName.RACE))
                 .thenReturn(session);
         when(sessionResultRepo.getSessionResultBySessionKey(9640))
                 .thenReturn(List.of(dsq, dns, normal));
+        when(driverService.getDriversBySessionKey(9640))
+                .thenReturn(List.of(alice,bob, carol));
 
         SessionResultWithContext result =
                 sessionResultService.getResultByLocationYearAndSessionType(
@@ -264,6 +290,8 @@ class SessionResultServiceTest {
                 List.of(92.5),
                 0
         );
+        Driver alice = new Driver("Alice", "Wonderland", 55, "RB");
+        Driver bob = new Driver("Bob", "Dylan", 99, "RB");
 
         when(meetingService.getMeetingByYearAndLocation(2025, "Austin"))
                 .thenReturn(meeting);
@@ -271,6 +299,8 @@ class SessionResultServiceTest {
                 .thenReturn(session);
         when(sessionResultRepo.getSessionResultBySessionKey(9640))
                 .thenReturn(List.of(unknownPosition, validPosition));
+        when(driverService.getDriversBySessionKey(9640))
+                .thenReturn(List.of(alice,bob));
 
         SessionResultWithContext result =
                 sessionResultService.getResultByLocationYearAndSessionType(

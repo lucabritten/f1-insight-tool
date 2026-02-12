@@ -5,6 +5,7 @@ import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.dto.DriverDto;
 import okhttp3.OkHttpClient;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import static htwsaar.nordpol.api.OpenF1Param.*;
@@ -39,6 +40,17 @@ public class DriverClient extends BaseClient implements IDriverClient {
                 Map.of(
                         DRIVER_NUMBER, number,
                         MEETING_KEY, meetingKey
+                ),
+                DriverDto[].class
+        );
+    }
+
+    @Override
+    public List<DriverDto> getDriversForSessionKey(int sessionKey) {
+        return fetchList(
+                OpenF1Endpoint.DRIVERS,
+                Map.of(
+                        SESSION_KEY, sessionKey
                 ),
                 DriverDto[].class
         );

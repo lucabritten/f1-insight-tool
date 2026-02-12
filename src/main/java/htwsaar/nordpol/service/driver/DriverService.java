@@ -135,6 +135,19 @@ public class DriverService implements IDriverService {
         }
     }
 
+    /**
+     * This method differs from the standard cache logic, as we cannot ensure
+     * that every driver is in the db, as we don't know how many drivers participated
+     * in a F1 session, normally 20 until 2026 season. However, sickness or penalties can also
+     * lead to less than 20 drivers. Therefore we first request the API for information.
+     */
+    @Override
+    public List<Driver> getDriversBySessionKey(int sessionKey) {
+        return driverClient.getDriversForSessionKey(sessionKey).stream()
+                .map(Mapper::toDriver)
+                .toList();
+    }
+
     private void validateInputYear(int year) {
         if (year < MIN_YEAR) {
             throw new IllegalArgumentException("Only data from " + MIN_YEAR + " onwards is available.");

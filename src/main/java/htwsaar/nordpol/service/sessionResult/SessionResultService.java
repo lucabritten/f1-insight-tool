@@ -1,15 +1,13 @@
 package htwsaar.nordpol.service.sessionResult;
 
+import htwsaar.nordpol.domain.*;
 import htwsaar.nordpol.dto.SessionResultDto;
 import htwsaar.nordpol.api.sessionresult.ISessionResultClient;
 import htwsaar.nordpol.presentation.view.SessionResultWithContext;
-import htwsaar.nordpol.domain.Meeting;
-import htwsaar.nordpol.domain.Session;
-import htwsaar.nordpol.domain.SessionName;
-import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.exception.SessionResultNotFoundException;
 import htwsaar.nordpol.repository.sessionresult.ISessionResultRepo;
 import htwsaar.nordpol.service.ICacheService;
+import htwsaar.nordpol.service.driver.IDriverService;
 import htwsaar.nordpol.service.meeting.IMeetingService;
 import htwsaar.nordpol.service.session.ISessionService;
 import htwsaar.nordpol.util.Mapper;
@@ -36,8 +34,9 @@ public class SessionResultService implements ISessionResultService {
     private final ISessionResultRepo sessionResultRepo;
 
     private final ICacheService cacheService;
+    private final IDriverService driverService;
 
-    public SessionResultService(IMeetingService meetingService, ISessionService sessionService, ISessionResultClient sessionResultClient, ISessionResultRepo sessionResultRepo, ICacheService cacheService) {
+    public SessionResultService(IMeetingService meetingService, ISessionService sessionService, ISessionResultClient sessionResultClient, ISessionResultRepo sessionResultRepo, ICacheService cacheService, IDriverService driverService) {
         requireNonNull(meetingService, "meetingService must not be null");
         requireNonNull(sessionService, "sessionService must not be null.");
         requireNonNull(sessionResultClient, "sessionResultClient must not be null.");
@@ -48,6 +47,7 @@ public class SessionResultService implements ISessionResultService {
         this.sessionService = sessionService;
         this.sessionResultClient = sessionResultClient;
         this.sessionResultRepo = sessionResultRepo;
+        this.driverService = driverService;
         this.cacheService = cacheService;
     }
 
@@ -96,9 +96,16 @@ public class SessionResultService implements ISessionResultService {
                 sessionResultRepo::saveAll,
                 () -> new SessionResultNotFoundException(sessionKey)
         );
+
+        List<Driver> drivers = driverService.getDriversBySessionKey(sessionKey);
+
         return dtoList
                 .stream()
-                .map(Mapper::toSessionResult)
+                .map(dto -> {
+                    Driver driver = drivers.stream().filter(d -> d.driverNumber() == dto.driver_number()).toList().getFirst();
+                    String name = driver.firstName() + " " + driver.lastName();
+                    return  Mapper.toSessionResult(dto, name);
+                })
                 .toList();
     }
 }
