@@ -11,13 +11,13 @@ export function initResult(): void {
 async function handleResultsSubmit(event: SubmitEvent): Promise<void> {
     event.preventDefault();
 
-    const locationInput = document.getElementById("laps-location") as HTMLInputElement;
+    const locationInput = document.getElementById("results-location") as HTMLInputElement;
     const location = locationInput.value;
 
-    const sessionInput = document.getElementById("laps-session") as HTMLInputElement;
+    const sessionInput = document.getElementById("results-session") as HTMLInputElement;
     const session = sessionInput.value;
 
-    const yearInput = document.getElementById("laps-year") as HTMLInputElement;
+    const yearInput = document.getElementById("results-year") as HTMLInputElement;
     const year = yearInput.value;
 
     const url = new URL("http://localhost:8080/session-result");
@@ -30,6 +30,11 @@ async function handleResultsSubmit(event: SubmitEvent): Promise<void> {
         resultBox.classList.add("hidden");
     }
 
+    const spinner = document.getElementById("loading-spinner");
+    if (spinner) {
+        spinner.classList.remove("hidden");
+    }
+
     try {
         const response = await fetch(url);
 
@@ -40,10 +45,16 @@ async function handleResultsSubmit(event: SubmitEvent): Promise<void> {
 
         const data: SessionResultWithContext = await response.json();
         renderSessionResults(data);
+        if (spinner) {
+            spinner.classList.add("hidden");
+        }
         if (resultBox) {
             resultBox.classList.remove("hidden");
         }
     } catch (error) {
+        if (spinner) {
+            spinner.classList.add("hidden");
+        }
         if (error instanceof Error)
             showError(error.message);
         else

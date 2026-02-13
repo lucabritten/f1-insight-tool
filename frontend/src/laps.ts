@@ -33,6 +33,11 @@ async function handleLapsSubmit(event:SubmitEvent): Promise<void> {
         resultBox.classList.add("hidden");
     }
 
+    const spinner = document.getElementById("loading-spinner");
+    if (spinner) {
+        spinner.classList.remove("hidden");
+    }
+
     try {
         const response = await fetch(url);
 
@@ -44,10 +49,16 @@ async function handleLapsSubmit(event:SubmitEvent): Promise<void> {
         const data: LapsWithContext = await response.json();
         renderLaps(data);
 
+        if (spinner) {
+            spinner.classList.add("hidden");
+        }
         if (resultBox) {
             resultBox.classList.remove("hidden");
         }
     } catch (error) {
+        if (spinner) {
+            spinner.classList.add("hidden");
+        }
         if (error instanceof Error)
             showError(error.message);
         else

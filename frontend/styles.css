@@ -2,12 +2,18 @@
    Base Styles
 ======================== */
 
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #f6f7f9;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+        "Segoe UI", sans-serif;
+    background: radial-gradient(circle at 20% 20%, #0f172a, #020617 70%);
     margin: 0;
     padding: 2rem;
-    color: #222;
+    color: #e5e7eb;
+    -webkit-font-smoothing: antialiased;
 }
 
 h1 {
@@ -20,11 +26,13 @@ h2 {
     font-size: 1.6rem;
     font-weight: 600;
     margin-bottom: 2rem;
+    color: #ffffff;
 }
 
 p {
-    line-height: 1.6;
-    color: #444;
+    line-height: 1.7;
+    color: #cbd5e1;
+    font-weight: 400;
 }
 
 
@@ -42,17 +50,18 @@ section {
 }
 
 .hero-container {
-    height: 300px;
+    min-height: 360px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    gap: 0.5rem;
-    padding: 5rem 2rem;
-    background: #111827;
-    border-radius: 16px;
-    color: #d1d5db;
+    gap: 1rem;
+    padding: 6rem 2rem;
+    background: linear-gradient(135deg, rgba(79,70,229,0.15), rgba(0,0,0,0.4));
+    border-radius: 24px;
+    color: #ffffff;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.4);
 }
 
 .hero-subtitle {
@@ -64,6 +73,15 @@ section {
 
 .features {
     margin-top: 5rem;
+    padding: 4rem 2.5rem;
+    border-radius: 28px;
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.02)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
 }
 
 .features h2 {
@@ -92,6 +110,8 @@ nav {
     background: #111827;
     padding: 0 2rem;
     height: 70px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
 }
 
 nav ul {
@@ -141,17 +161,19 @@ nav a:hover {
 }
 
 .form-card {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
     padding: 2.5rem;
-    border-radius: 16px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     margin-bottom: 3rem;
 }
 
 .form-grid {
     display: grid;
-    gap: 1.5rem;
+    column-gap: 1.5rem;
+    row-gap: 1.5rem;
     margin-bottom: 1.5rem;
 }
 
@@ -169,21 +191,22 @@ nav a:hover {
 }
 
 .feature {
-    background: #ffffff;
-    padding: 2rem;
-    border-radius: 14px;
-    border: 1px solid #e5e7eb;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: rgba(255,255,255,0.05);
+    padding: 2.5rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .feature:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    transform: translateY(-8px);
+    box-shadow: 0 30px 70px rgba(79,70,229,0.3);
 }
 
 .feature h3 {
     margin-bottom: 0.5rem;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
 }
 
 .feature p {
@@ -193,10 +216,15 @@ nav a:hover {
 
 .tech-stack {
     margin-top: 6rem;
-    padding: 3rem 2rem;
-    background: #ffffff;
-    border-radius: 16px;
-    border: 1px solid #e5e7eb;
+    padding: 4rem 2.5rem;
+    border-radius: 28px;
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.02)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
     text-align: center;
 }
 
@@ -215,20 +243,24 @@ nav a:hover {
 }
 
 .tech-stack li {
-    padding: 0.6rem 1rem;
-    background: #f3f4f6;
-    border-radius: 20px;
+    padding: 0.6rem 1.2rem;
+    background: rgba(255,255,255,0.06);
+    border-radius: 999px;
     font-size: 0.9rem;
-    color: #444;
+    color: #e5e7eb;
+    border: 1px solid rgba(255,255,255,0.08);
 }
 
 form {
-    background: #ffffff;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
 }
 
+form:hover {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+}
 form div {
     margin-bottom: 1rem;
 }
@@ -241,10 +273,17 @@ label {
 
 input {
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.85rem 1rem;
     font-size: 1rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+input::placeholder {
+    color: #94a3b8;
 }
 
 input:focus {
@@ -254,27 +293,36 @@ input:focus {
 }
 
 button {
-    margin-top: 0.5rem;
-    padding: 0.6rem 1rem;
+    margin-top: 1rem;
+    padding: 0.9rem 1.6rem;
     font-size: 1rem;
     font-weight: 600;
-    background: #4f46e5;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 16px;
     cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 12px 30px rgba(79, 70, 229, 0.4);
 }
 
 button:hover {
-    background: #4338ca;
+    transform: translateY(-3px);
+    box-shadow: 0 20px 50px rgba(79, 70, 229, 0.5);
 }
 
 .result {
-    margin-top: 2rem;
-    background: #ffffff;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    margin-top: 3rem;
+    padding: 2.5rem;
+    border-radius: 28px;
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.02)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
 }
 
 .result h2 {
@@ -293,6 +341,9 @@ table {
 }
 
 thead th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     position: sticky;
     top: 0;
     background: #f3f4f6;
@@ -312,7 +363,7 @@ td {
 }
 
 tbody tr:hover {
-    background: #f9fafb;
+    background: #eef2ff;
 }
 
 .pit-out {
@@ -341,4 +392,51 @@ footer {
     border-top: 1px solid #e5e7eb;
     font-size: 0.9rem;
     color: #777;
+}
+
+/* ========================
+   Hero Stats
+======================== */
+
+.hero-stats {
+    margin-top: 3rem;
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    text-align: center;
+}
+
+.hero-stats div {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+}
+
+.hero-stats strong {
+    display: block;
+    font-size: 1.1rem;
+    color: #ffffff;
+}
+
+/* ========================
+   Loading Spinner
+======================== */
+
+.loading {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 1rem auto;
+    border: 4px solid #e5e7eb;
+    border-top: 4px solid #4f46e5;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }

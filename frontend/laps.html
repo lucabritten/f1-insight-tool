@@ -32,9 +32,13 @@
             <p class="page-subtitle">
                 List Laps details, like sector times, for a Formula 1 Driver and a specified session.
             </p>
+            <p style="margin-top:1rem; font-size:0.95rem; color:#94a3b8;">
+                Analyze lap-by-lap telemetry including sector performance and
+                pit-out detection in a premium data layout.
+            </p>
         </section>
 
-        <section>
+        <section class="form-card">
             <form id="laps-form">
                 <div class="form-grid">
                     <div>
@@ -57,6 +61,11 @@
                 <button type="submit">Search</button>
             </form>
         </section>
+
+        <div id="loading-spinner" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Loading session results...</p>
+        </div>
 
     <div id="laps-result" class="result hidden">
         <h2>Lap Details:</h2>

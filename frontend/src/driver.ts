@@ -30,6 +30,11 @@ async function handleDriverSubmit(event: SubmitEvent): Promise<void> {
         throw new Error("driver-result element not found");
     resultBox.classList.add("hidden");
 
+    const spinner = document.getElementById("loading-spinner");
+    if (spinner) {
+        spinner.classList.remove("hidden");
+    }
+
     try {
         const response = await fetch(url);
 
@@ -40,8 +45,14 @@ async function handleDriverSubmit(event: SubmitEvent): Promise<void> {
 
         const data: Driver = await response.json();
         renderDriver(data, year);
+        if (spinner) {
+            spinner.classList.add("hidden");
+        }
         resultBox.classList.remove("hidden");
     } catch (error) {
+        if (spinner) {
+            spinner.classList.add("hidden");
+        }
         if (error instanceof Error)
             showError(error.message);
         else

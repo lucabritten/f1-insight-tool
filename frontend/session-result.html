@@ -32,9 +32,13 @@
             <p class="page-subtitle">
                 Display session results for a specified session!
             </p>
+            <p style="margin-top:1rem; font-size:0.95rem; color:#94a3b8;">
+                View structured race classifications and compare performance
+                across drivers with clarity and speed.
+            </p>
         </section>
 
-        <section>
+        <section class="form-card">
             <form id="results-form">
                 <div class="form-grid">
                     <div>
@@ -53,6 +57,11 @@
                 <button type="submit">Search</button>
             </form>
         </section>
+
+    <div id="loading-spinner" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Loading session results...</p>
+    </div>
 
     <div id="session-result-result" class="result hidden">
         <h2>Session Results:</h2>

@@ -32,6 +32,10 @@
             <p class="page-subtitle">
                 Search for Formula 1 driver information by season and explore team data instantly.
             </p>
+            <p style="margin-top:1rem; font-size:0.95rem; color:#94a3b8;">
+                Instantly retrieve structured driver data with backend validation
+                and clean UI rendering.
+            </p>
         </section>
 
         <section class="form-card">
@@ -56,6 +60,11 @@
                 <button type="submit">Search Driver</button>
             </form>
         </section>
+
+        <div id="loading-spinner" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Loading session results...</p>
+        </div>
 
         <div id="driver-result" class="result hidden">
             <h2>Driver Details</h2>
