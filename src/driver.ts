@@ -1,5 +1,5 @@
-import { ApiError, Driver } from "./types.js";
-import { showError, getElement } from "./utils.js";
+import { ApiError, Driver } from "./types";
+import { showError, getElement } from "./utils";
 
 export function initDriver(): void {
     const form = document.getElementById("driver-form");

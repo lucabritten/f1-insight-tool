@@ -1,5 +1,5 @@
-import { LapsWithContext, Lap, ApiError } from "./types.js";
-import { showError, getElement } from "./utils.js";
+import { LapsWithContext, Lap, ApiError } from "./types";
+import { showError, getElement } from "./utils";
 
 export function initLap(): void {
     const form = document.getElementById("laps-form");

@@ -149,11 +149,11 @@ pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next
 release.properties
-dependency-reduced-pom.xml
+backend/dependency-reduced-pom.xml
 buildNumber.properties
-.mvn/timing.properties
+backend/.mvn/timing.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
-.mvn/wrapper/maven-wrapper.jar
+backend/.mvn/wrapper/maven-wrapper.jar
 
 # Eclipse m2e generated files
 # Eclipse Core
@@ -181,7 +181,7 @@ buildNumber.properties
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/maven,java,intellij,visualstudiocode
-/f1data.db
+/backend/f1data.db
 /.settings/org.eclipse.core.resources.prefs
 /.settings/org.eclipse.jdt.apt.core.prefs
 /.settings/org.eclipse.jdt.core.prefs

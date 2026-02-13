@@ -1,5 +1,5 @@
-import { SessionResult, SessionResultWithContext, ApiError } from "./types.js";
-import { showError, getElement } from "./utils.js";
+import { SessionResult, SessionResultWithContext, ApiError } from "./types";
+import { showError, getElement } from "./utils";
 
 export function initResult(): void {
     const form = document.getElementById("results-form");
