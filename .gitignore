@@ -186,3 +186,9 @@ buildNumber.properties
 /.settings/org.eclipse.jdt.apt.core.prefs
 /.settings/org.eclipse.jdt.core.prefs
 /.settings/org.eclipse.m2e.core.prefs
+
+#Frontend files
+/frontend/node_modules/*
+/frontend/dist/*
+/frontend/node_modules
+/frontend/dist

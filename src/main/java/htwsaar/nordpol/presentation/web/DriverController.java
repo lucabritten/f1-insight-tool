@@ -17,8 +17,8 @@ public class DriverController {
 
     @GetMapping
     public Driver getDriverByNameAndYear(
-            @RequestParam(name = "firstName") String firstName,
-            @RequestParam(name = "lastName") String lastName,
+            @RequestParam(name = "first_name") String firstName,
+            @RequestParam(name = "last_name") String lastName,
             @RequestParam(name = "year") int year
     ) {
         return driverService.getDriverByNameAndYear(firstName,lastName,year);
