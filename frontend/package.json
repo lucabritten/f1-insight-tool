@@ -1,0 +1,27 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "f1",
+    "api"
+  ],
+  "homepage": "https://github.com/lucabritten/f1-insight-tool#readme",
+  "bugs": {
+    "url": "https://github.com/lucabritten/f1-insight-tool/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucabritten/f1-insight-tool.git"
+  },
+  "license": "ISC",
+  "author": "Nordpol",
+  "type": "commonjs",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "typescript": "^5.9.3"
+  }
+}
