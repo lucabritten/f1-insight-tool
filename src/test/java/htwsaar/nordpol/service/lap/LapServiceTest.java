@@ -122,7 +122,7 @@ public class LapServiceTest {
         void filtersLapsWithZeroDuration() {
             int sessionKey = 1234;
             int driverNumber = 1;
-            LapDto lap1 = new LapDto(33, 1011, 1, 30.1, 29.8, 31.2, 0, true);
+            LapDto lap1 = new LapDto(33, 1011, 1, 30.1, 29.8, 31.2, 0.0, true);
             LapDto lap2 = new LapDto(33, 1011, 2, 30.1, 25.8, 30.2, 91.1, false);
             LapDto lap3 = new LapDto(33, 1011, 3, 30.1, 29.8, 31.2, 90.1, true);
 
