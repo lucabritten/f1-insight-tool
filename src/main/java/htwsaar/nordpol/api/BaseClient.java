@@ -1,4 +1,5 @@
 package htwsaar.nordpol.api;
+import htwsaar.nordpol.dto.LapDto;
 import tools.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.exception.ExternalApiException;
 import okhttp3.*;

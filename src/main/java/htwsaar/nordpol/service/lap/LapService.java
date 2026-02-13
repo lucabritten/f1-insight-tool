@@ -83,7 +83,6 @@ public class LapService implements ILapService {
         return filterValidLaps(
                 dtoList
                 .stream()
-                .filter(lap -> lap.lap_duration() > 0)
                 .map(Mapper::toLap)
                 .toList(),
                 true);
@@ -102,8 +101,6 @@ public class LapService implements ILapService {
         List<Driver> drivers = new ArrayList<>();
 
         fastestLaps.forEach(lap -> drivers.add(driverService.getDriverByNumberAndYear(lap.driverNumber(), year)));
-
-
 
         return new FastestLapsWithContext(meeting.meetingName(),
                 session.sessionName(),
@@ -172,6 +169,7 @@ public class LapService implements ILapService {
             return List.of();
 
         return laps.stream()
+                .filter(dto -> dto.lapDuration() != null && dto.durationSector1() != null && dto.durationSector2() != null && dto.durationSector3() != null)
                 .filter(lap -> lap.lapDuration() > 0)
                 .filter(lap -> includePitOutLaps || !lap.isPitOutLap())
                 .toList();
