@@ -1,5 +1,5 @@
 import { ApiError, Driver } from "./types.js";
-import { showError, getElement } from "./utils.js";
+import { showError, getElement, callBackend } from "./utils.js";
 
 export function initDriver(): void {
     const form = document.getElementById("driver-form");
@@ -25,43 +25,14 @@ async function handleDriverSubmit(event: SubmitEvent): Promise<void> {
     url.searchParams.append("last_name", lastName);
     url.searchParams.append("year", year);
 
-    const resultBox = document.getElementById("driver-result");
-    if(!resultBox)
-        throw new Error("driver-result element not found");
-    resultBox.classList.add("hidden");
+    const data: Driver | null = await callBackend<Driver>(url, "driver-loading-spinner", "driver-result");
+    if(!data) return;
 
-    const spinner = document.getElementById("loading-spinner");
-    if (spinner) {
-        spinner.classList.remove("hidden");
-    }
+    renderDriver(data, year);
 
-    try {
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            const errorData: ApiError = await response.json();
-            throw new Error(`(${errorData.error}) with message: ${errorData.message}`);
-        }
-
-        const data: Driver = await response.json();
-        renderDriver(data, year);
-        if (spinner) {
-            spinner.classList.add("hidden");
-        }
-        resultBox.classList.remove("hidden");
-    } catch (error) {
-        if (spinner) {
-            spinner.classList.add("hidden");
-        }
-        if (error instanceof Error)
-            showError(error.message);
-        else
-            showError("An unknown error occurred")
-    }
 }
 
 function renderDriver(data: Driver, year: string): void {
-    console.log(data);
     const nameElem = getElement<HTMLElement>("res-name");
     const teamElem = getElement<HTMLElement>("res-team");
     const yearElem = getElement<HTMLElement>("res-year");

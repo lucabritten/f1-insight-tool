@@ -1,5 +1,5 @@
 import { SessionResult, SessionResultWithContext, ApiError } from "./types.js";
-import { showError, getElement } from "./utils.js";
+import { showError, getElement, callBackend } from "./utils.js";
 
 export function initResult(): void {
     const form = document.getElementById("results-form");
@@ -24,47 +24,15 @@ async function handleResultsSubmit(event: SubmitEvent): Promise<void> {
     url.searchParams.append("location", location);
     url.searchParams.append("session", session);
     url.searchParams.append("year", year);
+  
+    const data: SessionResultWithContext | null = await callBackend<SessionResultWithContext>(url, "results-loading-spinner", "session-result-result");
+    if(!data) return;
 
-    const resultBox = document.getElementById("session-result-result");
-    if (resultBox) {
-        resultBox.classList.add("hidden");
-    }
-
-    const spinner = document.getElementById("loading-spinner");
-    if (spinner) {
-        spinner.classList.remove("hidden");
-    }
-
-    try {
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            const errorData: ApiError = await response.json();
-            throw new Error(`(${errorData.error}) with message: ${errorData.message}`);
-        }
-
-        const data: SessionResultWithContext = await response.json();
-        renderSessionResults(data);
-        if (spinner) {
-            spinner.classList.add("hidden");
-        }
-        if (resultBox) {
-            resultBox.classList.remove("hidden");
-        }
-    } catch (error) {
-        if (spinner) {
-            spinner.classList.add("hidden");
-        }
-        if (error instanceof Error)
-            showError(error.message);
-        else
-            showError("An unknown error occurred")
-    }    
+    renderSessionResults(data);
 }
 
 function renderSessionResults(data: SessionResultWithContext): void {
     const headRow = getElement<HTMLElement>("results-table-head");
-
     const tbody = getElement<HTMLElement>("results-table-body");
 
     const isQualifying =

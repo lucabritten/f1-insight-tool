@@ -1,5 +1,5 @@
 import { LapsWithContext, Lap, ApiError } from "./types.js";
-import { showError, getElement } from "./utils.js";
+import { showError, getElement, callBackend } from "./utils.js";
 
 export function initLap(): void {
     const form = document.getElementById("laps-form");
@@ -28,42 +28,10 @@ async function handleLapsSubmit(event:SubmitEvent): Promise<void> {
     url.searchParams.append("year", year);
     url.searchParams.append("driver_number", driverNumber);
 
-    const resultBox = document.getElementById("laps-result");
-    if (resultBox) {
-        resultBox.classList.add("hidden");
-    }
+    const data: LapsWithContext | null = await callBackend<LapsWithContext>(url, "laps-loading-spinner", "laps-result");
+    if(!data) return;
 
-    const spinner = document.getElementById("loading-spinner");
-    if (spinner) {
-        spinner.classList.remove("hidden");
-    }
-
-    try {
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            const errorData: ApiError = await response.json();
-            throw new Error(`(${errorData.error}) with message: ${errorData.message}`);
-        }
-
-        const data: LapsWithContext = await response.json();
-        renderLaps(data);
-
-        if (spinner) {
-            spinner.classList.add("hidden");
-        }
-        if (resultBox) {
-            resultBox.classList.remove("hidden");
-        }
-    } catch (error) {
-        if (spinner) {
-            spinner.classList.add("hidden");
-        }
-        if (error instanceof Error)
-            showError(error.message);
-        else
-            showError("An unknown error occurred")
-    }
+    renderLaps(data);
 }
 
 function renderLaps(data: LapsWithContext): void {
@@ -80,23 +48,33 @@ function renderLaps(data: LapsWithContext): void {
 
     data.laps.forEach(lap => {
         if (!lap.isPitOutLap) {
-            if (!fastestLap || lap.lapDuration < fastestLap.lapDuration) {
+            if (!fastestLap || lap.lapDuration < fastestLap.lapDuration)
                 fastestLap = lap;
-            }
         }
     });
+
+    //determine slowest lap (ignore pit out laps)
+    let slowestLap: Lap;
+
+    data.laps.forEach(lap => {
+        if(!lap.isPitOutLap) {
+            if(!slowestLap || lap.lapDuration > slowestLap.lapDuration)
+                slowestLap = lap;
+        }
+    })
 
     data.laps.forEach(lap => {
         const row = document.createElement("tr");
         
-        if (lap.isPitOutLap) {
+        if (lap.isPitOutLap)
             row.classList.add("pit-out");
-        }
 
-        if (fastestLap && lap.lapNumber === fastestLap.lapNumber) {
+        if (fastestLap && lap.lapNumber === fastestLap.lapNumber)
             row.classList.add("fastest-lap");
-        }
 
+        if(slowestLap && lap.lapNumber === slowestLap.lapNumber)
+            row.classList.add("slowest-lap");
+        
         row.innerHTML = `
             <td>${lap.lapNumber}</td>
             <td>${lap.durationSector1.toFixed(3)}</td>

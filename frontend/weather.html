@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver-Lookup</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div>
+        <nav>
+            <ul>
+                <li id="nav-icon">
+                    <a href="./index.html">Home</a>
+                </li>
+                <li>
+                    <a href="./driver.html">Driver</a>
+                </li>
+                <li>
+                    <a href="./weather.html">Weather</a>
+                </li>
+                <li>
+                    <a href="./laps.html">Laps</a>
+                </li>
+                <li>
+                    <a href="./session-result.html">Session-Results</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="container">
+        <section class="page-header">
+            <h1>Weather Lookup</h1>
+            <p class="page-subtitle">
+                Search for Formula 1 weather information by season and explore this historical data instantly.
+            </p>
+            <p style="margin-top:1rem; font-size:0.95rem; color:#94a3b8;">
+                Instantly retrieve structured weather data with backend validation
+                and clean UI rendering.
+            </p>
+        </section>
+
+        <section class="form-card">
+            <form id="weather-form">
+                <div class="form-grid">
+                    <div>
+                        <label for="location">Location</label>
+                        <input type="text" id="weather-location" placeholder="e.g. Austin" required>
+                    </div>
+
+                    <div>
+                        <label for="sessionName">Session</label>
+                        <input type="text" id="weather-session" placeholder="e.g. Race, Quali" required>
+                    </div>
+
+                    <div>
+                        <label for="driver-year">Season</label>
+                        <input type="number" id="weather-year" placeholder="e.g. 2024" required>
+                    </div>
+                </div>
+
+                <button type="submit">Search Weather-data</button>
+            </form>
+        </section>
+
+        <div id="weather-loading-spinner" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Loading session results...</p>
+        </div>
+
+        <div id="weather-result" class="result hidden">
+            <div class="result-header">
+                <h2>Weather Overview</h2>
+                <p class="result-meta">
+                    <span id="weather-meeting-name"></span> • 
+                    <span id="weather-country-name"></span> • 
+                    <span id="weather-session-name"></span>
+                </p>
+            </div>
+
+            <div class="weather-grid">
+                <div class="weather-item">
+                    <span class="weather-label">Air Temperature</span>
+                    <span class="weather-value" id="weather-air-temp"></span>
+                </div>
+
+                <div class="weather-item">
+                    <span class="weather-label">Track Temperature</span>
+                    <span class="weather-value" id="weather-track-temp"></span>
+                </div>
+
+                <div class="weather-item">
+                    <span class="weather-label">Humidity</span>
+                    <span class="weather-value" id="weather-humidity"></span>
+                </div>
+
+                <div class="weather-item">
+                    <span class="weather-label">Wind Speed</span>
+                    <span class="weather-value" id="weather-wind-speed"></span>
+                </div>
+
+                <div class="weather-item">
+                    <span class="weather-label">Wind Direction</span>
+                    <span class="weather-value" id="weather-wind-direction"></span>
+                </div>
+
+                <div class="weather-item">
+                    <span class="weather-label">Rainfall</span>
+                    <span class="weather-value" id="weather-rainfall"></span>
+                </div>
+            </div>
+
+    </div>
+    <script type="module" src="./dist/main.js" defer></script>
+</body>
+</html>

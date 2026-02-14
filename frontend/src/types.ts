@@ -41,3 +41,21 @@ export interface ApiError {
     error: string;
     message: string;
 }
+
+export interface WeatherWithContext {
+    meetingName: string;
+    countryName: string;
+    sessionName: string;
+    weather: Weather;
+}
+
+export interface Weather {
+    sessionKey: number;
+    meetingKey: number;
+    avgAirTemperature: number;
+    avgHumidity: number;
+    isRainfall: boolean;
+    avgTrackTemperature: number;
+    avgWindDirection: number;
+    avgWindSpeed: number;
+}
