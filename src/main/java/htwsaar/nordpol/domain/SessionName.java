@@ -8,7 +8,7 @@ public enum SessionName {
     PRACTICE2("Practice 2", "FP2"),
     PRACTICE3("Practice 3", "FP3"),
     QUALIFYING("Qualifying", "Quali"),
-    SPRINT_SHOOTOUT("Sprint Shootout", "SprintQuali", "Sprint-Quali", "Sprint Qualifying"),
+    SPRINT_SHOOTOUT("Sprint Qualifying", "SprintQuali", "Sprint-Quali", "Sprint Shootout"),
     SPRINT("Sprint", "Sprint"),
     RACE("Race", "GP");
 

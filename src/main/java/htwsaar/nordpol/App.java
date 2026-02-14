@@ -1,5 +1,6 @@
 package htwsaar.nordpol;
 
+import htwsaar.nordpol.config.DatabaseInitializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -12,6 +13,7 @@ public class App {
 //        System.exit(exitCode);
 //    }
     public static void main(String[] args){
+        new DatabaseInitializer().run();
         SpringApplication.run(App.class, args);
     }
 }
