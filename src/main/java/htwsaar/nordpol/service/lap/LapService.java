@@ -83,7 +83,6 @@ public class LapService implements ILapService {
         return filterValidLaps(
                 dtoList
                 .stream()
-                .filter(lap -> lap.lap_duration() > 0)
                 .map(Mapper::toLap)
                 .toList(),
                 true);
@@ -172,6 +171,7 @@ public class LapService implements ILapService {
             return List.of();
 
         return laps.stream()
+                .filter(lap -> lap.durationSector1() != null && lap.durationSector2() != null && lap.durationSector3() != null && lap.lapDuration() != null)
                 .filter(lap -> lap.lapDuration() > 0)
                 .filter(lap -> includePitOutLaps || !lap.isPitOutLap())
                 .toList();

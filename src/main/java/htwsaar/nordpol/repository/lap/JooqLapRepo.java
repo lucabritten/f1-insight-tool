@@ -19,8 +19,9 @@ public class JooqLapRepo implements ILapRepo {
 
     @Override
     public void saveAll(List<LapDto> lapDto) {
-        validateLapDtoList(lapDto);
-        lapDto.forEach(lap ->
+        lapDto.stream()
+                .filter(lap -> lap.duration_sector_1() != null && lap.duration_sector_2() != null && lap.duration_sector_3() != null && lap.lap_duration() != null)
+                .forEach(lap ->
                     create.insertInto(
                             LAPS,
                             LAPS.DRIVER_NUMBER,

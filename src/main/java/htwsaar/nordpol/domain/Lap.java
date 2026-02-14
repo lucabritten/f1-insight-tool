@@ -3,10 +3,10 @@ package htwsaar.nordpol.domain;
 public record Lap(int driverNumber,
                   int lapNumber,
                   int sessionKey,
-                  double durationSector1,
-                  double durationSector2,
-                  double durationSector3,
-                  double lapDuration,
+                  Double durationSector1,
+                  Double durationSector2,
+                  Double durationSector3,
+                  Double lapDuration,
                   boolean isPitOutLap
 ) {
 }
