@@ -19,9 +19,10 @@ public class JooqLapRepo implements ILapRepo {
 
     @Override
     public void saveAll(List<LapDto> lapDto) {
-        lapDto.stream()
-                .filter(lap -> lap.duration_sector_1() != null && lap.duration_sector_2() != null && lap.duration_sector_3() != null && lap.lap_duration() != null)
-                .forEach(lap ->
+        List<LapDto> filtered = filterNullLaps(lapDto);
+        validateLapDtoList(filtered);
+
+        filtered.forEach(lap ->
                     create.insertInto(
                             LAPS,
                             LAPS.DRIVER_NUMBER,
@@ -44,7 +45,13 @@ public class JooqLapRepo implements ILapRepo {
                             ).execute()
                 );
     }
-    
+
+    private List<LapDto> filterNullLaps(List<LapDto> laps) {
+        return laps.stream()
+                .filter(lap -> lap.duration_sector_1() != null && lap.duration_sector_2() != null && lap.duration_sector_3() != null && lap.lap_duration() != null)
+                .toList();
+    }
+
     private void validateLapDtoList(List<LapDto> laps){
         laps.forEach(lap -> {
             if(lap.session_key() < 0)

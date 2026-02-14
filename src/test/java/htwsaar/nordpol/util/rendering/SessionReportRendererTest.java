@@ -45,7 +45,7 @@ public class SessionReportRendererTest {
         SessionResultWithContext sessionResultWithContext = new SessionResultWithContext(meetingName, sessionName, List.of(sessionResult));
 
         Driver driver = new Driver("Max", "Verstappen", 1, "Racing Cats");
-        Lap lap = new Lap(1, 1, 1234, 1,1,1,3,false);
+        Lap lap = new Lap(1, 1, 1234, 1.0,1.0,1.0,3.0,false);
 
         var lapSeries = Map.of(driver, List.of(lap));
 
