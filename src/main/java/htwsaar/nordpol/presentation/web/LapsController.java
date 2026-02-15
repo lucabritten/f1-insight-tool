@@ -6,7 +6,6 @@ import htwsaar.nordpol.service.lap.ILapService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/laps")
 public class LapsController {
 

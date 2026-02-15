@@ -6,7 +6,6 @@ import htwsaar.nordpol.service.sessionResult.ISessionResultService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/session-result")
 public class SessionResultController {
 

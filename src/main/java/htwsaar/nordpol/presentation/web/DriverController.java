@@ -5,7 +5,6 @@ import htwsaar.nordpol.service.driver.IDriverService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/driver")
 public class DriverController {
 
