@@ -58,7 +58,7 @@ public class SessionReportRendererTest {
                 weatherWithContext,
                 sessionResultWithContext,
                 lapSeries,
-                "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/Flags%2016x9/singapore-flag.png"
+                null
         );
     }
 }

@@ -200,9 +200,14 @@ public class SessionReportRenderer {
         return y - (size + LINE_SPACING);
     }
 
-    private BufferedImage loadImageFromUrl(String imageUrl) throws IOException {
-        try(InputStream inputStream = URI.create(imageUrl).toURL().openStream()) {
+    private BufferedImage loadImageFromUrl(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) {
+            return null;
+        }
+        try (InputStream inputStream = URI.create(imageUrl).toURL().openStream()) {
             return ImageIO.read(inputStream);
+        } catch (Exception ignored) {
+            return null;
         }
     }
 }
