@@ -1,5 +1,5 @@
-import { ApiError, Driver } from "./types.js";
-import { showError, getElement, callBackend } from "./utils.js";
+import { Driver } from "./types.js";
+import { getElement, callBackend, createApiUrl } from "./utils.js";
 
 export function initDriver(): void {
     const form = document.getElementById("driver-form");
@@ -20,7 +20,7 @@ async function handleDriverSubmit(event: SubmitEvent): Promise<void> {
     const yearInput = document.getElementById("driver-year") as HTMLInputElement;
     const year = yearInput.value;
 
-    const url = new URL("https://f1-insight-tool.onrender.com:8080/driver");
+    const url = createApiUrl("/driver");
     url.searchParams.append("first_name", firstName);
     url.searchParams.append("last_name", lastName);
     url.searchParams.append("year", year);

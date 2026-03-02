@@ -1,4 +1,10 @@
-import { ApiError, LapsWithContext } from "./types";
+import { ApiError } from "./types.js";
+
+declare global {
+    interface Window {
+        __API_BASE_URL__?: string;
+    }
+}
 
 export function showError(message: string) {
     alert("Error: " + message);
@@ -10,6 +16,11 @@ export function getElement<T extends HTMLElement>(id: string): T {
         throw new Error(`Element with id '${id}' not found.`);
 
     return elem as T;
+}
+
+export function createApiUrl(path: string): URL {
+    const base = window.__API_BASE_URL__ ?? window.location.origin;
+    return new URL(path, base);
 }
 
 export async function callBackend<T>(

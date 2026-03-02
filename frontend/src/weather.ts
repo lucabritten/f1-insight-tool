@@ -1,5 +1,5 @@
 import { WeatherWithContext } from "./types.js";
-import { callBackend, getElement } from "./utils.js";
+import { callBackend, getElement, createApiUrl } from "./utils.js";
 
 export function initWeather(): void {
     const form = document.getElementById("weather-form") as HTMLFormElement | null;
@@ -20,7 +20,7 @@ async function handleWeatherSubmit(event: SubmitEvent): Promise<void> {
     const yearInput = document.getElementById("weather-year") as HTMLInputElement;
     const year = yearInput.value;
 
-    const url = new URL("https://f1-insight-tool.onrender.com:8080/weather");
+    const url = createApiUrl("/weather");
     url.searchParams.append("location", location);
     url.searchParams.append("session", session);
     url.searchParams.append("year", year);

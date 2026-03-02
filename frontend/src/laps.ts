@@ -1,10 +1,10 @@
-import { LapsWithContext, Lap, ApiError } from "./types.js";
-import { showError, getElement, callBackend } from "./utils.js";
+import { LapsWithContext, Lap } from "./types.js";
+import { getElement, callBackend, createApiUrl } from "./utils.js";
 
 export function initLap(): void {
     const form = document.getElementById("laps-form");
-    if(form) 
-        document.addEventListener("submit", handleLapsSubmit);
+    if(form)
+        form.addEventListener("submit", handleLapsSubmit);
 }
 
 async function handleLapsSubmit(event:SubmitEvent): Promise<void> {
@@ -22,7 +22,7 @@ async function handleLapsSubmit(event:SubmitEvent): Promise<void> {
     const driverNumberInput = document.getElementById("driver-number") as HTMLInputElement;
     const driverNumber = driverNumberInput.value;
 
-    const url = new URL("https://f1-insight-tool.onrender.com:8080/laps");
+    const url = createApiUrl("/laps");
     url.searchParams.append("location", location);
     url.searchParams.append("session", session);
     url.searchParams.append("year", year);

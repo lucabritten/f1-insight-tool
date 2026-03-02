@@ -1,10 +1,10 @@
-import { SessionResult, SessionResultWithContext, ApiError } from "./types.js";
-import { showError, getElement, callBackend } from "./utils.js";
+import { SessionResult, SessionResultWithContext } from "./types.js";
+import { getElement, callBackend, createApiUrl } from "./utils.js";
 
 export function initResult(): void {
     const form = document.getElementById("results-form");
     if(form)
-        document.addEventListener("submit", handleResultsSubmit);
+        form.addEventListener("submit", handleResultsSubmit);
 }
 
 
@@ -20,7 +20,7 @@ async function handleResultsSubmit(event: SubmitEvent): Promise<void> {
     const yearInput = document.getElementById("results-year") as HTMLInputElement;
     const year = yearInput.value;
 
-    const url = new URL("https://f1-insight-tool.onrender.com:8080/session-result");
+    const url = createApiUrl("/session-result");
     url.searchParams.append("location", location);
     url.searchParams.append("session", session);
     url.searchParams.append("year", year);
