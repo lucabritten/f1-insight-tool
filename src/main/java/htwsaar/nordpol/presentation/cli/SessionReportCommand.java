@@ -94,7 +94,7 @@ public class SessionReportCommand implements Callable<Integer> {
                     }
             );
             Path outputPath = Paths.get(resolveOutputPath());
-            renderer.render(report, outputPath);
+            renderer.renderToFile(report, outputPath);
             System.out.println("Report written to: " + outputPath.toAbsolutePath());
             return 0;
         } catch (DataNotFoundException e) {

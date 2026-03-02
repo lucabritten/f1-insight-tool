@@ -20,7 +20,7 @@ async function handleDriverSubmit(event: SubmitEvent): Promise<void> {
     const yearInput = document.getElementById("driver-year") as HTMLInputElement;
     const year = yearInput.value;
 
-    const url = new URL("http://localhost:8080/driver");
+    const url = new URL("https://f1-insight-tool.onrender.com:8080/driver");
     url.searchParams.append("first_name", firstName);
     url.searchParams.append("last_name", lastName);
     url.searchParams.append("year", year);

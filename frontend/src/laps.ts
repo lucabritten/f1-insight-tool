@@ -22,7 +22,7 @@ async function handleLapsSubmit(event:SubmitEvent): Promise<void> {
     const driverNumberInput = document.getElementById("driver-number") as HTMLInputElement;
     const driverNumber = driverNumberInput.value;
 
-    const url = new URL("http://localhost:8080/laps");
+    const url = new URL("https://f1-insight-tool.onrender.com:8080/laps");
     url.searchParams.append("location", location);
     url.searchParams.append("session", session);
     url.searchParams.append("year", year);

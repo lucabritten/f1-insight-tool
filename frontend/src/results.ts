@@ -20,7 +20,7 @@ async function handleResultsSubmit(event: SubmitEvent): Promise<void> {
     const yearInput = document.getElementById("results-year") as HTMLInputElement;
     const year = yearInput.value;
 
-    const url = new URL("http://localhost:8080/session-result");
+    const url = new URL("https://f1-insight-tool.onrender.com:8080/session-result");
     url.searchParams.append("location", location);
     url.searchParams.append("session", session);
     url.searchParams.append("year", year);

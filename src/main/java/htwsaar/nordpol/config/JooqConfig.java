@@ -34,7 +34,7 @@ public class JooqConfig {
     @Bean
     public DSLContext createContext(){
         try{
-            Path dbPath = Path.of("f1data.db");
+            String dbPath = System.getenv().getOrDefault("F1_DB_PATH", "f1data.db");
             Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             if (schemaNeedsInitialization(connection)) {
                 initializeSchema(connection);

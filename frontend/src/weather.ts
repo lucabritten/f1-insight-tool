@@ -20,7 +20,7 @@ async function handleWeatherSubmit(event: SubmitEvent): Promise<void> {
     const yearInput = document.getElementById("weather-year") as HTMLInputElement;
     const year = yearInput.value;
 
-    const url = new URL("http://localhost:8080/weather");
+    const url = new URL("https://f1-insight-tool.onrender.com:8080/weather");
     url.searchParams.append("location", location);
     url.searchParams.append("session", session);
     url.searchParams.append("year", year);

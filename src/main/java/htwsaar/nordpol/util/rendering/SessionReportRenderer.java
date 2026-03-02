@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -48,17 +49,27 @@ public class SessionReportRenderer {
     private final ResultsTableRenderer resultsTableRenderer = new ResultsTableRenderer(new TimeFormatter(), new GapFormatter());
     private final LapChartBuilder chartBuilder = new XChartLapChartBuilder();
 
-    public void render(SessionReport report, Path outputPath) {
-        if (report == null) {
+    public byte[] render(SessionReport report) {
+        return renderInternal(report);
+    }
+
+    public void renderToFile(SessionReport report,  Path outputPath) {
+        byte[] pdf = renderInternal(report);
+        try {
+            Files.write(outputPath, pdf);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private byte[] renderInternal(SessionReport report) {
+        if (report == null)
             throw new IllegalArgumentException("report must not be null.");
-        }
-        if (outputPath == null) {
-            throw new IllegalArgumentException("outputPath must not be null.");
-        }
 
         BufferedImage chartImage = chartBuilder.build(report);
 
-        try (PDDocument document = new PDDocument()) {
+        try (PDDocument document = new PDDocument();
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             PDPage page = new PDPage(PDRectangle.LETTER);
             document.addPage(page);
             
@@ -117,11 +128,8 @@ public class SessionReportRenderer {
                 }
             }
 
-            Path parent = outputPath.getParent();
-            if (parent != null) {
-                Files.createDirectories(parent);
-            }
-            document.save(outputPath.toFile());
+            document.save(outputStream);
+            return outputStream.toByteArray();
         } catch (IOException e) {
             throw new RuntimeException("Failed to render session report.", e);
         }

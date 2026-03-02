@@ -158,7 +158,7 @@ public class SessionReportCommandTest {
             assertThat(errorStream.toString()).isBlank();
 
             ArgumentCaptor<Path> pathCaptor = ArgumentCaptor.forClass(Path.class);
-            verify(renderer, times(1)).render(eq(report), pathCaptor.capture());
+            verify(renderer, times(1)).renderToFile(eq(report), pathCaptor.capture());
             String path = Paths.get("reports", "monza-race.pdf").toString();
             assertThat(pathCaptor.getValue().toString()).endsWith(path);
         }
@@ -206,7 +206,7 @@ public class SessionReportCommandTest {
             assertThat(exitCode).isZero();
 
             ArgumentCaptor<Path> pathCaptor = ArgumentCaptor.forClass(Path.class);
-            verify(renderer, times(1)).render(eq(report), pathCaptor.capture());
+            verify(renderer, times(1)).renderToFile(eq(report), pathCaptor.capture());
             String path = Paths.get("reports", "session-report-las-vegas-2024-qualifying.pdf").toString();
             assertThat(pathCaptor.getValue().toString())
                     .endsWith(path);

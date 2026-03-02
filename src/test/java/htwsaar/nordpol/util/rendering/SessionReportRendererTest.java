@@ -26,7 +26,7 @@ public class SessionReportRendererTest {
 
         Path output = Files.createTempFile("session-report", ".pdf");
 
-        renderer.render(report, output);
+        renderer.renderToFile(report, output);
 
         assertThat(Files.exists(output)).isTrue();
         assertThat(Files.size(output)).isGreaterThan(0);

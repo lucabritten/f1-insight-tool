@@ -17,7 +17,8 @@ public class WebConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(
                                 "http://localhost:3000",
-                                "http://localhost:8081"
+                                "http://localhost:8081",
+                                "https://*.onrender.com"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
