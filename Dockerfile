@@ -37,4 +37,4 @@ ENV PORT=8080
 # ENV F1_DB_PATH=/var/data/f1data.db
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/app.jar", "--server.port=${PORT}"]
+ENTRYPOINT ["sh", "-c", "java -jar /app/app.jar --server.port=$PORT"]
