@@ -1,6 +1,6 @@
 package htwsaar.nordpol.api.baseclient;
 
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.api.OpenF1Param;

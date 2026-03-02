@@ -1,5 +1,5 @@
 package htwsaar.nordpol.api;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.exception.ExternalApiException;
 import okhttp3.*;
 import org.slf4j.Logger;

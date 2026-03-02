@@ -1,5 +1,5 @@
 package htwsaar.nordpol.api.driver;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.dto.DriverDto;

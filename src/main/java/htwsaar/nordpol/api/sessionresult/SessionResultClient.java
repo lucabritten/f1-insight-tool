@@ -1,5 +1,5 @@
 package htwsaar.nordpol.api.sessionresult;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import htwsaar.nordpol.api.BaseClient;
 import htwsaar.nordpol.api.OpenF1Endpoint;
 import htwsaar.nordpol.dto.SessionResultDto;
