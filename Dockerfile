@@ -25,7 +25,7 @@ RUN useradd -u 10001 -r -s /sbin/nologin appuser && chown -R appuser:appuser /ap
 USER appuser
 
 # Copy the shaded JAR from build stage
-COPY --from=build /workspace/target/f1-insight-tool-1.0-SNAPSHOT-shaded.jar /app/app.jar
+COPY --from=build /workspace/target/f1-insight-tool-1.0-SNAPSHOT.jar /app/app.jar
 
 # Default port; Render sets $PORT at runtime. We pass it to Spring below.
 ENV PORT=8080
