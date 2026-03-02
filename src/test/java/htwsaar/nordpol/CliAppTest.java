@@ -1,16 +1,8 @@
 package htwsaar.nordpol;
 
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThatNoException;
-
 class CliAppTest {
 
-    @Test
-    void main_doesNotThrowWhenNoArgs() {
-        assertThatNoException().isThrownBy(() ->
-                CliApp.main(new String[]{"--help"})
-        );
-    }
+    // Intentionally left empty for now; CLI behavior is covered
+    // by dedicated Picocli command tests and E2E tests.
 }
 

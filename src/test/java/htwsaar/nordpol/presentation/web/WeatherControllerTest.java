@@ -4,9 +4,12 @@ import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.Weather;
 import htwsaar.nordpol.presentation.view.WeatherWithContext;
 import htwsaar.nordpol.service.weather.IWeatherService;
+import htwsaar.nordpol.config.DatabaseInitializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -15,7 +18,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(WeatherController.class)
+@WebMvcTest(
+        controllers = WeatherController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = htwsaar.nordpol.App.class
+        )
+)
 class WeatherControllerTest {
 
     @Autowired
@@ -23,6 +32,9 @@ class WeatherControllerTest {
 
     @MockBean
     private IWeatherService weatherService;
+
+    @MockBean
+    private DatabaseInitializer databaseInitializer;
 
     @Test
     void getWeatherByLocationYearAndSessionName_returnsContext() throws Exception {

@@ -3,11 +3,14 @@ package htwsaar.nordpol.presentation.web;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.domain.SessionResult;
 import htwsaar.nordpol.presentation.view.SessionResultWithContext;
+import htwsaar.nordpol.config.DatabaseInitializer;
 import htwsaar.nordpol.service.sessionResult.ISessionResultService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -17,7 +20,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(SessionResultController.class)
+@WebMvcTest(
+        controllers = SessionResultController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = htwsaar.nordpol.App.class
+        )
+)
 class SessionResultControllerTest {
 
     @Autowired
@@ -25,6 +34,9 @@ class SessionResultControllerTest {
 
     @MockBean
     private ISessionResultService sessionResultService;
+
+    @MockBean
+    private DatabaseInitializer databaseInitializer;
 
     @Test
     void getSessionResultsBySession_returnsContext() throws Exception {

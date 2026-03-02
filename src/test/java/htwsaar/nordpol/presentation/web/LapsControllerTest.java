@@ -3,10 +3,13 @@ package htwsaar.nordpol.presentation.web;
 import htwsaar.nordpol.domain.Lap;
 import htwsaar.nordpol.domain.SessionName;
 import htwsaar.nordpol.presentation.view.LapsWithContext;
+import htwsaar.nordpol.config.DatabaseInitializer;
 import htwsaar.nordpol.service.lap.ILapService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -17,7 +20,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(LapsController.class)
+@WebMvcTest(
+        controllers = LapsController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = htwsaar.nordpol.App.class
+        )
+)
 class LapsControllerTest {
 
     @Autowired
@@ -25,6 +34,9 @@ class LapsControllerTest {
 
     @MockBean
     private ILapService lapService;
+
+    @MockBean
+    private DatabaseInitializer databaseInitializer;
 
     @Test
     void getLapsByLocationYearSessionNameAndDriverNumber_returnsContext() throws Exception {

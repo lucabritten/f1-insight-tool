@@ -1,14 +1,16 @@
 package htwsaar.nordpol.presentation.web;
 
 import htwsaar.nordpol.domain.*;
-import htwsaar.nordpol.presentation.web.dto.SessionReportDto;
 import htwsaar.nordpol.presentation.view.SessionResultWithContext;
 import htwsaar.nordpol.presentation.view.WeatherWithContext;
 import htwsaar.nordpol.service.report.ISessionReportService;
+import htwsaar.nordpol.config.DatabaseInitializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -19,7 +21,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(SessionReportController.class)
+@WebMvcTest(
+        controllers = SessionReportController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = htwsaar.nordpol.App.class
+        )
+)
 class SessionReportControllerTest {
 
     @Autowired
@@ -27,6 +35,9 @@ class SessionReportControllerTest {
 
     @MockBean
     private ISessionReportService reportService;
+
+    @MockBean
+    private DatabaseInitializer databaseInitializer;
 
     @Test
     void buildReport_returnsSessionReportDto() throws Exception {
@@ -68,7 +79,13 @@ class SessionReportControllerTest {
                 "https://example.com/flag.png"
         );
 
-        when(reportService.buildReport("Monte Carlo", 2024, SessionName.QUALIFYING, 10, org.mockito.ArgumentMatchers.any()))
+        when(reportService.buildReport(
+                org.mockito.ArgumentMatchers.eq("Monte Carlo"),
+                org.mockito.ArgumentMatchers.eq(2024),
+                org.mockito.ArgumentMatchers.eq(SessionName.QUALIFYING),
+                org.mockito.ArgumentMatchers.eq(10),
+                org.mockito.ArgumentMatchers.any()
+        ))
                 .thenReturn(report);
 
         mockMvc.perform(
