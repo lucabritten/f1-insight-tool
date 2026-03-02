@@ -34,7 +34,7 @@ ENV PORT=8080
 # HEALTHCHECK --interval=30s --timeout=3s --retries=3 CMD curl -fsS http://localhost:${PORT}/actuator/health || exit 1
 
 # If you will persist SQLite with a Render Disk at /var/data, consider:
-# ENV F1_DB_PATH=/var/data/f1data.db
+ENV F1_DB_PATH=/var/data/f1data.db
 
 EXPOSE 8080
 ENTRYPOINT ["sh", "-c", "java -jar /app/app.jar --server.port=$PORT"]
