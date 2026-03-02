@@ -1,8 +1,11 @@
 package htwsaar.nordpol.config;
 
+import org.springframework.stereotype.Component;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+@Component
 public final class DatabaseInitializer {
 
     public void run() {
@@ -14,9 +17,5 @@ public final class DatabaseInitializer {
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize database", e);
         }
-    }
-
-    public static void main(String[] args) {
-        new DatabaseInitializer().run();
     }
 }
