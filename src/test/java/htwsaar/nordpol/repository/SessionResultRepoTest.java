@@ -4,6 +4,7 @@ package htwsaar.nordpol.repository;
 import htwsaar.nordpol.dto.SessionResultDto;
 import htwsaar.nordpol.repository.sessionresult.JooqSessionResultRepo;
 import htwsaar.nordpol.testutil.SqlSchemaLoader;
+import htwsaar.nordpol.testutil.SqliteTestSupport;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -25,6 +26,7 @@ class SessionResultRepoTest {
 
     @BeforeEach
     void setup() throws Exception {
+        SqliteTestSupport.init();
         Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         create = DSL.using(connection, SQLDialect.SQLITE);
 

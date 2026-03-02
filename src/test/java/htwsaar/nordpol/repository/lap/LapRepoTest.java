@@ -2,6 +2,7 @@ package htwsaar.nordpol.repository.lap;
 
 import htwsaar.nordpol.dto.LapDto;
 import htwsaar.nordpol.testutil.SqlSchemaLoader;
+import htwsaar.nordpol.testutil.SqliteTestSupport;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -25,6 +26,7 @@ public class LapRepoTest {
 
     @BeforeEach
     void setUp() throws Exception {
+        SqliteTestSupport.init();
         connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         create = DSL.using(connection, SQLDialect.SQLITE);
 
