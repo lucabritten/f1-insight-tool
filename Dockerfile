@@ -7,11 +7,6 @@ RUN mvn -q -DskipTests dependency:go-offline
 
 # Now copy sources and build
 COPY src ./src
-# If your frontend is built into the backend, also COPY frontend and run its build here
-# COPY frontend ./frontend
-# RUN --mount=type=cache,target=/root/.npm \  
-#     cd frontend && npm ci && npm run build && cd .. && \
-#     mkdir -p src/main/resources/static && cp -r frontend/dist/* src/main/resources/static/
 
 # Package shaded JAR
 RUN mvn -q -DskipTests package
@@ -30,10 +25,6 @@ COPY --from=build /workspace/target/f1-insight-tool-1.0-SNAPSHOT.jar /app/app.ja
 # Default port; Render sets $PORT at runtime. We pass it to Spring below.
 ENV PORT=8080
 
-# Healthcheck (optional; Render also uses HTTP health checks)
-# HEALTHCHECK --interval=30s --timeout=3s --retries=3 CMD curl -fsS http://localhost:${PORT}/actuator/health || exit 1
-
-# If you will persist SQLite with a Render Disk at /var/data, consider:
 ENV F1_DB_PATH=/var/data/f1data.db
 
 EXPOSE 8080
